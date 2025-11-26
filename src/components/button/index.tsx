@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Colors} from '@/themes';
+import {Colors, Fonts} from '@/themes';
 import React, {ReactNode} from 'react';
 import {
   ActivityIndicator,
@@ -38,7 +38,7 @@ const CButton = ({
         style,
         {
           opacity: disabled ? 0.5 : 1,
-          backgroundColor: Colors.primary,
+          backgroundColor: Colors.yellow,
         },
       ]}>
       {isLoading && (
@@ -48,10 +48,7 @@ const CButton = ({
         />
       )}
       {renderIconLeft && renderIconLeft}
-      <CText
-        color={Colors.white}
-        fontFamily="SEMIBOLD"
-        style={{marginLeft: scale(6)}}>
+      <CText color={Colors.primary} fontFamily={Fonts.BOLD}>
         {title}
       </CText>
     </TouchableOpacity>
@@ -63,7 +60,7 @@ export default CButton;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: scale(45),
+    height: scale(40),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: scale(12),

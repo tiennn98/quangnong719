@@ -13,4 +13,5 @@ export const Colors = {
   gray200: '#E5E7EB',
   gray100: '#F3F4F6',
   blue400: '#318DD2',
+  red: 'red',
 };

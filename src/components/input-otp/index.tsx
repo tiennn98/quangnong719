@@ -6,10 +6,9 @@ import {StyleSheet} from 'react-native';
 interface Props {
   needReset?: boolean;
   onChangeValue: (value: any) => void;
-  valueText?: any;
 }
 
-const InputOTP: React.FC<Props> = ({needReset, onChangeValue, valueText}) => {
+const InputOTP: React.FC<Props> = ({needReset, onChangeValue}) => {
   const ref = useRef<any>(null);
 
   useEffect(() => {
@@ -23,9 +22,8 @@ const InputOTP: React.FC<Props> = ({needReset, onChangeValue, valueText}) => {
       ref={ref}
       style={styles.otpView}
       pinCount={6}
-      code={valueText}
-      onCodeChanged={code => onChangeValue(code)}
       autoFocusOnLoad
+      onCodeChanged={code => onChangeValue(code)}
       codeInputFieldStyle={styles.codeInputFieldStyle}
       codeInputHighlightStyle={styles.codeInputHighlightStyle}
       //   onCodeFilled={code => {
@@ -41,27 +39,12 @@ const styles = StyleSheet.create({
     height: 65,
     marginTop: 10,
   },
-  timeView: {
-    marginTop: 22,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  expireTimeLabel: {
-    fontSize: 13,
-    fontFamily: Fonts.REGULAR,
-    color: Colors.grayText,
-  },
-  expireTime: {
-    fontSize: 13,
-    fontFamily: Fonts.REGULAR,
-    color: Colors.blue400,
-  },
   codeInputFieldStyle: {
     width: 44,
     height: 60,
     borderWidth: 1,
-    borderColor: Colors.gray900,
-    color: Colors.gray900,
+    borderColor: Colors.white,
+    color: Colors.white,
     borderRadius: 6,
     fontSize: 28,
     fontFamily: Fonts.SEMIBOLD,
@@ -70,7 +53,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 60,
     borderWidth: 1,
-    borderColor: Colors.gray900,
+    borderColor: Colors.white,
   },
 });
 
