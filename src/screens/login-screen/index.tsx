@@ -8,6 +8,8 @@ import {scale, width} from 'react-native-utils-scale';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import CButton from '@/components/button';
+import {navigate} from '@/navigators';
+import {SCREEN_NAME} from '@/constants';
 
 const validationSchema = yup.object({
   phone: yup
@@ -55,7 +57,10 @@ const LoginScreen = () => {
             />
           </View>
           <View style={styles.viewButton}>
-            <CButton title="Đăng nhập" onPress={() => {}} />
+            <CButton
+              title="Đăng nhập"
+              onPress={() => navigate(SCREEN_NAME.CONFIRM_OTP_SCREEN)}
+            />
           </View>
         </View>
       </FormProvider>

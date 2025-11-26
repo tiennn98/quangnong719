@@ -1,6 +1,7 @@
 import {SCREEN_NAME} from '@/constants';
-import {LoginScreen} from '@/screens';
+import {ConfirmOtpScreen, LoginScreen} from '@/screens';
 
 export const AuthScreen = {
   [SCREEN_NAME.LOGIN]: LoginScreen,
+  [SCREEN_NAME.CONFIRM_OTP_SCREEN]: ConfirmOtpScreen,
 };

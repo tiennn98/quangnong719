@@ -4,4 +4,5 @@ export const SCREEN_NAME = {
   APP_STACK: 'AppStack',
   LOGIN: 'Login',
   HOME: 'Home',
+  CONFIRM_OTP_SCREEN: 'ConfirmOtpScreen',
 };
