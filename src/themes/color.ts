@@ -17,5 +17,5 @@ export const Colors = {
   h1:'#0F3D23',
   h2:'#527B63',
   backgroundInput:'#F8F7F1',
-  buttonbg:'#19673A'
+  buttonbg:'#19673A',
 };
