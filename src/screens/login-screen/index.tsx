@@ -1,6 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useCallback } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import React, {useCallback} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {
   Alert,
   Image,
@@ -15,14 +15,14 @@ import {
 } from 'react-native';
 import * as yup from 'yup';
 
-import { Images } from '@/assets';
-import { CInput, CText } from '@/components';
+import {Images} from '@/assets';
+import {CInput, CText} from '@/components';
 import CButton from '@/components/button';
-import { SCREEN_NAME } from '@/constants';
-import { useLogin } from '@/hooks/useAuth';
-import { navigate } from '@/navigators';
-import { Colors } from '@/themes';
-import { styles } from './styles.module';
+import {SCREEN_NAME} from '@/constants';
+import {useLogin} from '@/hooks/useAuth';
+import {navigate} from '@/navigators';
+import {Colors} from '@/themes';
+import {styles} from './styles.module';
 
 const validationSchema = yup.object({
   phone: yup
@@ -38,7 +38,7 @@ const validationSchema = yup.object({
           return false;
         }
         if (value.length < 10) {
-          return true;
+          return false;
         }
         return /^(03|05|07|08|09)[0-9]{8}$/.test(value);
       },
@@ -63,16 +63,15 @@ const LoginScreen = () => {
       acceptTerms: false,
     },
     resolver: yupResolver(validationSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   const {
     handleSubmit,
     control,
-    formState: {isValid, errors},
+    formState: {errors},
   } = form;
-
-  const phoneValue = form.watch('phone') || '';
 
   const loginMutation = useLogin();
 
@@ -94,11 +93,7 @@ const LoginScreen = () => {
     [loginMutation],
   );
 
-  const isButtonDisabled =
-    loginMutation.isPending ||
-    !phoneValue ||
-    phoneValue.length !== 10 ||
-    !isValid;
+  const isButtonDisabled = loginMutation.isPending;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,7 +106,6 @@ const LoginScreen = () => {
             keyboardShouldPersistTaps="handled">
             <FormProvider {...form}>
               <View style={styles.contentContainer}>
-                {/* Logo */}
                 <View style={styles.viewImage}>
                   <Image
                     source={Images.logo}
@@ -120,14 +114,10 @@ const LoginScreen = () => {
                   />
                 </View>
 
-                {/* Slogan */}
                 <View style={styles.center}>
-                  <CText color={Colors.h2}>
-                    Nông dân cần - Có Quang Nông
-                  </CText>
+                  <CText color={Colors.h2}>Nông dân cần - Có Quang Nông</CText>
                 </View>
 
-                {/* White Box */}
                 <View style={styles.whiteBox}>
                   <CText style={styles.titleText}>
                     Đăng nhập bằng tài khoản của bạn
@@ -168,7 +158,6 @@ const LoginScreen = () => {
                   </CText>
                 </View>
 
-                {/* Terms Checkbox */}
                 <Controller
                   control={control}
                   name="acceptTerms"
@@ -216,7 +205,5 @@ const LoginScreen = () => {
     </SafeAreaView>
   );
 };
-
-
 
 export default LoginScreen;

@@ -38,7 +38,7 @@ const CButton = ({
         style,
         {
           opacity: disabled ? 0.5 : 1,
-          backgroundColor: Colors.buttonbg,
+          // backgroundColor: Colors.buttonbg,
         },
       ]}>
       {isLoading && (
