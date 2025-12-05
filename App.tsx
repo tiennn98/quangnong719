@@ -1,24 +1,47 @@
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
-import GlobalLoading, {globalLoadingRef} from '@/components/global-loading';
-import Navigators from '@/navigators';
-import {persistor, store} from '@/redux/store';
+
 import React from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+
+import GlobalLoading, { globalLoadingRef } from '@/components/global-loading';
+import Navigators from '@/navigators';
+import { persistor, store } from '@/redux/store';
+
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './src/services/react-query-client';
+
+if (Text.defaultProps == null) { Text.defaultProps = {}; }
+if (TextInput.defaultProps == null) { TextInput.defaultProps = {}; }
+if (TouchableOpacity.defaultProps == null) { TouchableOpacity.defaultProps = {}; }
+if (Pressable.defaultProps == null) { Pressable.defaultProps = {}; }
+
+Text.defaultProps.allowFontScaling = false;
+TextInput.defaultProps.allowFontScaling = false;
+TouchableOpacity.defaultProps.allowFontScaling = false;
+Pressable.defaultProps.allowFontScaling = false;
 
 const App = () => {
   return (
-    <SafeAreaProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <GlobalLoading ref={globalLoadingRef} />
-          <Navigators />
-        </PersistGate>
-      </Provider>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <GlobalLoading ref={globalLoadingRef} />
+            <Navigators />
+          </PersistGate>
+        </Provider>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 };
 
