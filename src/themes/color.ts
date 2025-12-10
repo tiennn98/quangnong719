@@ -1,5 +1,5 @@
 export const Colors = {
-  primary: '#F8F7F1',
+  primary: '#19673A',
   white: '#FFFFFF',
   yellow: '#F3B90F',
   black: '#000000',
@@ -14,8 +14,9 @@ export const Colors = {
   gray100: '#F3F4F6',
   blue400: '#318DD2',
   red: '#F24822',
-  h1:'#0F3D23',
-  h2:'#527B63',
-  backgroundInput:'#F8F7F1',
-  buttonbg:'#19673A',
+  h1: '#0F3D23',
+  h2: '#527B63',
+  backgroundInput: '#F8F7F1',
+  buttonbg: '#19673A',
+  red400: '#FF6D6D',
 };

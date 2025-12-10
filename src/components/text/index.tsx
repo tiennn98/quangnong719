@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Colors} from '@/themes';
+import {Colors, Fonts} from '@/themes';
 import React, {ReactNode} from 'react';
 import {StyleProp, Text, TextProps, TextStyle} from 'react-native';
 import {fontScale} from 'react-native-utils-scale';
@@ -16,7 +16,7 @@ export interface Props extends TextProps {
 
 const CText = ({
   children,
-  fontFamily,
+  fontFamily = Fonts.REGULAR,
   fontSize = 14,
   align = 'left',
   uppercase,

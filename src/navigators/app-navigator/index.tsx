@@ -1,20 +1,14 @@
-import React from 'react';
 import {SCREEN_NAME} from '@/constants';
+import {HomeScreen} from '@/screens';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {AppScreen} from './app-screen';
+import React from 'react';
 
 const Stack = createNativeStackNavigator();
 
 const AppStackNavigator = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false}}
-      initialRouteName={SCREEN_NAME.HOME}>
-      {Object.entries({
-        ...AppScreen,
-      }).map(([name, component]) => (
-        <Stack.Screen name={name} component={component} key={name} />
-      ))}
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name={SCREEN_NAME.HOME} component={HomeScreen} />
     </Stack.Navigator>
   );
 };
