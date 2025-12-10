@@ -29,6 +29,7 @@ interface Props {
   onChangeText?: (text: string) => void;
   rightActiveOpacity?: number;
   styleText?: TextStyle;
+  isHome?: boolean;
 }
 
 const CHeader: React.FC<Props> = props => {
@@ -44,6 +45,7 @@ const CHeader: React.FC<Props> = props => {
     onBack,
     rightActiveOpacity = 0.5,
     styleText,
+    isHome,
   } = props;
 
   return (
@@ -65,15 +67,7 @@ const CHeader: React.FC<Props> = props => {
           backgroundColor={statusBarColor}
         />
 
-        <View style={styles.leftWrap}>
-          {back && (
-            <TouchableOpacity onPress={() => (onBack ? onBack() : goBack())}>
-              <ArrowLeft size={24} color={Colors.white} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <View style={styles.centerWrap}>
+        {isHome ? (
           <CText
             fontSize={16}
             color={Colors.white}
@@ -81,7 +75,7 @@ const CHeader: React.FC<Props> = props => {
             style={[
               {
                 alignSelf: 'center',
-                textAlign: 'center',
+                textAlign: 'left',
                 ...titleStyle,
                 textTransform: 'capitalize',
               },
@@ -89,19 +83,48 @@ const CHeader: React.FC<Props> = props => {
             ]}>
             {title}
           </CText>
-        </View>
+        ) : (
+          <>
+            <View style={styles.leftWrap}>
+              {back && (
+                <TouchableOpacity
+                  onPress={() => (onBack ? onBack() : goBack())}>
+                  <ArrowLeft size={24} color={Colors.white} />
+                </TouchableOpacity>
+              )}
+            </View>
 
-        <TouchableOpacity
-          activeOpacity={rightActiveOpacity}
-          style={styles.rightWrap}
-          onPress={onPressRight}>
-          {rightIcon ? rightIcon : <View />}
-          {rightText && (
-            <CText fontSize={16} color={Colors.white}>
-              {rightText}
-            </CText>
-          )}
-        </TouchableOpacity>
+            <View style={styles.centerWrap}>
+              <CText
+                fontSize={16}
+                color={Colors.white}
+                fontFamily={Fonts.BOLD}
+                style={[
+                  {
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    ...titleStyle,
+                    textTransform: 'capitalize',
+                  },
+                  styleText,
+                ]}>
+                {title}
+              </CText>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={rightActiveOpacity}
+              style={styles.rightWrap}
+              onPress={onPressRight}>
+              {rightIcon ? rightIcon : <View />}
+              {rightText && (
+                <CText fontSize={16} color={Colors.white}>
+                  {rightText}
+                </CText>
+              )}
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
