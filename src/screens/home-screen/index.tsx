@@ -42,7 +42,8 @@ const HomeScreen = () => {
       </View>
       <ScrollView style={styles.content}>
         <View style={styles.contentHeader}>
-          <View style={[styles.itemHeader, {backgroundColor: Colors.primary}]}>
+          <View
+            style={[styles.itemHeader, {backgroundColor: Colors.greenPrimary}]}>
             <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={15}>
               999 điểm
             </CText>
@@ -73,7 +74,7 @@ const HomeScreen = () => {
             <View
               style={[
                 styles.imageBackground,
-                {backgroundColor: Colors.primary},
+                {backgroundColor: Colors.greenPrimary},
               ]}>
               <Image source={Images.gift} style={styles.iconHeader} />
             </View>
@@ -137,25 +138,25 @@ const HomeScreen = () => {
               <View key={index} style={styles.viewInvoice}>
                 <View style={styles.promoLeft}>
                   <CText
-                    color={Colors.primary}
+                    color={Colors.greenPrimary}
                     fontFamily={Fonts.BOLD}
                     fontSize={16}>
                     Mã hoá đơn : HD004771
                   </CText>
                   <CText
-                    color={Colors.primary}
+                    color={Colors.greenPrimary}
                     fontFamily={Fonts.SEMIBOLD}
                     fontSize={12}>
                     Số lượng sản phẩm: 6
                   </CText>
                   <CText
-                    color={Colors.primary}
+                    color={Colors.greenPrimary}
                     fontFamily={Fonts.SEMIBOLD}
                     fontSize={12}>
                     Tổng cộng : 1,250,000 đ
                   </CText>
                   <CText
-                    color={Colors.primary}
+                    color={Colors.greenPrimary}
                     fontFamily={Fonts.SEMIBOLD}
                     fontSize={12}>
                     Thời gian : 28/10/2025 07:18
@@ -181,7 +182,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.greenPrimary,
   },
   viewBarCode: {
     padding: scale(12),
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
   },
   viewReferral: {
     width: width - scale(40),
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.greenPrimary,
     borderRadius: scale(12),
     flexDirection: 'row',
     justifyContent: 'space-between',

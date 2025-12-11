@@ -48,7 +48,7 @@ const CButton = ({
         />
       )}
       {renderIconLeft && renderIconLeft}
-      <CText color={Colors.primary} fontFamily={Fonts.BOLD}>
+      <CText color={Colors.white} fontFamily={Fonts.BOLD}>
         {title}
       </CText>
     </TouchableOpacity>

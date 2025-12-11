@@ -5,5 +5,8 @@ export const SCREEN_NAME = {
   LOGIN: 'Login',
   CONFIRM_OTP_SCREEN: 'ConfirmOtpScreen',
   HOME: 'Home',
-  SETTING: 'Setting',
+  CALENDAR: 'Calendar',
+  PROMOTION: 'Promotion',
+  INVOICE: 'Invoice',
+  PROFILE: 'Profile',
 };

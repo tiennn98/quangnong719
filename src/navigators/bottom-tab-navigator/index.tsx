@@ -1,36 +1,57 @@
+import {CText} from '@/components';
 import {SCREEN_NAME} from '@/constants';
-import {HomeScreen} from '@/screens';
-import {Colors} from '@/themes';
-import {MapPinned} from 'lucide-react-native';
+import {HomeScreen, PromotionScreen} from '@/screens';
+import {Colors, Fonts} from '@/themes';
+import {
+  CalendarDays,
+  House,
+  NotepadText,
+  TicketPercent,
+  UserRound,
+} from 'lucide-react-native';
 import React from 'react';
-import {Animated, Linking, StyleSheet, TouchableOpacity} from 'react-native';
+import {Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {CurvedBottomBar} from 'react-native-curved-bottom-bar';
-import {scale} from 'react-native-utils-scale';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {width} from 'react-native-utils-scale';
+import {navigate as MoveTo} from '../navigation-service';
 
 const BottomTabNavigator = () => {
-  const _renderIcon = (routeName: string, selectedTab: string) => {
-    let icon = '';
+  const _renderIcon = (routeName: string, _selectedTab: string) => {
     switch (routeName) {
       case SCREEN_NAME.HOME:
-        icon = 'home-outline';
+        return <House color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.CALENDAR:
+        return <CalendarDays color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.INVOICE:
+        return <NotepadText color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.PROFILE:
+        return <UserRound color={Colors.greenPrimary} size={22} />;
+    }
+  };
+
+  const _renderName = (routeName: string, selectedTab: string) => {
+    let name = '';
+    switch (routeName) {
+      case SCREEN_NAME.HOME:
+        name = 'Trang chủ';
         break;
-      // case SCREEN_NAME.LIST_NEWS:
-      //   icon = 'newspaper-outline';
-      //   break;
-      // case SCREEN_NAME.TAB_RANKINGS:
-      //   icon = 'stats-chart';
-      //   break;
-      // case SCREEN_NAME.PROFILE:
-      //   icon = 'person-outline';
-      //   break;
+      case SCREEN_NAME.CALENDAR:
+        name = 'Lịch chăm sóc';
+        break;
+      case SCREEN_NAME.INVOICE:
+        name = 'Hoá đơn';
+        break;
+      case SCREEN_NAME.PROFILE:
+        name = 'Cá nhân';
+        break;
     }
     return (
-      <Ionicons
-        name={icon}
-        size={scale(24)}
-        color={routeName === selectedTab ? Colors.primary : Colors.gray100}
-      />
+      <CText
+        color={Colors.greenPrimary}
+        fontSize={10}
+        fontFamily={selectedTab ? Fonts.BOLD : Fonts.MEDIUM}>
+        {name}
+      </CText>
     );
   };
 
@@ -40,39 +61,31 @@ const BottomTabNavigator = () => {
         onPress={() => navigate(routeName)}
         style={styles.tabbarItem}>
         {_renderIcon(routeName, selectedTab)}
+        {_renderName(routeName, selectedTab)}
       </TouchableOpacity>
     );
   };
 
-  const openMap = () => {
-    const url =
-      'https://www.google.com/maps/place/Th%C3%A0nh+L%E1%BB%A3i+Building+%C4%90%C3%A0+N%E1%BA%B5ng/@16.0593587,108.2088566,17z/data=!3m1!4b1!4m6!3m5!1s0x3142192d672dd473:0x6abd983cc7674ed8!8m2!3d16.0593587!4d108.2114315!16s%2Fg%2F11fhw_p1lx?entry=ttu&g_ep=EgoyMDI1MTExNy4wIKXMDSoASAFQAw%3D%3D';
-    Linking.canOpenURL(url)
-      .then(supported => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          Linking.openURL('https://www.google.com/maps');
-        }
-      })
-      .catch(err => console.error('Error opening map:', err));
-  };
-
   return (
     <CurvedBottomBar.Navigator
-      type="UP"
-      style={styles.bottomBar}
-      shadowStyle={styles.shawdow}
       height={55}
-      circleWidth={50}
+      type={undefined}
+      style={styles.bottomBar}
       bgColor="white"
       initialRouteName={SCREEN_NAME.HOME}
-      borderTopLeftRight
       screenOptions={{headerShown: false}}
       renderCircle={() => (
         <Animated.View style={styles.btnCircleUp}>
-          <TouchableOpacity style={styles.button} onPress={openMap}>
-            <MapPinned />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => MoveTo(SCREEN_NAME.PROMOTION)}>
+            <TicketPercent color={Colors.greenPrimary} size={22} />
+            <CText
+              color={Colors.greenPrimary}
+              fontSize={10}
+              fontFamily={Fonts.BOLD}>
+              {'Khuyến mãi'}
+            </CText>
           </TouchableOpacity>
         </Animated.View>
       )}
@@ -83,7 +96,22 @@ const BottomTabNavigator = () => {
         component={() => <HomeScreen />}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.SETTING}
+        name={SCREEN_NAME.CALENDAR}
+        position="LEFT"
+        component={() => <HomeScreen />}
+      />
+      <CurvedBottomBar.Screen
+        name={SCREEN_NAME.PROMOTION}
+        position="CENTER"
+        component={() => <PromotionScreen />}
+      />
+      <CurvedBottomBar.Screen
+        name={SCREEN_NAME.INVOICE}
+        position="RIGHT"
+        component={() => <HomeScreen />}
+      />
+      <CurvedBottomBar.Screen
+        name={SCREEN_NAME.PROFILE}
         position="RIGHT"
         component={() => <HomeScreen />}
       />
@@ -94,45 +122,22 @@ const BottomTabNavigator = () => {
 export default BottomTabNavigator;
 
 const styles = StyleSheet.create({
-  shawdow: {
-    shadowColor: '#DDDDDD',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-  },
   button: {
-    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  bottomBar: {},
+  bottomBar: {
+    backgroundColor: '#FFFFFF',
+  },
   btnCircleUp: {
-    width: scale(60),
-    height: scale(60),
-    borderRadius: scale(30),
+    width: width / 5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    bottom: scale(18),
-  },
-  imgCircle: {
-    width: scale(30),
-    height: scale(30),
-    tintColor: 'gray',
   },
   tabbarItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  img: {
-    width: scale(30),
-    height: scale(30),
-  },
-  image: {
-    width: scale(55),
-    height: scale(55),
   },
 });

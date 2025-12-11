@@ -51,7 +51,7 @@ const ConfirmOtpScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.greenPrimary,
   },
   contentContainer: {
     flex: 1,

@@ -37,7 +37,7 @@ const CHeader: React.FC<Props> = props => {
   const {
     title,
     titleStyle = {},
-    statusBarColor = Colors.primary,
+    statusBarColor = Colors.greenPrimary,
     back,
     rightIcon,
     rightText,

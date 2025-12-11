@@ -1,9 +1,8 @@
 import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import AppNavigator from './app-navigator';
 import AuthNavigator from './auth-navigator';
-import {navigationRef} from './navigation-service';
 import BottomTabNavigator from './bottom-tab-navigator';
+import {navigationRef} from './navigation-service';
 
 const Navigators = () => {
   const auth = true;
