@@ -198,4 +198,33 @@ const resendOTPMutation = useSendOTP();
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.greenPrimary,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: scale(20),
+    gap: scale(20),
+  },
+  viewImage: {
+    alignItems: 'center',
+    marginTop: scale(20),
+  },
+  imageLogo: {
+    width: width / 2.5,
+    height: width / 2.5,
+  },
+  viewButton: {
+    paddingHorizontal: scale(50),
+  },
+  gap: {
+    gap: scale(8),
+  },
+  underline: {
+    textDecorationLine: 'underline',
+  },
+});
+
 export default ConfirmOtpScreen;

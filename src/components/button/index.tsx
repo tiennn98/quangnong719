@@ -50,7 +50,7 @@ const CButton = ({
         />
       )}
       {renderIconLeft && renderIconLeft}
-      <CText color={Colors.primary} fontFamily={Fonts.BOLD} fontSize={fontSize ? fontSize : fontScale(18)}>
+      <CText color={Colors.white} fontFamily={Fonts.BOLD}>
         {title}
       </CText>
     </TouchableOpacity>

@@ -7,5 +7,8 @@ export const SCREEN_NAME = {
   WELLCOME_SCREEN: 'WellcomeScreen',
   //----------------------------------------
   HOME: 'Home',
-  SETTING: 'Setting',
+  CALENDAR: 'Calendar',
+  PROMOTION: 'Promotion',
+  INVOICE: 'Invoice',
+  PROFILE: 'Profile',
 };

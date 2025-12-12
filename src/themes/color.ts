@@ -1,5 +1,5 @@
 export const Colors = {
-  primary: '#F8F7F1',
+  primary: '#19673A',
   white: '#FFFFFF',
   yellow: '#F3B90F',
   black: '#000000',
@@ -19,13 +19,5 @@ export const Colors = {
   backgroundInput: '#F8F7F1',
   buttonbg: '#19673A',
   red400: '#FF6D6D',
-
-    green: '#345c34',
-    orange: '#FFA500',
-    iconBg: '#E8F5E9',
-
-    // Màu nền cho các trạng thái (Lấy gần đúng từ ảnh)
-    statusBg_PARTIAL: '#FFF8E1', // Vàng nhạt (Amber light)
-    statusBg_PAID: '#E8F5E9',   // Xanh lá nhạt (Light green)
-    statusBg_CANCELLED: '#FBE0E0', // Đỏ nhạt (Light red)
+  greenPrimary: '#19673A',
 };
