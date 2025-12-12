@@ -1,6 +1,6 @@
 import {CText} from '@/components';
 import {SCREEN_NAME} from '@/constants';
-import {HomeScreen, PromotionScreen} from '@/screens';
+import {HomeScreen, ProfileScreen, PromotionScreen} from '@/screens';
 import {Colors, Fonts} from '@/themes';
 import {
   CalendarDays,
@@ -14,17 +14,18 @@ import {Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import {CurvedBottomBar} from 'react-native-curved-bottom-bar';
 import {width} from 'react-native-utils-scale';
 import {navigate as MoveTo} from '../navigation-service';
+import InvoiceScreen from '@/screens/invoice-screen';
 
 const BottomTabNavigator = () => {
   const _renderIcon = (routeName: string, _selectedTab: string) => {
     switch (routeName) {
       case SCREEN_NAME.HOME:
         return <House color={Colors.greenPrimary} size={22} />;
-      case SCREEN_NAME.CALENDAR:
-        return <CalendarDays color={Colors.greenPrimary} size={22} />;
-      case SCREEN_NAME.INVOICE:
+      case SCREEN_NAME.PROMOTION:
+        return <TicketPercent color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.INVOICESCREEN:
         return <NotepadText color={Colors.greenPrimary} size={22} />;
-      case SCREEN_NAME.PROFILE:
+      case SCREEN_NAME.PROFILESCREEN:
         return <UserRound color={Colors.greenPrimary} size={22} />;
     }
   };
@@ -35,21 +36,21 @@ const BottomTabNavigator = () => {
       case SCREEN_NAME.HOME:
         name = 'Trang chủ';
         break;
-      case SCREEN_NAME.CALENDAR:
-        name = 'Lịch chăm sóc';
+      case SCREEN_NAME.PROMOTION:
+        name = 'Voucher';
         break;
-      case SCREEN_NAME.INVOICE:
+      case SCREEN_NAME.INVOICESCREEN:
         name = 'Hoá đơn';
         break;
-      case SCREEN_NAME.PROFILE:
+      case SCREEN_NAME.PROFILESCREEN:
         name = 'Cá nhân';
         break;
     }
     return (
       <CText
         color={Colors.greenPrimary}
-        fontSize={10}
-        fontFamily={selectedTab ? Fonts.BOLD : Fonts.MEDIUM}>
+        fontSize={11}
+        fontFamily={routeName === selectedTab ? Fonts.BOLD : Fonts.MEDIUM}>
         {name}
       </CText>
     );
@@ -68,7 +69,7 @@ const BottomTabNavigator = () => {
 
   return (
     <CurvedBottomBar.Navigator
-      height={55}
+      height={70}
       type={undefined}
       style={styles.bottomBar}
       bgColor="white"
@@ -78,13 +79,12 @@ const BottomTabNavigator = () => {
         <Animated.View style={styles.btnCircleUp}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => MoveTo(SCREEN_NAME.PROMOTION)}>
-            <TicketPercent color={Colors.greenPrimary} size={22} />
+            onPress={() => MoveTo(SCREEN_NAME.CALENDAR)}>
+            <TicketPercent color={Colors.greenPrimary} size={30} />
             <CText
               color={Colors.greenPrimary}
-              fontSize={10}
-              fontFamily={Fonts.BOLD}>
-              {'Khuyến mãi'}
+              fontSize={14}>
+              {'Cửa Hàng'}
             </CText>
           </TouchableOpacity>
         </Animated.View>
@@ -96,24 +96,24 @@ const BottomTabNavigator = () => {
         component={() => <HomeScreen />}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.CALENDAR}
+        name={SCREEN_NAME.PROMOTION}
         position="LEFT"
         component={() => <HomeScreen />}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.PROMOTION}
+        name={SCREEN_NAME.CALENDAR}
         position="CENTER"
         component={() => <PromotionScreen />}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.INVOICE}
+        name={SCREEN_NAME.INVOICESCREEN}
         position="RIGHT"
-        component={() => <HomeScreen />}
+        component={() => <InvoiceScreen />}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.PROFILE}
+        name={SCREEN_NAME.PROFILESCREEN}
         position="RIGHT"
-        component={() => <HomeScreen />}
+        component={() => <ProfileScreen />}
       />
     </CurvedBottomBar.Navigator>
   );
@@ -139,5 +139,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign: 'center',
   },
 });

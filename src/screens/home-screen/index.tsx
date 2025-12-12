@@ -16,7 +16,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { QuickAccessBox } from './components/QuickAccessBox';
 import { styles } from './style.module';
-
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
 const defaultProps = {
@@ -51,8 +50,9 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 );
 
 const HomeScreen: React.FC = () => {
-  const customerPhone = '0332775667';
+  const customerPhone = '0922982986';
   const {data:profile} = useGetProfile();
+
   return (
     <View style={{flex: 1}}>
       <StatusBar
@@ -118,7 +118,7 @@ const HomeScreen: React.FC = () => {
                 source={Images.qrcodeIcon}
                 style={styles.quickActionIcon}
               />
-              <Text style={styles.quickActionText}>Mã của tôi</Text>
+              <CText style={styles.quickActionText}>Mã của tôi</CText>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.quickActionButton}
@@ -127,7 +127,7 @@ const HomeScreen: React.FC = () => {
                 source={Images.walletIcon}
                 style={styles.quickActionIcon}
               />
-              <Text style={styles.quickActionText}>Công nợ của tôi</Text>
+              <CText style={styles.quickActionText}>Công nợ của tôi</CText>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,9 +1,8 @@
-import {URL} from '@/constants/screen-name';
+import { URL } from '@/constants/screen-name';
 import { logout } from '@/redux/slices/authSlice';
 import { store } from '@/redux/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import reactotron from 'reactotron-react-native';
 
 export interface UserProfileData {

@@ -10,5 +10,6 @@ export const SCREEN_NAME = {
   CALENDAR: 'Calendar',
   PROMOTION: 'Promotion',
   INVOICE: 'Invoice',
-  PROFILE: 'Profile',
+  PROFILESCREEN: 'ProfileScreen',
+  INVOICESCREEN:'InvoiceScreen',
 };
