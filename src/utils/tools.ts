@@ -29,3 +29,15 @@ export const getItem = async (name: any) => {
   const result = await AsyncStorage.getItem(name);
   return JSON.parse(result || '');
 };
+export const hidePhoneNumber = (phoneNumber: string): string => {
+  if (!phoneNumber || typeof phoneNumber !== 'string' || phoneNumber.length < 5) {
+    return phoneNumber;
+  }
+  const startLength = 3;
+  const endLength = 2;
+  const start = phoneNumber.substring(0, startLength);
+  const end = phoneNumber.substring(phoneNumber.length - endLength);
+  const hiddenLength = phoneNumber.length - startLength - endLength;
+  const hiddenPart = '*'.repeat(hiddenLength);
+  return `${start}${hiddenPart}${end}`;
+};

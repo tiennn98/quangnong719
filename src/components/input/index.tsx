@@ -19,14 +19,16 @@ interface Props extends TextInputProps {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   isIconPhone?: boolean;
+  fontSize: number;
 }
 
 const CInput = ({
   name,
-  height = 40,
+  height = 50,
   disabled = false,
   style,
   isIconPhone,
+  fontSize,
   ...props
 }: Props) => {
   const {
@@ -51,7 +53,7 @@ const CInput = ({
           control={control}
           render={({field: {onChange, onBlur, value}}) => (
             <TextInput
-              style={styles.input}
+              style={[styles.input, {fontSize: fontSize}]}
               onBlur={() => {
                 setIsFocus(false);
                 onBlur();

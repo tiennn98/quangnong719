@@ -58,16 +58,17 @@ export const styles = StyleSheet.create({
   titleText: {
     color: Colors.h1,
     fontWeight: 'bold',
-    fontSize: fontScale(20),
+    fontSize: fontScale(24),
   },
   subtitleText: {
     color: Colors.h2,
-    fontSize: fontScale(13),
+    fontSize: fontScale(16),
     marginBottom: scale(20),
   },
   labelText: {
     color: Colors.h1,
     fontWeight: 'bold',
+    fontSize: fontScale(14),
   },
   input: {
     backgroundColor: Colors.primary,

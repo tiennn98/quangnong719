@@ -6,6 +6,7 @@ if (__DEV__) {
 
 import React, { useEffect } from 'react';
 import {
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -39,7 +40,11 @@ const App = () => {
 
     Notifications.registerRemoteNotifications();
 
-    Notifications.ios.checkPermissions().then((currentPermissions) => {
+   if(Platform.OS === 'ios'){
+    // Notifications.ios.getPermissions().then((currentPermissions) => {
+    //   console.log('Current permissions: ', currentPermissions);
+    // });
+     Notifications.ios.checkPermissions().then((currentPermissions) => {
       console.log('Badges enabled: ' + !!currentPermissions.badge);
       console.log('Sounds enabled: ' + !!currentPermissions.sound);
       console.log('Alerts enabled: ' + !!currentPermissions.alert);
@@ -49,6 +54,7 @@ const App = () => {
       console.log('Provides App Notification Settings enabled: ' + !!currentPermissions.providesAppNotificationSettings);
       console.log('Announcement enabled: ' + !!currentPermissions.announcement);
     });
+   }
 
 
     Notifications.getInitialNotification()

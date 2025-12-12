@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {scale} from 'react-native-utils-scale';
+import {fontScale, scale} from 'react-native-utils-scale';
 import CText from '../text';
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   renderIconLeft?: ReactNode;
+  fontSize?: number;
 };
 
 const CButton = ({
@@ -27,6 +28,7 @@ const CButton = ({
   disabled,
   style,
   renderIconLeft,
+  fontSize,
 }: Props) => {
   return (
     <TouchableOpacity
@@ -38,7 +40,7 @@ const CButton = ({
         style,
         {
           opacity: disabled ? 0.5 : 1,
-          // backgroundColor: Colors.buttonbg,
+          backgroundColor: Colors.buttonbg,
         },
       ]}>
       {isLoading && (
@@ -48,7 +50,7 @@ const CButton = ({
         />
       )}
       {renderIconLeft && renderIconLeft}
-      <CText color={Colors.primary} fontFamily={Fonts.BOLD}>
+      <CText color={Colors.primary} fontFamily={Fonts.BOLD} fontSize={fontSize ? fontSize : fontScale(18)}>
         {title}
       </CText>
     </TouchableOpacity>
@@ -60,7 +62,7 @@ export default CButton;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: scale(40),
+    height: scale(50),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: scale(12),

@@ -1,9 +1,6 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {useMutation} from '@tanstack/react-query';
-import axios from 'axios';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
-  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -14,35 +11,23 @@ import {
   View,
 } from 'react-native';
 
-import {Images} from '@/assets';
-import {CText, InputOTP} from '@/components';
+import { Images } from '@/assets';
+import { CText, InputOTP } from '@/components';
 import CButton from '@/components/button';
-import {useLogin} from '@/hooks/useAuth';
-import {styles} from './styles.module';
-import {Colors} from '@/themes';
-import { scale } from 'react-native-utils-scale';
+import { useLogin, useSendOTP } from '@/hooks/useAuth';
+import { Colors } from '@/themes';
+import { hidePhoneNumber } from '@/utils/tools';
+import { fontScale, scale } from 'react-native-utils-scale';
+import { styles } from './styles.module';
+
 const RESEND_COUNTDOWN = 300;
 
-const resendOtpApi = async (phone: string) => {
-  const res = await axios.post(
-    'https://api-agri.nguyenphuquoc.info/api/v1/auth/resend-otp',
-    {phone_number: phone},
-    {
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    },
-  );
-
-  return res.data;
-};
 
 const ConfirmOtpScreen = () => {
   const route = useRoute();
   const {phone} = route.params as {phone: string};
   const navigation = useNavigation();
-
+const loginMutation = useLogin();
   useLayoutEffect(() => {
     navigation.setOptions({
       gestureEnabled: false,
@@ -54,18 +39,14 @@ const ConfirmOtpScreen = () => {
 
   const [timeLeft, setTimeLeft] = useState(0);
 
-  const loginMutation = useLogin();
+const resendOTPMutation = useSendOTP();
 
-  const resendMutation = useMutation({
-    mutationFn: (phoneNumber: string) => resendOtpApi(phoneNumber),
-    onError: (error: any) => {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Gửi lại OTP không thành công, vui lòng thử lại!';
-      Alert.alert('Thông báo', message);
-    },
-  });
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setTimeLeft(RESEND_COUNTDOWN);
+    }
+  }, [timeLeft]);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -101,35 +82,20 @@ const ConfirmOtpScreen = () => {
       return;
     }
 
-    loginMutation.mutate(
-      {phone, otp},
-      {
-        onSuccess: () => {
-          Alert.alert('Thành công', 'Xác minh OTP thành công!');
-        },
-        onError: (error: any) => {
-          const message =
-            error instanceof Error
-              ? error.message
-              : 'Mã OTP không chính xác, vui lòng thử lại!';
-          Alert.alert('Thông báo', message);
-        },
-      },
-    );
+    loginMutation.mutate({phone, otp});
   }, [loginMutation, otp, phone]);
 
   const handleResendOtp = useCallback(() => {
-    if (timeLeft > 0 || resendMutation.isPending) {
+    if (timeLeft > 0 || resendOTPMutation.isPending) {
       return;
     }
 
-    setTimeLeft(RESEND_COUNTDOWN);
-    resendMutation.mutate(phone);
-  }, [phone, resendMutation, timeLeft]);
+    resendOTPMutation.mutate(phone);
+  }, [phone, resendOTPMutation, timeLeft]);
 
   const isVerifyDisabled = loginMutation.isPending || otp.length !== 6;
 
-  const isResendDisabled = resendMutation.isPending || timeLeft > 0;
+  const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
 
   const formatCountdown = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -159,7 +125,9 @@ const ConfirmOtpScreen = () => {
               </View>
 
               <View style={styles.center}>
-                <CText color={Colors.h2}>Nông dân cần - Có Quang Nông</CText>
+                <CText color={Colors.h2} fontSize={fontScale(16)}>
+                  Nông dân cần - Có Quang Nông
+                </CText>
               </View>
 
               <View style={styles.whiteBox}>
@@ -167,7 +135,9 @@ const ConfirmOtpScreen = () => {
 
                 <CText style={styles.subtitleText}>
                   Chúng tôi đã gửi mã đến số{' '}
-                  <CText style={styles.phoneText}>{phone}</CText>
+                  <CText style={styles.phoneText}>
+                    {hidePhoneNumber(phone)}
+                  </CText>
                 </CText>
 
                 <CText style={styles.labelText}>Nhập mã OTP 6 số</CText>
@@ -176,7 +146,14 @@ const ConfirmOtpScreen = () => {
 
                 {otpError && <CText style={styles.errorText}>{otpError}</CText>}
 
-                <CText color={Colors.h2}>
+                <CText
+                  color={Colors.h2}
+                  fontSize={fontScale(14)}
+                  style={{
+                    marginTop: scale(10),
+                    marginBottom: scale(30),
+                    textAlign: 'center',
+                  }}>
                   Nhập mã gồm 6 chữ số được gửi đến điện thoại của bạn
                 </CText>
 
@@ -194,16 +171,21 @@ const ConfirmOtpScreen = () => {
                   />
                 </View>
 
-                <View>
+                <View style={{marginTop: scale(10)}}>
                   <CButton
                     title={
-                      resendMutation.isPending ? 'Đang gửi...' : resendLabel
+                      resendOTPMutation.isPending ? 'Đang gửi...' : resendLabel
                     }
                     onPress={handleResendOtp}
                     disabled={isResendDisabled}
-                    isLoading={resendMutation.isPending}
+                    isLoading={resendOTPMutation.isPending}
                     style={[
-                      {backgroundColor: Colors.yellow, height: scale(48)},
+                      {
+                        backgroundColor: isResendDisabled
+                          ? Colors.gray500
+                          : Colors.yellow,
+                        height: scale(48),
+                      },
                     ]}
                   />
                 </View>

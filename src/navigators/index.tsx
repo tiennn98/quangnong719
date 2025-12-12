@@ -1,13 +1,12 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { useAppSelector } from '@/redux/store';
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import AppNavigator from './app-navigator';
 import AuthNavigator from './auth-navigator';
-import {navigationRef} from './navigation-service';
 import BottomTabNavigator from './bottom-tab-navigator';
+import { navigationRef } from './navigation-service';
 
 const Navigators = () => {
-  const auth = true;
-
+  const auth = useAppSelector(state => state.auth);
   return (
     <NavigationContainer ref={navigationRef}>
       {auth ? <BottomTabNavigator /> : <AuthNavigator />}
@@ -17,4 +16,4 @@ const Navigators = () => {
 
 export default Navigators;
 
-export {goBack, navigate, navigationRef, replace} from './navigation-service';
+export { goBack, navigate, navigationRef, replace } from './navigation-service';

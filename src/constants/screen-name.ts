@@ -4,6 +4,8 @@ export const SCREEN_NAME = {
   APP_STACK: 'AppStack',
   LOGIN: 'Login',
   CONFIRM_OTP_SCREEN: 'ConfirmOtpScreen',
+  WELLCOME_SCREEN: 'WellcomeScreen',
+  //----------------------------------------
   HOME: 'Home',
   SETTING: 'Setting',
 };
