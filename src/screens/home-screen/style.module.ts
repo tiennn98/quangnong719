@@ -42,6 +42,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
+
   },
   greetingTitle: {
     fontSize: fontScale(14),

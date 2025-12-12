@@ -3,8 +3,15 @@ import { useAppDispatch } from '@/redux/store';
 import { authLogin, sendOTP } from '@/services/auth.api';
 import { useMutation } from '@tanstack/react-query';
 import { Alert } from 'react-native';
-interface LoginSuccessData {
+export interface LoginResponse {
+  msg: 'ok' | string;
+  statusCode: number;
+  data: DataPayload;
+}
+export interface DataPayload {
   access_token: string;
+
+
 }
 export const useSendOTP = () => {
   return useMutation({
@@ -14,13 +21,14 @@ export const useSendOTP = () => {
 export const useLogin = () => {
   const dispatch = useAppDispatch();
 
-  return useMutation<LoginSuccessData, string, { phone: string; otp: string }>({
+  return useMutation<LoginResponse, string, { phone: string; otp: string }>({
     mutationFn: ({ phone, otp }: { phone: string; otp: string }) => authLogin(phone, otp),
 
     onSuccess: (data) => {
+      console.log('Token nhận được:', data);
       dispatch(
         setTokens({
-          accessToken: data.access_token,
+          accessToken: data.data.access_token,
         }),
       );
           Alert.alert(
@@ -37,20 +45,15 @@ export const useLogin = () => {
   });
 };
 
-// export const useProfile = () => {
-//   const dispatch = useAppDispatch();
 
-//   const {data,isSuccess,isError} = useQuery({
-//     queryKey: ['profile'],
-//     queryFn: async () => {
-//       const res = await getProfileApi();
-//       return res.data;
-//     },
-//   });
-//   if (isSuccess) {
-//    return dispatch(setUser(data));
-//   }
-//   if (isError) {
-//     return null;
-//   }
-// };
+
+
+
+
+
+
+
+
+
+
+

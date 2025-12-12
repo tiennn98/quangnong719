@@ -61,7 +61,7 @@ axiosClient.interceptors.response.use(
 
       const state: any = store.getState();
       const refreshToken = state.auth?.refreshToken;
-
+      store.dispatch(logout());
       if (!refreshToken) {
         store.dispatch(logout());
         return Promise.reject(error);

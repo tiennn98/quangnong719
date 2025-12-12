@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Colors, Fonts} from '@/themes';
-import React, {ReactNode} from 'react';
+import { Colors, Fonts } from '@/themes';
+import React, { ReactNode } from 'react';
 import {
   ActivityIndicator,
   StyleProp,
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {fontScale, scale} from 'react-native-utils-scale';
+import { scale } from 'react-native-utils-scale';
 import CText from '../text';
 
 type Props = {

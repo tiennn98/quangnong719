@@ -1,6 +1,9 @@
-import {Images} from '@/assets/images';
-import {CText} from '@/components';
+import { Images } from '@/assets/images';
+import { CText } from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
+import { useGetProfile } from '@/hooks/useProfile';
+import { Colors } from '@/themes';
+import { formatCurrency } from '@/utils/tools';
 import React from 'react';
 import {
   Image,
@@ -11,10 +14,8 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {QuickAccessBox} from './components/QuickAccessBox';
-import {styles} from './style.module';
-import {Colors} from '@/themes';
-import { hidePhoneNumber } from '@/utils/tools';
+import { QuickAccessBox } from './components/QuickAccessBox';
+import { styles } from './style.module';
 
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
@@ -51,8 +52,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 
 const HomeScreen: React.FC = () => {
   const customerPhone = '0332775667';
-  const customerPoints = '999,999';
-
+  const {data:profile} = useGetProfile();
   return (
     <View style={{flex: 1}}>
       <StatusBar
@@ -83,7 +83,7 @@ const HomeScreen: React.FC = () => {
           <CText
             fontSize={fontScale(20)}
             style={{fontWeight: 'bold', paddingHorizontal: scale(10)}}>
-            Nhâm QT
+            {profile?.full_name}
           </CText>
           <CText style={styles.greetingSubtitle}>
             Hãy kiểm tra tiến độ vườn của bạn hôm nay
@@ -98,15 +98,15 @@ const HomeScreen: React.FC = () => {
             <View>
               <CText style={styles.label}>Mã Khách Hàng</CText>
               <CText style={styles.customerPhone}>
-                {hidePhoneNumber(customerPhone)}
+                {(profile?.phone_number || customerPhone)}
               </CText>
-              <CText fontSize={fontScale(16)}>Nguyễn Đức Nhâm!</CText>
+              <CText fontSize={fontScale(16)}>{profile?.full_name || 'Nguyễn Đức Nhâm!'}</CText>
             </View>
 
             <View style={styles.pointsContainer}>
               <CText style={styles.diamondIcon}>💎</CText>
               <CText style={styles.pointsText}>Kim cương</CText>
-              <CText style={styles.pointsValue}>{customerPoints} điểm</CText>
+              <CText style={styles.pointsValue}>{profile?.q_points || 0} điểm</CText>
             </View>
           </View>
 
@@ -150,11 +150,11 @@ const HomeScreen: React.FC = () => {
               icon={Images.voucherIcon}
               value="2"
               label="Phiếu ưu đãi"
-              color={Colors.orange}
+              color={Colors.gray300}
             />
             <InfoBox
               icon={Images.listInvoice}
-              value="48"
+              value={profile?.total_invoiced.toString() || '0'}
               label="Tổng số hoá đơn"
             />
             <InfoBox
@@ -164,9 +164,9 @@ const HomeScreen: React.FC = () => {
             />
             <InfoBox
               icon={Images.debt}
-              value="7,000,000"
+              value={formatCurrency(profile?.debt) || '0 VND'}
               label="Công nợ hiện tại"
-              color={Colors.green}
+              color={Colors.black}
             />
           </View>
 

@@ -30,7 +30,11 @@ export const getItem = async (name: any) => {
   return JSON.parse(result || '');
 };
 export const hidePhoneNumber = (phoneNumber: string): string => {
-  if (!phoneNumber || typeof phoneNumber !== 'string' || phoneNumber.length < 5) {
+  if (
+    !phoneNumber ||
+    typeof phoneNumber !== 'string' ||
+    phoneNumber.length < 5
+  ) {
     return phoneNumber;
   }
   const startLength = 3;
@@ -40,4 +44,33 @@ export const hidePhoneNumber = (phoneNumber: string): string => {
   const hiddenLength = phoneNumber.length - startLength - endLength;
   const hiddenPart = '*'.repeat(hiddenLength);
   return `${start}${hiddenPart}${end}`;
+};
+export const formatCurrency = (
+  amount: number | string | null | undefined,
+  style: 'currency' | 'decimal' = 'currency',
+  currency: string = 'VND',
+  locale: string = 'vi-VN',
+): string => {
+  if (
+    amount === null ||
+    amount === undefined ||
+    amount === '' ||
+    Number(amount) === 0
+  ) {
+    return style === 'currency' ? `0 ${currency}` : '0';
+  }
+  const num = Number(amount);
+  const options: Intl.NumberFormatOptions = {
+    style: style,
+    currency: style === 'currency' ? currency : undefined,
+    minimumFractionDigits: style === 'currency' ? 0 : 0,
+    maximumFractionDigits: style === 'currency' ? 0 : 2,
+  };
+  try {
+    return new Intl.NumberFormat(locale, options).format(num);
+  } catch (error) {
+    console.error('Lỗi định dạng tiền tệ:', error);
+
+    return num.toString();
+  }
 };
