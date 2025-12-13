@@ -12,4 +12,5 @@ export const SCREEN_NAME = {
   INVOICE: 'Invoice',
   PROFILESCREEN: 'ProfileScreen',
   INVOICESCREEN:'InvoiceScreen',
+  ABOUT_STORE_SCREEN: 'AboutStoreScreen',
 };
