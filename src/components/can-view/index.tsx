@@ -24,7 +24,7 @@ const CanView: React.FC<IProps> = ({
     return null;
   }
   return (
-    <View style={[{display: !!condition ? 'flex' : 'none'}, style]}>
+    <View style={[{display: condition ? 'flex' : 'none'}, style]}>
       {children}
     </View>
   );

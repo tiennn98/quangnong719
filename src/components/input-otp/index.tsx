@@ -43,17 +43,18 @@ const styles = StyleSheet.create({
     width: 44,
     height: 60,
     borderWidth: 1,
-    borderColor: Colors.white,
-    color: Colors.white,
+    borderColor: Colors.h2,
+    color: Colors.h1,
     borderRadius: 6,
     fontSize: 28,
     fontFamily: Fonts.SEMIBOLD,
+    backgroundColor: Colors.primary,
   },
   codeInputHighlightStyle: {
     width: 44,
     height: 60,
     borderWidth: 1,
-    borderColor: Colors.white,
+    borderColor: Colors.h1,
   },
 });
 

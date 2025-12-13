@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
   },
   viewButton: {
     marginTop: scale(20),
+
   },
   rowAgree: {
     flexDirection: 'row',
@@ -62,7 +63,7 @@ export const styles = StyleSheet.create({
   },
   subtitleText: {
     color: Colors.h2,
-    fontSize: fontScale(13),
+    fontSize: fontScale(15),
     marginBottom: scale(20),
   },
   labelText: {
@@ -71,9 +72,14 @@ export const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: Colors.primary,
+    height: scale(50),
   },
   button: {
     backgroundColor: Colors.buttonbg,
+    height: scale(50),
+    borderRadius: scale(10),
+    fontSize: fontScale(16),
+
   },
   termsText: {
     flex: 1,
@@ -85,6 +91,5 @@ export const styles = StyleSheet.create({
   errorText: {
     color: Colors.red,
     marginTop: scale(4),
-    fontSize: fontScale(12),
   },
 });

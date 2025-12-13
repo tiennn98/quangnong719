@@ -6,6 +6,8 @@ export const baseQueryNoAuth = fetchBaseQuery({
   baseUrl: URL,
 });
 
+
+
 export const baseQuery = fetchBaseQuery({
   baseUrl: URL,
   prepareHeaders: async headers => {

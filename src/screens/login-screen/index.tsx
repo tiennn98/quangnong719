@@ -1,6 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useCallback } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import React, {useCallback} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {
   Alert,
   Image,
@@ -15,14 +15,15 @@ import {
 } from 'react-native';
 import * as yup from 'yup';
 
-import { Images } from '@/assets';
-import { CInput, CText } from '@/components';
+import {Images} from '@/assets';
+import {CInput, CText} from '@/components';
 import CButton from '@/components/button';
-import { SCREEN_NAME } from '@/constants';
-import { useLogin } from '@/hooks/useAuth';
-import { navigate } from '@/navigators';
-import { Colors } from '@/themes';
-import { styles } from './styles.module';
+import {SCREEN_NAME} from '@/constants';
+import {useSendOTP} from '@/hooks/useAuth';
+import {navigate} from '@/navigators';
+import {Colors} from '@/themes';
+import {styles} from './styles.module';
+import { fontScale } from 'react-native-utils-scale';
 
 const validationSchema = yup.object({
   phone: yup
@@ -38,7 +39,7 @@ const validationSchema = yup.object({
           return false;
         }
         if (value.length < 10) {
-          return true;
+          return false;
         }
         return /^(03|05|07|08|09)[0-9]{8}$/.test(value);
       },
@@ -63,22 +64,21 @@ const LoginScreen = () => {
       acceptTerms: false,
     },
     resolver: yupResolver(validationSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   const {
     handleSubmit,
     control,
-    formState: {isValid, errors},
+    formState: {errors},
   } = form;
 
-  const phoneValue = form.watch('phone') || '';
-
-  const loginMutation = useLogin();
+  const sendOTPMutation = useSendOTP();
 
   const onSubmit = useCallback(
     (values: LoginFormValues) => {
-      loginMutation.mutate(values.phone, {
+      sendOTPMutation.mutate(values.phone, {
         onSuccess: () => {
           navigate(SCREEN_NAME.CONFIRM_OTP_SCREEN, {phone: values.phone});
         },
@@ -91,14 +91,10 @@ const LoginScreen = () => {
         },
       });
     },
-    [loginMutation],
+    [sendOTPMutation],
   );
 
-  const isButtonDisabled =
-    loginMutation.isPending ||
-    !phoneValue ||
-    phoneValue.length !== 10 ||
-    !isValid;
+  const isButtonDisabled = sendOTPMutation.isPending;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,7 +107,6 @@ const LoginScreen = () => {
             keyboardShouldPersistTaps="handled">
             <FormProvider {...form}>
               <View style={styles.contentContainer}>
-                {/* Logo */}
                 <View style={styles.viewImage}>
                   <Image
                     source={Images.logo}
@@ -120,14 +115,10 @@ const LoginScreen = () => {
                   />
                 </View>
 
-                {/* Slogan */}
                 <View style={styles.center}>
-                  <CText color={Colors.h2}>
-                    Nông dân cần - Có Quang Nông
-                  </CText>
+                  <CText color={Colors.h2} fontSize={fontScale(16)}>Nông dân cần - Có Quang Nông</CText>
                 </View>
 
-                {/* White Box */}
                 <View style={styles.whiteBox}>
                   <CText style={styles.titleText}>
                     Đăng nhập bằng tài khoản của bạn
@@ -137,7 +128,7 @@ const LoginScreen = () => {
                     Nhập số điện thoại của bạn để nhận mã OTP
                   </CText>
 
-                  <CText style={styles.labelText}>Nhập số điện thoại</CText>
+                  <CText style={styles.labelText} fontSize={fontScale(14)}>Nhập số điện thoại</CText>
 
                   <CInput
                     name="phone"
@@ -146,29 +137,29 @@ const LoginScreen = () => {
                     maxLength={10}
                     style={styles.input}
                     returnKeyType="done"
+                    fontSize={fontScale(18)}
                     onSubmitEditing={Keyboard.dismiss}
                   />
 
                   <View style={styles.viewButton}>
                     <CButton
                       title={
-                        loginMutation.isPending
+                        sendOTPMutation.isPending
                           ? 'Đang gửi OTP...'
-                          : 'Đăng nhập'
+                          : 'Nhận mã OTP'
                       }
                       onPress={handleSubmit(onSubmit)}
                       disabled={isButtonDisabled}
-                      isLoading={loginMutation.isPending}
+                      isLoading={sendOTPMutation.isPending}
                       style={styles.button}
                     />
                   </View>
 
-                  <CText color={Colors.h2}>
+                  <CText color={Colors.h2} fontSize={fontScale(16)}>
                     Chưa có tài khoản? Bạn sẽ được tạo sau khi xác minh OTP
                   </CText>
                 </View>
 
-                {/* Terms Checkbox */}
                 <Controller
                   control={control}
                   name="acceptTerms"
@@ -187,13 +178,13 @@ const LoginScreen = () => {
                           )}
                         </View>
 
-                        <CText color={Colors.h2} style={styles.termsText}>
+                        <CText color={Colors.h2} style={styles.termsText} fontSize={fontScale(16)}>
                           Bằng cách tiếp tục, bạn đồng ý với{' '}
                           <CText style={styles.linkText}>
                             Điều khoản dịch vụ
                           </CText>
                           {' và '}
-                          <CText style={styles.linkText}>
+                          <CText style={styles.linkText} fontSize={fontScale(16)}>
                             Chính sách bảo mật
                           </CText>
                           {' của chúng tôi'}
@@ -201,7 +192,7 @@ const LoginScreen = () => {
                       </TouchableOpacity>
 
                       {errors.acceptTerms && (
-                        <CText style={styles.errorText}>
+                        <CText style={styles.errorText} fontSize={fontScale(14)}>
                           {errors.acceptTerms.message as string}
                         </CText>
                       )}
@@ -216,7 +207,5 @@ const LoginScreen = () => {
     </SafeAreaView>
   );
 };
-
-
 
 export default LoginScreen;

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Colors, Fonts} from '@/themes';
-import React, {ReactNode} from 'react';
+import { Colors, Fonts } from '@/themes';
+import React, { ReactNode } from 'react';
 import {
   ActivityIndicator,
   StyleProp,
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {scale} from 'react-native-utils-scale';
+import { scale } from 'react-native-utils-scale';
 import CText from '../text';
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   renderIconLeft?: ReactNode;
+  fontSize?: number;
 };
 
 const CButton = ({
@@ -27,6 +28,7 @@ const CButton = ({
   disabled,
   style,
   renderIconLeft,
+  fontSize,
 }: Props) => {
   return (
     <TouchableOpacity
@@ -60,7 +62,7 @@ export default CButton;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: scale(40),
+    height: scale(50),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: scale(12),

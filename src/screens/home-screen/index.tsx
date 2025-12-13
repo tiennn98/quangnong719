@@ -1,176 +1,205 @@
-import {CHeader, CText} from '@/components';
-import {Colors, Fonts} from '@/themes';
+import { Images } from '@/assets/images';
+import { CText } from '@/components';
+import InvoiceBlock from '@/components/invoice-block';
+import { useGetProfile } from '@/hooks/useProfile';
+import { Colors } from '@/themes';
+import { formatCurrency } from '@/utils/tools';
 import React from 'react';
-import {View, StyleSheet, ScrollView, Image, ImageProps} from 'react-native';
-import {scale, width} from 'react-native-utils-scale';
-import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {ChevronRight} from 'lucide-react-native';
-import {Images} from '@/assets';
-import {formatToVND} from '@/utils/tools';
+import {
+  Image,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { QuickAccessBox } from './components/QuickAccessBox';
+import { styles } from './style.module';
+const scale = (size: number) => size;
+const fontScale = (size: number) => size;
+const defaultProps = {
+  invoiceId: 'HD004632',
+  branch: 'Chi nhánh trung tâm',
+  purchaseDate: '2025-11-22',
+  totalAmount: '7,000,000 VND',
+  onDetailPress: () => console.log('Xem chi tiết hóa đơn'),
+};
 
-const HomeScreen = () => {
-  const valueBarCode = 'KH00001KH00001';
-  const FakeInvoice = [{}, {}, {}];
-  const headerComponent = (icon: ImageProps, title: string) => {
-    return (
-      <View style={styles.viewContentHeader}>
-        <Image source={icon} style={styles.iconLeft} />
-        <CText fontSize={16} fontFamily={Fonts.BOLD}>
-          {title}
-        </CText>
-      </View>
-    );
-  };
+interface InfoBoxProps {
+  icon: any;
+  value: string;
+  label: string;
+  color?: string;
+}
+
+const InfoBox: React.FC<InfoBoxProps> = ({
+  icon,
+  value,
+  label,
+  color = Colors.h2,
+}) => (
+  <View style={styles.infoBoxContainer}>
+    <TouchableOpacity style={styles.infoBox} activeOpacity={0.8}>
+      <View style={styles.infoIconWrapper}>{icon}</View>
+      <Image source={icon} style={{width: 24, height: 24}} />
+      <Text style={[styles.infoBoxValue, {color}]}>{value}</Text>
+      <Text style={styles.infoBoxLabel}>{label}</Text>
+    </TouchableOpacity>
+  </View>
+);
+
+const HomeScreen: React.FC = () => {
+  const customerPhone = '0922982986';
+  const {data:profile} = useGetProfile();
+
   return (
-    <View style={styles.container}>
-      <CHeader isHome title={'Xin chào Nhâm báo thủ!'} />
-      <View style={styles.viewBarCode}>
-        <CText
-          fontFamily={Fonts.MEDIUM}
-          fontSize={16}
-          color={Colors.text}
-          align="center">
-          ĐƯA MÃ CHO NHÂN VIÊN ĐỂ TÍCH ĐIỂM, SỬ DỤNG ĐIỂM
-        </CText>
-        <BarcodeCreatorView
-          value={valueBarCode}
-          background={'#FFFFFF'}
-          foregroundColor={'#000000'}
-          format={BarcodeFormat.CODE128}
-          style={styles.barcode}
-        />
+    <View style={{flex: 1}}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.backgroundInput}
+      />
+
+      <View style={styles.headerBackground}>
+        <View style={styles.headerBar}>
+          <Image
+            source={Images.bannner}
+            style={styles.headerLogo}
+            resizeMethod="resize"
+          />
+          <LinearGradient
+            colors={[
+              'rgba(34, 139, 34, 0)',
+              'rgba(182, 186, 182, 0.3)',
+              'rgba(222, 224, 222, 0.65)',
+              'rgba(222, 224, 222, 0.95)',
+            ]}
+            style={styles.headerGradient}
+          />
+        </View>
+
+        <View style={styles.headerHelloContainer}>
+          <CText style={styles.greetingTitle}>Chào buổi sáng!</CText>
+          <CText
+            fontSize={fontScale(20)}
+            style={{fontWeight: 'bold', paddingHorizontal: scale(10)}}>
+            {profile?.full_name}
+          </CText>
+          <CText style={styles.greetingSubtitle}>
+            Hãy kiểm tra tiến độ vườn của bạn hôm nay
+          </CText>
+        </View>
       </View>
-      <ScrollView style={styles.content}>
-        <View style={styles.contentHeader}>
-          <View
-            style={[styles.itemHeader, {backgroundColor: Colors.greenPrimary}]}>
-            <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={15}>
-              999 điểm
-            </CText>
-            <View style={styles.row}>
-              <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={15}>
-                Xem lịch sử
-              </CText>
-              <ChevronRight color={Colors.white} />
-            </View>
-            <View
-              style={[
-                styles.imageBackground,
-                {backgroundColor: Colors.yellow},
-              ]}>
-              <Image source={Images.wallet} style={styles.iconHeader} />
-            </View>
-          </View>
-          <View style={[styles.itemHeader, {backgroundColor: Colors.yellow}]}>
-            <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={15}>
-              999 điểm
-            </CText>
-            <View style={styles.row}>
-              <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={15}>
-                Xem quà
-              </CText>
-              <ChevronRight color={Colors.white} />
-            </View>
-            <View
-              style={[
-                styles.imageBackground,
-                {backgroundColor: Colors.greenPrimary},
-              ]}>
-              <Image source={Images.gift} style={styles.iconHeader} />
-            </View>
-          </View>
-        </View>
-        <View style={styles.viewDebt}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.customerInfoBox}>
           <View style={styles.row}>
-            <View style={styles.viewImageLeft}>
-              <Image source={Images.debt} style={styles.iconHeader} />
+            <View>
+              <CText style={styles.label}>Mã Khách Hàng</CText>
+              <CText style={styles.customerPhone}>
+                {(profile?.phone_number || customerPhone)}
+              </CText>
+              <CText fontSize={fontScale(16)}>{profile?.full_name || 'Nguyễn Đức Nhâm!'}</CText>
             </View>
-            <View style={styles.gap}>
-              <CText color={Colors.white} fontFamily={Fonts.BOLD} fontSize={14}>
-                Tổng công nợ
-              </CText>
-              <CText
-                color={Colors.red400}
-                fontFamily={Fonts.BOLD}
-                fontSize={18}>
-                {formatToVND(10000000)}
-              </CText>
+
+            <View style={styles.pointsContainer}>
+              <CText style={styles.diamondIcon}>💎</CText>
+              <CText style={styles.pointsText}>Kim cương</CText>
+              <CText style={styles.pointsValue}>{profile?.q_points || 0} điểm</CText>
             </View>
           </View>
-          <View style={styles.viewRight}>
-            <CText color={'#313851'} fontFamily={Fonts.BOLD} fontSize={14}>
-              Chi tiết
-            </CText>
-            <ChevronRight color={'#313851'} size={16} />
+
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              activeOpacity={0.7}>
+              <Image
+                source={Images.qrcodeIcon}
+                style={styles.quickActionIcon}
+              />
+              <CText style={styles.quickActionText}>Mã của tôi</CText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              activeOpacity={0.7}>
+              <Image
+                source={Images.walletIcon}
+                style={styles.quickActionIcon}
+              />
+              <CText style={styles.quickActionText}>Công nợ của tôi</CText>
+            </TouchableOpacity>
           </View>
         </View>
-        {headerComponent(Images.referral, 'Chương trình khuyến mãi')}
-        <View style={styles.viewReferral}>
-          <View style={styles.promoLeft}>
-            <CText color={Colors.yellow} fontFamily={Fonts.BOLD} fontSize={16}>
-              COMBO 5 XÔ NAVI KP 11-7 10KG
-            </CText>
-            <CText
-              color={Colors.white}
-              fontFamily={Fonts.SEMIBOLD}
-              fontSize={12}>
-              Mua 5 xô được tặng một gói kích hoa trị giá 500k
-            </CText>
-            <CText
-              color={Colors.white}
-              fontFamily={Fonts.SEMIBOLD}
-              fontSize={12}>
-              Từ ngày : 04/11/2025
-            </CText>
-            <CText
-              color={Colors.white}
-              fontFamily={Fonts.SEMIBOLD}
-              fontSize={12}>
-              Đến ngày : 15/11/2025
-            </CText>
+
+        <View style={styles.mainContent}>
+          <View style={styles.bannerContainer}>
+            <Image
+              source={Images.bannner}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+            <View style={styles.bannerOverlay}>
+              <Text style={styles.bannerTextMain}>KÍCH HOẠT</Text>
+              <Text style={styles.bannerTextSub}>PHÂN HÓA MẦM HOA</Text>
+            </View>
           </View>
-          <Image source={Images.thung} style={styles.imageRight} />
-        </View>
-        {headerComponent(Images.listInvoice, 'Hoá đơn gần đây')}
-        <View style={styles.list}>
-          {FakeInvoice.map((e, index) => {
-            return (
-              <View key={index} style={styles.viewInvoice}>
-                <View style={styles.promoLeft}>
-                  <CText
-                    color={Colors.greenPrimary}
-                    fontFamily={Fonts.BOLD}
-                    fontSize={16}>
-                    Mã hoá đơn : HD004771
-                  </CText>
-                  <CText
-                    color={Colors.greenPrimary}
-                    fontFamily={Fonts.SEMIBOLD}
-                    fontSize={12}>
-                    Số lượng sản phẩm: 6
-                  </CText>
-                  <CText
-                    color={Colors.greenPrimary}
-                    fontFamily={Fonts.SEMIBOLD}
-                    fontSize={12}>
-                    Tổng cộng : 1,250,000 đ
-                  </CText>
-                  <CText
-                    color={Colors.greenPrimary}
-                    fontFamily={Fonts.SEMIBOLD}
-                    fontSize={12}>
-                    Thời gian : 28/10/2025 07:18
-                  </CText>
-                </View>
-                <View style={styles.viewRightDetail}>
-                  <CText fontFamily={Fonts.BOLD} fontSize={14}>
-                    Chi tiết
-                  </CText>
-                  <ChevronRight color={Colors.black} size={16} />
-                </View>
-              </View>
-            );
-          })}
+
+          <View style={styles.infoGrid}>
+            <InfoBox
+              icon={Images.voucherIcon}
+              value="2"
+              label="Phiếu ưu đãi"
+              color={Colors.gray300}
+            />
+            <InfoBox
+              icon={Images.listInvoice}
+              value={profile?.total_invoiced.toString() || '0'}
+              label="Tổng số hoá đơn"
+            />
+            <InfoBox
+              icon={Images.eventIcon}
+              value="2"
+              label="Số sự kiện đã tham gia"
+            />
+            <InfoBox
+              icon={Images.debt}
+              value={formatCurrency(profile?.debt) || '0 VND'}
+              label="Công nợ hiện tại"
+              color={Colors.black}
+            />
+          </View>
+
+          {/* <NextTaskBlock /> */}
+          <View style={{paddingVertical: scale(10)}}>
+            <View style={styles.invoiceCurrentHeader}>
+              <Image source={Images.listInvoice} style={styles.iconStyle} />
+              <CText fontSize={fontScale(18)} style={{fontWeight: 'bold'}}>Hóa đơn gần đây</CText>
+            </View>
+            <InvoiceBlock
+            {...defaultProps}
+            status="PARTIALLY_PAID"
+            remainingDebt="500,000 VND"
+          />
+          </View>
+
+          {/* <UpcomingEventBlock
+                blockIcon="☕"
+                eventTitle="Hội thảo Kỹ thuật Cà phê Lạnh"
+                eventTime="2026-01-20 • 09:00 - 11:00"
+                iconBackgroundColor={Colors.iconBg}
+            /> */}
+
+          <View style={styles.quickAccessGrid}>
+            <QuickAccessBox
+              icon={Images.skillCorner}
+              label="Mẹo canh tác"
+            />
+            <QuickAccessBox
+              icon={Images.helpSupport}
+              label="Hỗ trợ"
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -178,143 +207,3 @@ const HomeScreen = () => {
 };
 
 export default HomeScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.greenPrimary,
-  },
-  viewBarCode: {
-    padding: scale(12),
-    borderRadius: 16,
-    width: width - scale(40),
-    backgroundColor: Colors.white,
-    marginLeft: scale(20),
-    marginBottom: scale(20),
-  },
-  barcode: {
-    width: '100%',
-    height: scale(50),
-  },
-  content: {
-    flexGrow: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: scale(20),
-    paddingTop: scale(20),
-  },
-  contentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  itemHeader: {
-    width: (width - scale(60)) / 2,
-    borderRadius: scale(16),
-    borderColor: Colors.yellow,
-    borderWidth: scale(1),
-    gap: scale(12),
-    paddingLeft: scale(16),
-    paddingVertical: scale(12),
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  imageBackground: {
-    position: 'absolute',
-    bottom: scale(-5),
-    right: scale(-5),
-    width: scale(50),
-    height: scale(50),
-    borderRadius: 999,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconHeader: {
-    width: scale(24),
-    height: scale(24),
-  },
-  viewDebt: {
-    width: width - scale(40),
-    borderRadius: scale(16),
-    padding: scale(16),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#313851',
-    marginTop: scale(16),
-  },
-  viewImageLeft: {
-    width: scale(45),
-    height: scale(45),
-    borderRadius: 999,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: scale(8),
-  },
-  gap: {
-    gap: scale(4),
-  },
-  viewRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: scale(8),
-    backgroundColor: Colors.white,
-    borderRadius: scale(12),
-    gap: scale(4),
-  },
-  viewContentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(6),
-    marginVertical: scale(16),
-  },
-  iconLeft: {
-    width: scale(30),
-    height: scale(30),
-  },
-  viewReferral: {
-    width: width - scale(40),
-    backgroundColor: Colors.greenPrimary,
-    borderRadius: scale(12),
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(8),
-  },
-  promoLeft: {
-    gap: scale(8),
-    flex: 1,
-  },
-  imageRight: {
-    width: scale(80),
-    height: scale(120),
-  },
-  viewInvoice: {
-    width: width - scale(40),
-    backgroundColor: Colors.yellow,
-    borderRadius: scale(12),
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(12),
-  },
-  viewRightDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: scale(4),
-    paddingHorizontal: scale(8),
-    backgroundColor: Colors.white,
-    borderRadius: scale(12),
-    gap: scale(2),
-    height: 'auto',
-  },
-  list: {
-    gap: scale(12),
-    paddingBottom: scale(50),
-  },
-});

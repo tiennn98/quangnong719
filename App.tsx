@@ -1,9 +1,12 @@
+import { Notifications } from 'react-native-notifications';
+
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -20,6 +23,7 @@ import { persistor, store } from '@/redux/store';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/services/react-query-client';
 
+// disable font scaling
 if (Text.defaultProps == null) { Text.defaultProps = {}; }
 if (TextInput.defaultProps == null) { TextInput.defaultProps = {}; }
 if (TouchableOpacity.defaultProps == null) { TouchableOpacity.defaultProps = {}; }
@@ -31,6 +35,47 @@ TouchableOpacity.defaultProps.allowFontScaling = false;
 Pressable.defaultProps.allowFontScaling = false;
 
 const App = () => {
+  useEffect(() => {
+    Notifications.registerRemoteNotifications();
+
+    Notifications.registerRemoteNotifications();
+
+   if(Platform.OS === 'ios'){
+    // Notifications.ios.getPermissions().then((currentPermissions) => {
+    //   console.log('Current permissions: ', currentPermissions);
+    // });
+     Notifications.ios.checkPermissions().then((currentPermissions) => {
+      console.log('Badges enabled: ' + !!currentPermissions.badge);
+      console.log('Sounds enabled: ' + !!currentPermissions.sound);
+      console.log('Alerts enabled: ' + !!currentPermissions.alert);
+      console.log('Car Play enabled: ' + !!currentPermissions.carPlay);
+      console.log('Critical Alerts enabled: ' + !!currentPermissions.criticalAlert);
+      console.log('Provisional enabled: ' + !!currentPermissions.provisional);
+      console.log('Provides App Notification Settings enabled: ' + !!currentPermissions.providesAppNotificationSettings);
+      console.log('Announcement enabled: ' + !!currentPermissions.announcement);
+    });
+   }
+
+
+    Notifications.getInitialNotification()
+      .then((notification) => {
+        console.log(
+          'Initial notification was:',
+          notification ? notification.payload : 'N/A',
+        );
+      })
+      .catch((err) =>
+        console.error('getInitialNotification() failed', err),
+      );
+let someLocalNotification = Notifications.postLocalNotification({
+    body: 'Chúc quý khách có một mùa vụ bội thu!',
+    title: 'Quang Nông 719 xin chào quý khách hàng ',
+    sound: 'chime.aiff',
+});
+
+Notifications.cancelLocalNotification(someLocalNotification);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
