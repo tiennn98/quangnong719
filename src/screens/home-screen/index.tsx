@@ -34,14 +34,15 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
-  icon,
+  icon, // Dữ liệu: require('...')
   value,
   label,
   color = Colors.h2,
 }) => (
   <View style={styles.infoBoxContainer}>
     <TouchableOpacity style={styles.infoBox} activeOpacity={0.8}>
-      <View style={styles.infoIconWrapper}>{icon}</View>
+      {/* Xóa: <View style={styles.infoIconWrapper}>{icon}</View> */}
+      {/* Giữ lại: Dùng icon làm source cho Image */}
       <Image source={icon} style={{width: 24, height: 24}} />
       <Text style={[styles.infoBoxValue, {color}]}>{value}</Text>
       <Text style={styles.infoBoxLabel}>{label}</Text>
@@ -57,7 +58,7 @@ const HomeScreen: React.FC = () => {
     <View style={{flex: 1}}>
       <StatusBar
         barStyle="light-content"
-        backgroundColor={Colors.backgroundInput}
+        backgroundColor={Colors.greenPrimary}
       />
 
       <View style={styles.headerBackground}>

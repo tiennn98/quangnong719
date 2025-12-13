@@ -8,9 +8,28 @@ import {
 import axios, { AxiosRequestConfig } from 'axios';
 import { getTokenKiot } from './kiot.api';
 
-interface InvoiceDetail {}
+export interface InvoiceDetailTax {
+}
 
-interface InvoiceData {
+export interface InvoiceDetail {
+  productId: number;
+  productCode: string;
+  productName: string;
+  categoryId: number;
+  categoryName: string;
+  quantity: number;
+  price: number;
+  discount: number;
+  usePoint: boolean;
+  subTotal: number;
+  note: string;
+  serialNumbers: string;
+  invoiceDetailTaxs: InvoiceDetailTax[];
+  id: number;
+  returnQuantity: number;
+}
+
+export interface InvoiceData {
   id: number;
   uuid: string;
   code: string;
@@ -34,14 +53,13 @@ interface InvoiceData {
   invoiceDetails: InvoiceDetail[];
 }
 
-interface InvoiceResponse {
+export interface InvoiceResponse {
   total: number;
   pageSize: number;
   data: InvoiceData[];
   timestamp: string;
 }
 
-export type { InvoiceData, InvoiceDetail, InvoiceResponse };
 
 export const getListInvoice = async (
     phone: string,

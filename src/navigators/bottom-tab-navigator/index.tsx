@@ -1,20 +1,19 @@
-import {CText} from '@/components';
-import {SCREEN_NAME} from '@/constants';
-import {HomeScreen, ProfileScreen, PromotionScreen} from '@/screens';
-import {Colors, Fonts} from '@/themes';
+import { CText } from '@/components';
+import { SCREEN_NAME } from '@/constants';
+import { HomeScreen, ProfileScreen, PromotionScreen, WellcomeScreen } from '@/screens';
+import InvoiceScreen from '@/screens/invoice-screen';
+import { Colors, Fonts } from '@/themes';
 import {
-  CalendarDays,
   House,
   NotepadText,
+  Store,
   TicketPercent,
   UserRound,
 } from 'lucide-react-native';
 import React from 'react';
-import {Animated, StyleSheet, TouchableOpacity} from 'react-native';
-import {CurvedBottomBar} from 'react-native-curved-bottom-bar';
-import {width} from 'react-native-utils-scale';
-import {navigate as MoveTo} from '../navigation-service';
-import InvoiceScreen from '@/screens/invoice-screen';
+import { Animated, Linking, StyleSheet, TouchableOpacity } from 'react-native';
+import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
+import { width } from 'react-native-utils-scale';
 
 const BottomTabNavigator = () => {
   const _renderIcon = (routeName: string, _selectedTab: string) => {
@@ -29,6 +28,19 @@ const BottomTabNavigator = () => {
         return <UserRound color={Colors.greenPrimary} size={22} />;
     }
   };
+const openMap = () => {
+    const url =
+'https://www.google.com/maps/place/Quang+N%C3%B4ng+719/@12.7478125,108.4169876,17z/data=!3m1!4b1!4m6!3m5!1s0x3171e7a09a4799db:0x651080a1f91043b0!8m2!3d12.7478125!4d108.4195625!16s%2Fg%2F11xrdvnly3?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D';
+    Linking.canOpenURL(url)
+      .then(supported => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          Linking.openURL('https://www.google.com/maps');
+        }
+      })
+      .catch(err => console.error('Error opening map:', err));
+  };
 
   const _renderName = (routeName: string, selectedTab: string) => {
     let name = '';
@@ -37,7 +49,7 @@ const BottomTabNavigator = () => {
         name = 'Trang chủ';
         break;
       case SCREEN_NAME.PROMOTION:
-        name = 'Voucher';
+        name = 'Khuyến mãi';
         break;
       case SCREEN_NAME.INVOICESCREEN:
         name = 'Hoá đơn';
@@ -79,8 +91,8 @@ const BottomTabNavigator = () => {
         <Animated.View style={styles.btnCircleUp}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => MoveTo(SCREEN_NAME.CALENDAR)}>
-            <TicketPercent color={Colors.greenPrimary} size={30} />
+            onPress={openMap}>
+            <Store color={Colors.greenPrimary} size={30} />
             <CText
               color={Colors.greenPrimary}
               fontSize={14}>
@@ -98,12 +110,12 @@ const BottomTabNavigator = () => {
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.PROMOTION}
         position="LEFT"
-        component={() => <HomeScreen />}
+        component={() => <PromotionScreen />}
       />
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.CALENDAR}
         position="CENTER"
-        component={() => <PromotionScreen />}
+        component={() => <WellcomeScreen />}
       />
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.INVOICESCREEN}

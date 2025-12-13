@@ -1,19 +1,29 @@
-import {Colors, Fonts} from '@/themes';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useEffect, useRef} from 'react';
 import {StyleSheet} from 'react-native';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import {Colors, Fonts} from '@/themes';
 
 interface Props {
   needReset?: boolean;
-  onChangeValue: (value: any) => void;
+  onChangeValue: (value: string) => void;
 }
 
 const InputOTP: React.FC<Props> = ({needReset, onChangeValue}) => {
   const ref = useRef<any>(null);
 
+  // Force focus after mount (Android often needs delay)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      ref.current?.focusField?.(0);
+    }, 300);
+
+    return () => clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     if (needReset) {
-      ref?.current?.onReset?.();
+      ref.current?.onReset?.();
+      setTimeout(() => ref.current?.focusField?.(0), 200);
     }
   }, [needReset]);
 
@@ -23,12 +33,19 @@ const InputOTP: React.FC<Props> = ({needReset, onChangeValue}) => {
       style={styles.otpView}
       pinCount={6}
       autoFocusOnLoad
+      keyboardType="number-pad"
       onCodeChanged={code => onChangeValue(code)}
       codeInputFieldStyle={styles.codeInputFieldStyle}
       codeInputHighlightStyle={styles.codeInputHighlightStyle}
-      //   onCodeFilled={code => {
-      //     onChangeValue(code)
-      //   }}
+      textInputProps={{
+        autoFocus: true,
+        autoCorrect: false,
+        importantForAutofill: 'yes',
+        textContentType: 'oneTimeCode',
+        showSoftInputOnFocus: true,
+        keyboardType: 'number-pad',
+        returnKeyType: 'done',
+      }}
     />
   );
 };

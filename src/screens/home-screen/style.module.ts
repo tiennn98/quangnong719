@@ -61,11 +61,6 @@ export const styles = StyleSheet.create({
     borderRadius: scale(15),
     padding: scale(20),
     zIndex: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 8,
   },
   row: {
     flexDirection: 'row',
