@@ -20,7 +20,7 @@ interface UpcomingEventBlockProps {
 const UpcomingEventBlock: React.FC<UpcomingEventBlockProps> = ({
   blockTitle = 'Sự kiện sắp tới',
   blockIcon = '',
-  iconBackgroundColor = Colors.iconBg,
+  iconBackgroundColor = Colors.backgroundInput,
   eventTitle,
   eventTime,
   onViewAllPress,

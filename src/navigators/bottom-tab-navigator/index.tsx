@@ -1,11 +1,12 @@
 import {CText} from '@/components';
 import {SCREEN_NAME} from '@/constants';
-import {HomeScreen, ProfileScreen, PromotionScreen} from '@/screens';
+import {HomeScreen, ProfileScreen, PromotionScreen, WellcomeScreen} from '@/screens';
 import {Colors, Fonts} from '@/themes';
 import {
   CalendarDays,
   House,
   NotepadText,
+  Store,
   TicketPercent,
   UserRound,
 } from 'lucide-react-native';
@@ -37,7 +38,7 @@ const BottomTabNavigator = () => {
         name = 'Trang chủ';
         break;
       case SCREEN_NAME.PROMOTION:
-        name = 'Voucher';
+        name = 'Khuyến mãi';
         break;
       case SCREEN_NAME.INVOICESCREEN:
         name = 'Hoá đơn';
@@ -80,7 +81,7 @@ const BottomTabNavigator = () => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => MoveTo(SCREEN_NAME.CALENDAR)}>
-            <TicketPercent color={Colors.greenPrimary} size={30} />
+            <Store color={Colors.greenPrimary} size={30} />
             <CText
               color={Colors.greenPrimary}
               fontSize={14}>
@@ -98,12 +99,12 @@ const BottomTabNavigator = () => {
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.PROMOTION}
         position="LEFT"
-        component={() => <HomeScreen />}
+        component={() => <PromotionScreen />}
       />
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.CALENDAR}
         position="CENTER"
-        component={() => <PromotionScreen />}
+        component={() => <WellcomeScreen />}
       />
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.INVOICESCREEN}

@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         width: scale(40),
         height: scale(40),
         borderRadius: scale(8),
-        backgroundColor: Colors.iconBg,
+        backgroundColor: Colors.backgroundInput,
         justifyContent: 'center',
         alignItems: 'center',
     },
