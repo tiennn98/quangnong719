@@ -7,7 +7,7 @@ import CText from '@/components/text';
 export const NextTaskBlock: React.FC = () => (
   <View style={styles.blockWrapper}>
     <View style={styles.blockHeader}>
-      <View style={[styles.blockIconCircle, {backgroundColor: Colors.iconBg}]}>
+      <View style={[styles.blockIconCircle, {backgroundColor: Colors.backgroundInput}]}>
         <CText style={styles.blockIconText}>🍃</CText>
       </View>
       <CText style={styles.blockTitle}>Công việc tiếp theo</CText>

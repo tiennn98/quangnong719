@@ -1,75 +1,74 @@
-import {CText} from '@/components';
-import {useGetProfile} from '@/hooks/useProfile';
-import {Colors, Fonts} from '@/themes';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   View,
   SectionList,
   ListRenderItemInfo,
-  FlatList,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import {scale} from 'react-native-utils-scale';
-import {useGetInvoiceList} from '@/hooks/useInvoice';
-import reactotron from 'reactotron-react-native';
 import moment from 'moment';
+import reactotron from 'reactotron-react-native';
+import {CText} from '@/components';
+import InvoiceBlock from '@/components/invoice-block';
+import {useGetProfile} from '@/hooks/useProfile';
+import {useGetInvoiceList} from '@/hooks/useInvoice';
+import {Colors, Fonts} from '@/themes';
+import { InvoiceData } from '@/services/invoice.api';
 
-interface InvoiceDetail {
-  productId: number;
-  productCode: string;
-  productName: string;
-}
+const InvoiceScreen: React.FC = () => {
+  const [page, setPage] = useState(1);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-interface Invoice {
-  id: number;
-  uuid: string;
-  code: string;
-  purchaseDate: string;
-  branchName: string;
-  customerName: string;
-  total: number;
-  totalPayment: number;
-  statusValue: string;
-  invoiceDetails: InvoiceDetail[];
-}
+  const {data: profile, refetch: refetchProfile} = useGetProfile();
+  const {
+    data: invoiceList = [],
+    isLoading,
+    isFetchingNextPage,
+    refetch: refetchInvoices,
+  } = useGetInvoiceList(profile?.phone_number, page);
+reactotron.log('InvoiceList', invoiceList);
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    setPage(1);
+    try {
+      await Promise.all([refetchProfile(), refetchInvoices()]);
+    } catch (error) {
+      reactotron.log('Error refreshing data', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refetchProfile, refetchInvoices]);
 
-interface InvoiceSection {
-  title: string;
-  data: Invoice[];
-}
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amount);
-};
-
-const InvoiceScreen = () => {
-  const {data: profile} = useGetProfile();
-  const {data: invoiceList = []} = useGetInvoiceList(profile?.phone_number);
-  reactotron.log('INVOICE LIST:', invoiceList);
+  const onLoadMore = useCallback(() => {
+    if (!isLoading && !isFetchingNextPage && invoiceList.length > 0) {
+      setPage(prev => prev + 1);
+    }
+  }, [isLoading, isFetchingNextPage, invoiceList.length]);
 
   const sections: InvoiceSection[] = useMemo(() => {
-    if (!invoiceList || invoiceList?.length === 0) {
+    if (!invoiceList?.length) {
       return [];
     }
 
-    const groupedByDate: {[key: string]: Invoice[]} = {};
+    const grouped = invoiceList?.reduce(
+      (acc: {[key: string]: InvoiceData[]}, inv) => {
+        const dateKey = moment(inv.purchaseDate).format('DD/MM/YYYY');
+        if (!acc[dateKey]) {
+          acc[dateKey] = [];
+        }
+        acc[dateKey].push(inv);
+        return acc;
+      },
+      {},
+    );
 
-    invoiceList?.forEach?.((invoice: Invoice) => {
-      const dateKey = moment(invoice.purchaseDate).format('DD/MM/YYYY');
-      if (!groupedByDate[dateKey]) {
-        groupedByDate[dateKey] = [];
-      }
-      groupedByDate[dateKey].push(invoice);
-    });
-
-    return Object.keys(groupedByDate)
+    return Object.keys(grouped)
       .map(date => ({
         title: date,
-        data: groupedByDate[date],
+        data: grouped[date],
       }))
       .sort(
         (a, b) =>
@@ -78,8 +77,8 @@ const InvoiceScreen = () => {
       );
   }, [invoiceList]);
 
-  const _renderHeader = useCallback(() => {
-    return (
+  const renderHeader = useMemo(
+    () => (
       <View style={styles.viewHeader}>
         <View style={styles.headerLeft}>
           <CText
@@ -92,7 +91,7 @@ const InvoiceScreen = () => {
             fontFamily={Fonts.REGULAR}
             color={Colors.greenPrimary}
             fontSize={14}>
-            Xem tất cả hóa đơn và giao dịch của bạn
+            Xem tất cả hóa đơn của bạn
           </CText>
         </View>
         <View style={styles.headerRight}>
@@ -101,92 +100,90 @@ const InvoiceScreen = () => {
             fontFamily={Fonts.REGULAR}
             color={Colors.greenPrimary}
             fontSize={12}>
-            Tổng số hoá đơn : {profile?.total_invoiced || 0}
+            Tổng hóa đơn{'\n'}
+            <CText fontFamily={Fonts.BOLD} fontSize={18}>
+              {invoiceList?.total || 0}
+            </CText>
           </CText>
         </View>
       </View>
-    );
-  }, [profile?.total_invoiced]);
+    ),
+    [profile?.total_invoiced],
+  );
 
-  const _renderItem = useCallback(({item}: ListRenderItemInfo<Invoice>) => {
-    return (
+  const renderItem = useCallback(
+    ({item}: ListRenderItemInfo<InvoiceData>) => (
       <View style={styles.invoiceItem}>
-        <View style={styles.itemRow}>
-          <CText fontFamily={Fonts.MEDIUM} color={Colors.h1} fontSize={16}>
-            {item.code} - {item.branchName}
-          </CText>
-          <CText
-            fontFamily={Fonts.MEDIUM}
-            color={Colors.greenPrimary}
-            fontSize={16}>
-            {formatCurrency(item.total)}
-          </CText>
-        </View>
-        <View style={styles.itemRow}>
-          <CText fontFamily={Fonts.REGULAR} color={Colors.h2} fontSize={14}>
-            Khách hàng: {item.customerName}
-          </CText>
-          <CText fontFamily={Fonts.REGULAR} color={Colors.h2} fontSize={14}>
-            Thanh toán: {formatCurrency(item.totalPayment)}
-          </CText>
-        </View>
-        <View style={styles.itemRow}>
-          <CText fontFamily={Fonts.MEDIUM} color={Colors.h1} fontSize={14}>
-            Chi tiết ({item.invoiceDetails.length} SP)
-          </CText>
-          <CText
-            fontFamily={Fonts.BOLD}
-            color={item.status === 1 ? Colors.greenPrimary : Colors.red}
-            fontSize={14}>
-            {item.statusValue}
-          </CText>
-        </View>
+        <InvoiceBlock
+          invoiceId={item.code}
+          branchName={item.branchName}
+          purchaseDate={item.purchaseDate}
+          totalAmount={item.total.toString()}
+          status={item.status}
+          onDetailPress={() => {}}
+          totalPayment={item.totalPayment}
+          invoiceDetails={item.invoiceDetails}
+        />
       </View>
-    );
-  }, []);
-
-  const _renderSectionHeader = useCallback(
-    ({section: {title}}: {section: InvoiceSection}) => {
-      return (
-        <View style={styles.sectionHeader}>
-          <CText fontFamily={Fonts.BOLD} color={Colors.h1} fontSize={18}>
-            Ngày: {title}
-          </CText>
-        </View>
-      );
-    },
+    ),
     [],
   );
 
-  const _renderInvoiceList = () => {
+  const renderSectionHeader = useCallback(
+    ({section: {title}}: {section: InvoiceSection}) => (
+      <View style={styles.sectionHeader}>
+        <CText fontFamily={Fonts.BOLD} color={Colors.blue400} fontSize={14}>
+          Ngày: {title}
+        </CText>
+      </View>
+    ),
+    [],
+  );
+
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) {
+      return <View style={{height: 20}} />;
+    }
     return (
-      <View style={styles.listContainer}>
-        {sections.length > 0 ? (
-          <SectionList<Invoice, InvoiceSection>
-            sections={sections}
-            keyExtractor={(item, index) => item.id.toString() + index}
-            renderItem={_renderItem}
-            renderSectionHeader={_renderSectionHeader}
-            stickySectionHeadersEnabled={true}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            contentContainerStyle={styles.contentContainer}
-          />
-        ) : (
-          <View style={styles.emptyContainer}>
-            <CText fontFamily={Fonts.REGULAR} color={Colors.h2} fontSize={16}>
-              Chưa có hóa đơn nào được ghi nhận.
-            </CText>
-          </View>
-        )}
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={Colors.greenPrimary} />
       </View>
     );
-  };
+  }, [isFetchingNextPage]);
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        {_renderHeader()}
-        {_renderInvoiceList()}
+        {renderHeader}
+
+        <SectionList<InvoiceData, InvoiceSection>
+          sections={sections}
+          keyExtractor={(item, index) => item.id.toString() + index}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+          stickySectionHeadersEnabled={true}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={renderFooter}
+          contentContainerStyle={styles.contentContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.greenPrimary}
+              colors={[Colors.greenPrimary]}
+            />
+          }
+          ListEmptyComponent={
+            !isLoading && (
+              <View style={styles.emptyContainer}>
+                <CText color={Colors.h2}>Không có dữ liệu hóa đơn.</CText>
+              </View>
+            )
+          }
+          removeClippedSubviews={true}
+          initialNumToRender={10}
+        />
       </View>
     </SafeAreaView>
   );
@@ -195,63 +192,27 @@ const InvoiceScreen = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: Colors.primary,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scale(16),
-  },
+  safe: {flex: 1, backgroundColor: Colors.white},
+  container: {flex: 1, paddingHorizontal: scale(16)},
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: scale(16),
+    marginVertical: scale(16),
   },
-  headerLeft: {
-    paddingRight: scale(16),
-    flex: 2,
-  },
+  headerLeft: {flex: 1},
   headerRight: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Colors.yellow,
-    borderRadius: scale(16),
-    padding: scale(12),
-    maxHeight: scale(80),
-  },
-  listContainer: {
-    flex: 1,
-  },
-  invoiceItem: {
-    paddingVertical: scale(10),
-    paddingHorizontal: scale(5),
-  },
-  itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: scale(4),
-  },
-  separator: {
-    height: 1,
-    backgroundColor: Colors.h2,
-    marginHorizontal: scale(5),
-  },
-  sectionHeader: {
-    backgroundColor: Colors.backgroundInput,
-    paddingVertical: scale(8),
-    paddingHorizontal: scale(5),
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.h2,
-  },
-  contentContainer: {
-    paddingBottom: scale(20),
-  },
-  emptyContainer: {
-    flex: 1,
+    borderRadius: scale(12),
+    padding: scale(10),
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: scale(50),
+    minWidth: scale(90),
   },
+  invoiceItem: {marginBottom: scale(8)},
+  sectionHeader: {
+    backgroundColor: Colors.white,
+    paddingVertical: scale(10),
+  },
+  contentContainer: {paddingBottom: scale(20)},
+  footerLoader: {paddingVertical: scale(20)},
+  emptyContainer: {alignItems: 'center', marginTop: scale(50)},
 });

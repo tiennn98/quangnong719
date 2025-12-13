@@ -1,32 +1,34 @@
-import React, {useMemo} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, { useMemo } from 'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import {Images} from '@/assets';
-import {Colors} from '@/themes';
-import {fontScale, scale} from 'react-native-utils-scale';
+import { Images } from '@/assets';
+import { InvoiceDetail } from '@/services/invoice.api';
+import { Colors } from '@/themes';
+import { formatCurrency, formatISODate } from '@/utils/tools';
+import { fontScale, scale } from 'react-native-utils-scale';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CText from '../text';
 
-type InvoiceStatus = 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
+type InvoiceStatus = 1 | 2;
 
 interface InvoiceBlockProps {
   invoiceId: string;
-  branch: string;
   purchaseDate: string;
   totalAmount: string;
   status: InvoiceStatus;
   remainingDebt?: string;
   onDetailPress: () => void;
   hideDetailButton?: boolean;
+  branchName?: string;
+  totalPayment: number;
+  invoiceDetails: InvoiceDetail[];
 }
 
 const getStatusDisplay = (status: InvoiceStatus) => {
   switch (status) {
-    case 'PAID':
-      return {text: 'Đã thanh toán', color: Colors.green, bgColor: '#E7F4ED'};
-    case 'PARTIALLY_PAID':
-      return {text: 'Nợ một phần', color: Colors.orange, bgColor: '#FFF4E6'};
-    case 'CANCELLED':
+    case 1:
+      return {text: 'Đã thanh toán', color: Colors.h2, bgColor: '#E7F4ED'};
+    case 2:
       return {text: 'Đã hủy', color: Colors.red, bgColor: '#FFE6E6'};
     default:
       return {text: '', color: Colors.h2, bgColor: Colors.white};
@@ -54,16 +56,26 @@ const StatusTag: React.FC<{status: InvoiceStatus}> = React.memo(({status}) => {
 const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
   ({
     invoiceId,
-    branch,
     purchaseDate,
     totalAmount,
     status,
     remainingDebt,
     onDetailPress,
+    totalPayment,
     hideDetailButton = false,
+    invoiceDetails,
   }) => {
+    const totalQuantity = useMemo(() => {
+      if (!Array.isArray(invoiceDetails)) {
+        return 0;
+      }
+      return invoiceDetails.reduce((sum, item) => {
+        const quantity = Number(item?.quantity) || 0;
+        return sum + quantity;
+      }, 0);
+    }, [invoiceDetails]);
     const debtDisplay = useMemo(() => {
-      if (status !== 'PAID' && remainingDebt) {
+      if (status !== 1 && remainingDebt) {
         return (
           <CText fontSize={fontScale(14)} style={styles.debtText}>
             Còn nợ : {remainingDebt}
@@ -74,7 +86,7 @@ const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
     }, [status, remainingDebt]);
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container,{borderWidth:1,borderColor:getStatusDisplay(status).color}]}>
         <View style={styles.header}>
           <View style={styles.invoiceInfo}>
             <View style={styles.iconWrapper}>
@@ -91,15 +103,21 @@ const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
         <View style={styles.content}>
           <View>
             <CText style={styles.purchaseDateText}>
-              Ngày mua : {purchaseDate}
+              Ngày mua : {formatISODate(purchaseDate)}
             </CText>
-            <CText style={styles.totalAmountText}>
-              Tổng tiền : {totalAmount}
+            <CText style={styles.totalAmountText} fontSize={fontScale(16)}>
+              Tổng tiền ({totalQuantity}) : {formatCurrency(totalAmount)}
+            </CText>
+            <CText style={styles.totalAmountText} fontSize={fontScale(16)}>
+              Đã thanh toán : {formatCurrency(totalPayment)}
+            </CText>
+            <CText style={styles.totalAmountText} fontSize={fontScale(16) }>
+             {Number(totalAmount) - totalPayment !== 0 && `Còn lại : ${formatCurrency(Number(totalAmount) - totalPayment)}`}
             </CText>
             {debtDisplay}
           </View>
 
-          <View style={styles.buttonContainer}>
+          {status === 1 && <View style={styles.buttonContainer}>
             {!hideDetailButton && (
               <TouchableOpacity
                 style={styles.detailButton}
@@ -113,7 +131,7 @@ const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
                 />
               </TouchableOpacity>
             )}
-          </View>
+          </View>}
         </View>
 
         <View style={styles.watermark}>
@@ -128,7 +146,7 @@ export default InvoiceBlock;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.backgroundInput,
     borderRadius: scale(15),
     padding: scale(16),
     shadowColor: '#000',
@@ -188,15 +206,12 @@ const styles = StyleSheet.create({
     paddingTop: scale(5),
   },
   purchaseDateText: {
-    fontSize: fontScale(14),
     color: Colors.h2,
     marginBottom: scale(10),
-
   },
   totalAmountText: {
-    fontSize: fontScale(18),
-    fontWeight: 'bold',
-    color: Colors.h1,
+    color: Colors.h2,
+    fontWeight: '600',
     marginBottom: scale(10),
   },
   debtText: {
@@ -209,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   detailButton: {
-    backgroundColor: Colors.iconBg,
+    backgroundColor: Colors.backgroundInput,
     borderRadius: scale(8),
     paddingHorizontal: scale(10),
     paddingVertical: scale(8),
@@ -227,14 +242,14 @@ const styles = StyleSheet.create({
   watermark: {
     position: 'absolute',
     right: scale(20),
-    top: scale(0),
+    top: scale(20),
     opacity: 0.1,
     transform: [{rotate: '45deg'}],
     zIndex: -1,
   },
   watermarkImage: {
-    width: scale(100),
-    height: scale(100),
+    width: scale(120),
+    height: scale(120),
     resizeMode: 'contain',
   },
 });

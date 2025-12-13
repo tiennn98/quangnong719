@@ -12,6 +12,9 @@ PODS:
     - FirebaseAnalytics (~> 12.6.0)
   - Firebase/CoreOnly (12.6.0):
     - FirebaseCore (~> 12.6.0)
+  - Firebase/Messaging (12.6.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 12.6.0)
   - FirebaseAnalytics (12.6.0):
     - FirebaseAnalytics/Default (= 12.6.0)
     - FirebaseCore (~> 12.6.0)
@@ -34,6 +37,8 @@ PODS:
     - FirebaseCoreInternal (~> 12.6.0)
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreExtension (12.6.0):
+    - FirebaseCore (~> 12.6.0)
   - FirebaseCoreInternal (12.6.0):
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
   - FirebaseInstallations (12.6.0):
@@ -41,6 +46,15 @@ PODS:
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/UserDefaults (~> 8.1)
     - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (12.6.0):
+    - FirebaseCore (~> 12.6.0)
+    - FirebaseInstallations (~> 12.6.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Reachability (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
   - fmt (11.0.2)
   - glog (0.3.5)
   - GoogleAdsOnDeviceConversion (3.2.0):
@@ -70,6 +84,9 @@ PODS:
     - GoogleUtilities/Network (~> 8.1)
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
     - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - GoogleUtilities (8.1.0):
     - GoogleUtilities/AppDelegateSwizzler (= 8.1.0)
     - GoogleUtilities/Environment (= 8.1.0)
@@ -1810,6 +1827,11 @@ PODS:
   - RNFBApp (23.7.0):
     - Firebase/CoreOnly (= 12.6.0)
     - React-Core
+  - RNFBMessaging (23.7.0):
+    - Firebase/Messaging (= 12.6.0)
+    - FirebaseCoreExtension
+    - React-Core
+    - RNFBApp
   - RNScreens (4.18.0):
     - DoubleConversion
     - glog
@@ -1952,6 +1974,7 @@ DEPENDENCIES:
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -1961,10 +1984,13 @@ SPEC REPOS:
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
     - FirebaseInstallations
+    - FirebaseMessaging
     - GoogleAdsOnDeviceConversion
     - GoogleAppMeasurement
+    - GoogleDataTransport
     - GoogleUtilities
     - libwebp
     - nanopb
@@ -2133,6 +2159,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+  RNFBMessaging:
+    :path: "../node_modules/@react-native-firebase/messaging"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -2149,12 +2177,15 @@ SPEC CHECKSUMS:
   Firebase: a451a7b61536298fd5cbfe3a746fd40443a50679
   FirebaseAnalytics: d0a97a0db6425e5a5d966340b87f92ca7b13a557
   FirebaseCore: 0e38ad5d62d980a47a64b8e9301ffa311457be04
+  FirebaseCoreExtension: 032fd6f8509e591fda8cb76f6651f20d926b121f
   FirebaseCoreInternal: 69bf1306a05b8ac43004f6cc1f804bb7b05b229e
   FirebaseInstallations: 631b38da2e11a83daa4bfb482f79d286a5dfa7ad
+  FirebaseMessaging: a61bc42dcab3f7a346d94bbb54dab2c9435b18b2
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   GoogleAdsOnDeviceConversion: d68c69dd9581a0f5da02617b6f377e5be483970f
   GoogleAppMeasurement: 3bf40aff49a601af5da1c3345702fcb4991d35ee
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: b2187dbe13edb0db8fcb2a93a69c1987a30d98a4
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2231,6 +2262,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFBApp: 0c4cadae3900893d4631ea9a9effd14f853cd8e0
+  RNFBMessaging: 873220424f6f6aa5c787baf5c7099e1e2ba087c9
   RNScreens: b0691b7488fc428136a2e7abab32f751b01b2696
   RNSVG: af004514150de2bd928e11d215bca33a5d1c19ce
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
