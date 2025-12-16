@@ -1,20 +1,14 @@
 import {URL} from '@/constants';
-import {store} from '@/redux/store';
 import {fetchBaseQuery} from '@reduxjs/toolkit/query';
+import type {RootState} from '@/redux/store';
 
-export const baseQueryNoAuth = fetchBaseQuery({
-  baseUrl: URL,
-});
-
-
+export const baseQueryNoAuth = fetchBaseQuery({baseUrl: URL});
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: URL,
-  prepareHeaders: async headers => {
-    const token = store.getState().user?.accessToken;
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
+  prepareHeaders: (headers, {getState}) => {
+    const token = (getState() as RootState).auth.accessToken;
+    if (token) {headers.set('Authorization', `Bearer ${token}`);}
     return headers;
   },
 });

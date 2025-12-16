@@ -16,6 +16,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { QuickAccessBox } from './components/QuickAccessBox';
 import { styles } from './style.module';
+import { navigate } from '@/navigators';
+import { SCREEN_NAME } from '@/constants';
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
 const defaultProps = {
@@ -114,7 +116,8 @@ const HomeScreen: React.FC = () => {
           <View style={styles.quickActionsContainer}>
             <TouchableOpacity
               style={styles.quickActionButton}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+              onPress={()=>navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)}>
               <Image
                 source={Images.qrcodeIcon}
                 style={styles.quickActionIcon}
@@ -155,7 +158,7 @@ const HomeScreen: React.FC = () => {
             />
             <InfoBox
               icon={Images.listInvoice}
-              value={profile?.total_invoiced.toString() || '0'}
+              value={formatCurrency(profile?.total_invoiced.toString() || '0')}
               label="Tổng số hoá đơn"
             />
             <InfoBox

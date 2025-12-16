@@ -1,6 +1,6 @@
 import { CText } from '@/components';
 import { SCREEN_NAME } from '@/constants';
-import { AboutStoreScreen, HomeScreen, ProfileScreen, PromotionScreen, WellcomeScreen } from '@/screens';
+import { AboutStoreScreen, HomeScreen, ProfileScreen, PromotionScreen } from '@/screens';
 import InvoiceScreen from '@/screens/invoice-screen';
 import { Colors, Fonts } from '@/themes';
 import {

@@ -31,6 +31,7 @@
 		54B5D95131E14082BC5AB32C /* Lexend-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DA167123CAFC4AFD904294B7 /* Lexend-ExtraBold.ttf */; };
 		5BFDEB6DCF1A25BD15FA738D /* libPods-quangnong719.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09753C10794266DF98C63AB8 /* libPods-quangnong719.a */; };
 		65EAFE33909F4B06B9811713 /* Lexend-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5EEC35791A00483D9B516F30 /* Lexend-Light.ttf */; };
+		716A444B2EF1C4C90029ED70 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 716A444A2EF1C4C90029ED70 /* GoogleService-Info.plist */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9E1B098608614A2C872A5677 /* Lexend-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44F20AD9752C44E6AFCC0AA2 /* Lexend-ExtraLight.ttf */; };
@@ -74,6 +75,8 @@
 		5EEC35791A00483D9B516F30 /* Lexend-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lexend-Light.ttf"; path = "../src/assets/fonts/Lexend-Light.ttf"; sourceTree = "<group>"; };
 		612F5D8F5845465BA0B9F466 /* Lexend-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lexend-Bold.ttf"; path = "../src/assets/fonts/Lexend-Bold.ttf"; sourceTree = "<group>"; };
 		6DDA905B9243B975C5BEF308 /* Pods-quangnong719.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-quangnong719.debug.xcconfig"; path = "Target Support Files/Pods-quangnong719/Pods-quangnong719.debug.xcconfig"; sourceTree = "<group>"; };
+		716A44482EF1B27F0029ED70 /* quangnong719.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = quangnong719.entitlements; path = quangnong719/quangnong719.entitlements; sourceTree = "<group>"; };
+		716A444A2EF1C4C90029ED70 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		718CB5D02EE9FE2200C38B87 /* quangnong719-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "quangnong719-Bridging-Header.h"; path = "quangnong719/quangnong719-Bridging-Header.h"; sourceTree = "<group>"; };
 		7280B86C1A7D6742F7ED5345 /* Pods-quangnong719.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-quangnong719.release.xcconfig"; path = "Target Support Files/Pods-quangnong719/Pods-quangnong719.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = quangnong719/AppDelegate.swift; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 		13B07FAE1A68108700A75B9A /* quangnong719 */ = {
 			isa = PBXGroup;
 			children = (
+				716A444A2EF1C4C90029ED70 /* GoogleService-Info.plist */,
+				716A44482EF1B27F0029ED70 /* quangnong719.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
@@ -257,6 +262,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				716A44492EF1BBCB0029ED70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -296,6 +304,7 @@
 				2448377C2C951E7A00CB3A30 /* Foundation.ttf in Resources */,
 				2448377F2C951E7A00CB3A30 /* FontAwesome5_Regular.ttf in Resources */,
 				AF5D2B2D2E3F49E6968101F9 /* Lexend-Regular.ttf in Resources */,
+				716A444B2EF1C4C90029ED70 /* GoogleService-Info.plist in Resources */,
 				244837862C951E7A00CB3A30 /* MaterialIcons.ttf in Resources */,
 				2448377A2C951E7A00CB3A30 /* MaterialCommunityIcons.ttf in Resources */,
 				E89D97BED7C646DC861855BC /* Lexend-SemiBold.ttf in Resources */,
@@ -413,14 +422,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = quangnong719/quangnong719.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 279J6RBPC4;
+				DEVELOPMENT_TEAM = 2S6Z5U4D63;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = quangnong719/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = quangnong719;
+				INFOPLIST_KEY_CFBundleDisplayName = "Quang Nông 719 CSKH";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -432,7 +442,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.quangnong;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quangnong.qnt719;
 				PRODUCT_NAME = quangnong719;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "quangnong719/quangnong719-Bridging-Header.h";
@@ -448,13 +458,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = quangnong719/quangnong719.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 279J6RBPC4;
+				DEVELOPMENT_TEAM = 2S6Z5U4D63;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = quangnong719/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = quangnong719;
+				INFOPLIST_KEY_CFBundleDisplayName = "Quang Nông 719 CSKH";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -466,7 +477,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.quangnong;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quangnong.qnt719;
 				PRODUCT_NAME = quangnong719;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "quangnong719/quangnong719-Bridging-Header.h";
@@ -653,6 +664,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		716A44492EF1BBCB0029ED70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

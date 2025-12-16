@@ -1,5 +1,4 @@
 import { URL } from '@/constants/screen-name';
-import { logout } from '@/redux/slices/authSlice';
 import { store } from '@/redux/store';
 import axios from 'axios';
 import { Alert } from 'react-native';
@@ -45,7 +44,6 @@ export const getProfile = async (): Promise<UserProfileData> => {
       'Lỗi',
       'Unauthorized: Không tìm thấy accessToken trong store.',
     );
-    store.dispatch(logout());
     throw new Error('Unauthorized: Không tìm thấy accessToken trong store.');
   }
 

@@ -1,75 +1,113 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import moment from 'moment';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
+  Image,
+  ListRenderItemInfo,
+  Platform,
+  RefreshControl,
   SafeAreaView,
+  SectionList,
   StyleSheet,
   View,
-  SectionList,
-  ListRenderItemInfo,
-  RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
-import {scale} from 'react-native-utils-scale';
-import moment from 'moment';
-import reactotron from 'reactotron-react-native';
+import {scale, width} from 'react-native-utils-scale';
+
+import {Images} from '@/assets';
 import {CText} from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
-import {useGetProfile} from '@/hooks/useProfile';
 import {useGetInvoiceList} from '@/hooks/useInvoice';
+import {useGetProfile} from '@/hooks/useProfile';
+import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
 import {Colors, Fonts} from '@/themes';
-import { InvoiceData } from '@/services/invoice.api';
+
+type InvoiceSection = {
+  title: string;
+  data: InvoiceData[];
+};
 
 const InvoiceScreen: React.FC = () => {
-  const [page, setPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const listRef = useRef<SectionList<InvoiceData, InvoiceSection>>(null);
+  const lastEndReachedRef = useRef<number>(0);
+
   const {data: profile, refetch: refetchProfile} = useGetProfile();
+
   const {
-    data: invoiceList = [],
+    data: invoiceResponse,
     isLoading,
-    isFetchingNextPage,
+    isFetching,
     refetch: refetchInvoices,
-  } = useGetInvoiceList(profile?.phone_number, page);
-reactotron.log('InvoiceList', invoiceList);
+  } = useGetInvoiceList(profile?.phone_number) as {
+    data?: InvoiceResponse;
+    isLoading: boolean;
+    isFetching: boolean;
+    refetch: () => Promise<any>;
+  };
+
+  const invoiceList = useMemo<InvoiceData[]>(
+    () => invoiceResponse?.data ?? [],
+    [invoiceResponse?.data],
+  );
+  const totalInvoices: number = invoiceResponse?.total ?? 0;
+
   const onRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    setPage(1);
     try {
       await Promise.all([refetchProfile(), refetchInvoices()]);
-    } catch (error) {
-      reactotron.log('Error refreshing data', error);
     } finally {
       setIsRefreshing(false);
     }
   }, [refetchProfile, refetchInvoices]);
 
-  const onLoadMore = useCallback(() => {
-    if (!isLoading && !isFetchingNextPage && invoiceList.length > 0) {
-      setPage(prev => prev + 1);
+  const onEndReached = useCallback(() => {
+    if (isLoading || isFetching) {
+      return;
     }
-  }, [isLoading, isFetchingNextPage, invoiceList.length]);
+    if (!invoiceList.length) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastEndReachedRef.current < 1500) {
+      return;
+    }
+    lastEndReachedRef.current = now;
+
+    refetchInvoices();
+  }, [isLoading, isFetching, invoiceList.length, refetchInvoices]);
+
+  const onScrollToIndexFailed = useCallback(
+    (info: {
+      index: number;
+      highestMeasuredFrameIndex: number;
+      averageItemLength: number;
+    }) => {
+      const offset = info.averageItemLength * info.index;
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({offset, animated: false});
+      });
+    },
+    [],
+  );
 
   const sections: InvoiceSection[] = useMemo(() => {
-    if (!invoiceList?.length) {
+    if (!invoiceList.length) {
       return [];
     }
 
-    const grouped = invoiceList?.reduce(
-      (acc: {[key: string]: InvoiceData[]}, inv) => {
+    const grouped = invoiceList.reduce<Record<string, InvoiceData[]>>(
+      (acc, inv) => {
         const dateKey = moment(inv.purchaseDate).format('DD/MM/YYYY');
-        if (!acc[dateKey]) {
-          acc[dateKey] = [];
-        }
-        acc[dateKey].push(inv);
+        (acc[dateKey] ??= []).push(inv);
         return acc;
       },
       {},
     );
 
     return Object.keys(grouped)
-      .map(date => ({
-        title: date,
-        data: grouped[date],
-      }))
+      .map(date => ({title: date, data: grouped[date]}))
       .sort(
         (a, b) =>
           moment(b.title, 'DD/MM/YYYY').valueOf() -
@@ -94,6 +132,7 @@ reactotron.log('InvoiceList', invoiceList);
             Xem tất cả hóa đơn của bạn
           </CText>
         </View>
+
         <View style={styles.headerRight}>
           <CText
             align="center"
@@ -101,14 +140,14 @@ reactotron.log('InvoiceList', invoiceList);
             color={Colors.greenPrimary}
             fontSize={12}>
             Tổng hóa đơn{'\n'}
-            <CText fontFamily={Fonts.BOLD} fontSize={18}>
-              {invoiceList?.total || 0}
+            <CText fontFamily={Fonts.BOLD} fontSize={18} style={{lineHeight: 24,textAlign: 'center'}}>
+              {totalInvoices}
             </CText>
           </CText>
         </View>
       </View>
     ),
-    [profile?.total_invoiced],
+    [totalInvoices],
   );
 
   const renderItem = useCallback(
@@ -118,8 +157,8 @@ reactotron.log('InvoiceList', invoiceList);
           invoiceId={item.code}
           branchName={item.branchName}
           purchaseDate={item.purchaseDate}
-          totalAmount={item.total.toString()}
-          status={item.status}
+          totalAmount={String(item.total)}
+          status={item.status as any}
           onDetailPress={() => {}}
           totalPayment={item.totalPayment}
           invoiceDetails={item.invoiceDetails}
@@ -130,10 +169,10 @@ reactotron.log('InvoiceList', invoiceList);
   );
 
   const renderSectionHeader = useCallback(
-    ({section: {title}}: {section: InvoiceSection}) => (
+    ({section}: {section: InvoiceSection}) => (
       <View style={styles.sectionHeader}>
         <CText fontFamily={Fonts.BOLD} color={Colors.blue400} fontSize={14}>
-          Ngày: {title}
+          Ngày: {section.title}
         </CText>
       </View>
     ),
@@ -141,7 +180,7 @@ reactotron.log('InvoiceList', invoiceList);
   );
 
   const renderFooter = useCallback(() => {
-    if (!isFetchingNextPage) {
+    if (!isFetching || isRefreshing) {
       return <View style={{height: 20}} />;
     }
     return (
@@ -149,21 +188,52 @@ reactotron.log('InvoiceList', invoiceList);
         <ActivityIndicator size="small" color={Colors.greenPrimary} />
       </View>
     );
-  }, [isFetchingNextPage]);
+  }, [isFetching, isRefreshing]);
+
+  const EmptyComponent = useMemo(() => {
+    if (isLoading) {
+      return null;
+    }
+    return (
+      <View style={styles.emptyContainer}>
+        <Image
+          source={Images.logo}
+          style={styles.emptyLogo}
+          resizeMode="contain"
+        />
+        <CText
+          color={Colors.h2}
+          fontFamily={Fonts.BOLD}
+          fontSize={16}
+          style={{marginTop: scale(10)}}>
+          Không có dữ liệu hóa đơn
+        </CText>
+        <CText
+          color={Colors.h2}
+          fontSize={13}
+          style={{marginTop: scale(6), textAlign: 'center'}}>
+          Khi bạn phát sinh mua hàng, hóa đơn sẽ hiển thị tại đây.
+        </CText>
+      </View>
+    );
+  }, [isLoading]);
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         {renderHeader}
 
-        <SectionList<InvoiceData, InvoiceSection>
+        {
+          <SectionList<InvoiceData, InvoiceSection>
+          ref={listRef}
           sections={sections}
-          keyExtractor={(item, index) => item.id.toString() + index}
+          keyExtractor={item => String(item.id)}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           stickySectionHeadersEnabled={true}
-          onEndReached={onLoadMore}
+          onEndReached={onEndReached}
           onEndReachedThreshold={0.3}
+          onScrollToIndexFailed={onScrollToIndexFailed}
           ListFooterComponent={renderFooter}
           contentContainerStyle={styles.contentContainer}
           refreshControl={
@@ -174,16 +244,11 @@ reactotron.log('InvoiceList', invoiceList);
               colors={[Colors.greenPrimary]}
             />
           }
-          ListEmptyComponent={
-            !isLoading && (
-              <View style={styles.emptyContainer}>
-                <CText color={Colors.h2}>Không có dữ liệu hóa đơn.</CText>
-              </View>
-            )
-          }
-          removeClippedSubviews={true}
+          ListEmptyComponent={EmptyComponent}
+          removeClippedSubviews={Platform.OS === 'android' ? false : true}
           initialNumToRender={10}
         />
+        }
       </View>
     </SafeAreaView>
   );
@@ -205,7 +270,9 @@ const styles = StyleSheet.create({
     borderRadius: scale(12),
     padding: scale(10),
     justifyContent: 'center',
+    alignItems: 'center',
     minWidth: scale(90),
+    width: width / 3,
   },
   invoiceItem: {marginBottom: scale(8)},
   sectionHeader: {
@@ -214,5 +281,16 @@ const styles = StyleSheet.create({
   },
   contentContainer: {paddingBottom: scale(20)},
   footerLoader: {paddingVertical: scale(20)},
-  emptyContainer: {alignItems: 'center', marginTop: scale(50)},
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: scale(50),
+    paddingHorizontal: scale(16),
+  },
+  emptyLogo: {
+    width: scale(120),
+    height: scale(120),
+    opacity: 0.9,
+  },
 });

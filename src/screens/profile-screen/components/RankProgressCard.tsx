@@ -1,137 +1,213 @@
-// src/components/RankProgressCard.tsx
-
 import CText from '@/components/text';
-import { Colors } from '@/themes';
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Colors} from '@/themes';
+import React, {memo, useEffect, useMemo, useRef} from 'react';
+import {Animated, Easing, StyleSheet, View} from 'react-native';
+import {Award, Sparkles} from 'lucide-react-native';
+import {fontScale, scale} from 'react-native-utils-scale';
+
 interface RankProgressCardProps {
   currentRank: string;
   nextRank: string;
-  currentValue: number; // Ví dụ: 125.0 (triệu VND)
-  remainingValue: number; // Ví dụ: 25.0 (triệu VND)
-  totalValueForNextRank: number; // Ví dụ: 150.0 (triệu VND)
+  currentValue: number; // ví dụ: 125 (triệu)
+  remainingValue: number; // ví dụ: 25 (triệu)
+  totalValueForNextRank: number; // ví dụ: 150 (triệu)
 }
 
-const RankProgressCard: React.FC<RankProgressCardProps> = ({
-  currentRank,
-  nextRank,
-  currentValue,
-  remainingValue,
-  totalValueForNextRank,
-}) => {
-  const percentage = (currentValue / totalValueForNextRank) * 100;
-  const currentText = `${currentValue.toFixed(1)}M VND`;
-  const remainingText = `${remainingValue.toFixed(1)}M nữa`;
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, n));
 
-  return (
-    <View style={styles.card}>
-      <View style={styles.titleContainer}>
-        <MaterialCommunityIcons name="ribbon" size={24} color={Colors.yellow} />
-        <CText style={styles.title}>Tiến độ Hạng</CText>
-      </View>
+const RankProgressCard: React.FC<RankProgressCardProps> = memo(
+  ({currentRank, nextRank, currentValue, remainingValue, totalValueForNextRank}) => {
+    const ratio = useMemo(() => {
+      if (!totalValueForNextRank || totalValueForNextRank <= 0) {
+        return 0;
+      }
+      return clamp(currentValue / totalValueForNextRank, 0, 1);
+    }, [currentValue, totalValueForNextRank]);
 
-      <View style={styles.rankInfo}>
-        <View>
-          <CText style={styles.label}>Hạng hiện tại</CText>
-          <CText style={styles.currentRank}>{currentRank}</CText>
+    const currentText = useMemo(() => `${currentValue.toFixed(1)}M VND`, [currentValue]);
+    const remainingText = useMemo(() => `${remainingValue.toFixed(1)}M nữa`, [remainingValue]);
+
+    /** ===== Animations ===== */
+    const appear = useRef(new Animated.Value(0)).current; // 0->1 fade
+    const lift = useRef(new Animated.Value(10)).current; // 10->0 slide up
+    const progress = useRef(new Animated.Value(0)).current; // 0->ratio
+    const sparkle = useRef(new Animated.Value(0.9)).current; // pop
+
+    useEffect(() => {
+      // reset (để dùng lại khi component remount)
+      appear.setValue(0);
+      lift.setValue(10);
+      progress.setValue(0);
+      sparkle.setValue(0.9);
+
+      Animated.parallel([
+        Animated.timing(appear, {
+          toValue: 1,
+          duration: 240,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(lift, {
+          toValue: 0,
+          duration: 240,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        // progress chạy sau 1 nhịp cho “đã mắt”
+        Animated.timing(progress, {
+          toValue: ratio,
+          duration: 700,
+          delay: 120,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false, // vì dùng width/flex
+        }),
+        Animated.sequence([
+          Animated.delay(180),
+          Animated.spring(sparkle, {
+            toValue: 1.12,
+            useNativeDriver: true,
+            speed: 18,
+            bounciness: 10,
+          }),
+          Animated.spring(sparkle, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 18,
+            bounciness: 10,
+          }),
+        ]),
+      ]).start();
+    }, [appear, lift, progress, sparkle, ratio]);
+
+    // Dùng width theo % để tránh flex fractional có thể “kỳ” khi ratio update
+    const fillWidth = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%'],
+    });
+
+    return (
+      <Animated.View
+        style={[
+          styles.card,
+          {
+            opacity: appear,
+            transform: [{translateY: lift}],
+          },
+        ]}>
+        <View style={styles.titleRow}>
+          <View style={styles.iconBadge}>
+            <Award size={18} color={Colors.yellow} />
+          </View>
+          <CText style={styles.title}>Tiến độ Hạng</CText>
         </View>
-        <View style={styles.nextRankContainer}>
-          <CText style={styles.label}>Hạng tiếp theo</CText>
-          <CText style={styles.nextRank}>{nextRank}</CText>
-          <MaterialCommunityIcons name="weather-sunny" size={20} color={Colors.yellow} style={styles.sparkle} />
+
+        <View style={styles.rankRow}>
+          <View>
+            <CText style={styles.label}>Hạng hiện tại</CText>
+            <CText style={styles.rankText}>{currentRank}</CText>
+          </View>
+
+          <View style={styles.nextCol}>
+            <View style={styles.nextRow}>
+              <CText style={styles.label}>Hạng tiếp theo</CText>
+              <Animated.View style={{transform: [{scale: sparkle}]}}>
+                <Sparkles
+                  size={16}
+                  color={Colors.yellow}
+                  style={{marginLeft: scale(6)}}
+                />
+              </Animated.View>
+            </View>
+            <CText style={styles.rankText}>{nextRank}</CText>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBar, { width: `${percentage}%` }]} />
-        <View style={styles.progressBarBackground} />
-      </View>
+        {/* Progress */}
+        <View style={styles.progressTrack}>
+          <Animated.View style={[styles.progressFill, {width: fillWidth}]} />
+        </View>
 
-      <View style={styles.progressValue}>
-        <CText style={styles.currentValueText}>{currentText}</CText>
-        <CText style={styles.remainingValueText}>{remainingText}</CText>
-      </View>
-    </View>
-  );
-};
+        <View style={styles.valueRow}>
+          <CText style={styles.currentValue}>{currentText}</CText>
+          <CText style={styles.remainingValue}>{remainingText}</CText>
+        </View>
+      </Animated.View>
+    );
+  },
+);
+
+export default RankProgressCard;
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    marginHorizontal: 16,
+    borderRadius: scale(16),
+    padding: scale(16),
+    marginBottom: scale(16),
+    marginHorizontal: scale(16),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.08)',
   },
-  titleContainer: {
-    flexDirection: 'row',
+
+  titleRow: {flexDirection: 'row', alignItems: 'center', marginBottom: scale(12)},
+  iconBadge: {
+    width: scale(32),
+    height: scale(32),
+    borderRadius: scale(12),
+    backgroundColor: 'rgba(255,215,0,0.12)',
     alignItems: 'center',
-    marginBottom: 15,
+    justifyContent: 'center',
+    marginRight: scale(10),
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 8,
+    fontSize: fontScale(16),
+    fontWeight: '800',
     color: Colors.h1,
   },
-  rankInfo: {
+
+  rankRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: scale(12),
   },
   label: {
-    fontSize: 14,
-    color: Colors.buttonbg,
+    fontSize: fontScale(12),
+    color: 'rgba(0,0,0,0.55)',
   },
-  currentRank: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  rankText: {
+    marginTop: scale(2),
+    fontSize: fontScale(20),
+    fontWeight: '900',
     color: Colors.h2,
   },
-  nextRankContainer: {
-    alignItems: 'flex-end',
-  },
-  nextRank: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.h2,
-  },
-  sparkle: {
-    position: 'absolute',
-    right: -25, // Di chuyển biểu tượng ra ngoài
-    bottom: 0,
-  },
-  progressBarContainer: {
-    height: 10,
-    backgroundColor: Colors.black, // Màu nền nhạt
-    borderRadius: 5,
+  nextCol: {alignItems: 'flex-end'},
+  nextRow: {flexDirection: 'row', alignItems: 'center'},
+
+  progressTrack: {
+    height: scale(10),
+    borderRadius: scale(999),
+    backgroundColor: 'rgba(11,43,30,0.08)',
     overflow: 'hidden',
-    position: 'relative',
-    marginBottom: 10,
   },
-  progressBarBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.h2, // Thay thế cho Colors.platinum
-  },
-  progressBar: {
+  progressFill: {
     height: '100%',
-    backgroundColor: Colors.red,
-    borderRadius: 5,
+    borderRadius: scale(999),
+    backgroundColor: Colors.greenPrimary,
   },
-  progressValue: {
+
+  valueRow: {
+    marginTop: scale(10),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  currentValueText: {
-    fontSize: 14,
-    fontWeight: '600',
+  currentValue: {
+    fontSize: fontScale(13),
+    fontWeight: '700',
     color: Colors.h1,
   },
-  remainingValueText: {
-    fontSize: 14,
-    color: Colors.buttonbg,
+  remainingValue: {
+    fontSize: fontScale(13),
+    color: 'rgba(0,0,0,0.55)',
   },
 });
-
-export default RankProgressCard;
