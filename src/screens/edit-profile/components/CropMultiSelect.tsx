@@ -9,10 +9,10 @@ export type CropOption = {id: string; label: string};
 
 interface Props {
   options: CropOption[];
-  value: string[];              // list of selected ids
+  value: string[];
   onChange: (next: string[]) => void;
   columns?: 2 | 3;
-  maxVisible?: number;          // show “Xem thêm” when > maxVisible
+  maxVisible?: number;
 }
 
 const CropMultiSelect: React.FC<Props> = ({
@@ -40,7 +40,7 @@ const CropMultiSelect: React.FC<Props> = ({
   );
 
   const itemWidth = useMemo(() => {
-    // grid 2 cột: 48% / 3 cột: 31%
+
     return columns === 3 ? '31.5%' : '48%';
   }, [columns]);
 

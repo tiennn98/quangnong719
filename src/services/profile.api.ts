@@ -3,6 +3,7 @@ import { store } from '@/redux/store';
 import axios from 'axios';
 import { Alert } from 'react-native';
 import reactotron from 'reactotron-react-native';
+import { axiosClient } from './axiosClient';
 
 export interface UserProfileData {
   phone_number: string;
@@ -36,6 +37,18 @@ export interface ProfileResponse {
   data: UserProfileData;
 }
 
+export type UpdateDevicePayload = {
+  device_id: string;
+  fcm_token: string;
+};
+
+export type UpdateDeviceResponse = {
+  statusCode?: number;
+  msg?: string;
+  data?: any;
+};
+
+
 export const getProfile = async (): Promise<UserProfileData> => {
   const token = store.getState().auth.accessToken;
     reactotron.log('TOKEN IN PROFILE SERVICE:', token);
@@ -68,3 +81,11 @@ export const getProfile = async (): Promise<UserProfileData> => {
     throw new Error(message);
   }
 };
+
+export async function updateCustomerDevice(payload: UpdateDevicePayload) {
+  const res = await axiosClient.put<UpdateDeviceResponse>(
+    '/customer/update-device',
+    payload,
+  );
+  return res.data;
+}

@@ -2,7 +2,7 @@ if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Pressable, Text, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -15,21 +15,12 @@ import { persistor, store } from '@/redux/store';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/services/react-query-client';
 
-import { initFCM } from '@/services/fcm';
-import { setupFcmListeners } from '@/services/initNotifications';
 
-if (Text.defaultProps == null) {
-  Text.defaultProps = {};
-}
-if (TextInput.defaultProps == null) {
-  TextInput.defaultProps = {};
-}
-if (TouchableOpacity.defaultProps == null) {
-  TouchableOpacity.defaultProps = {};
-}
-if (Pressable.defaultProps == null) {
-  Pressable.defaultProps = {};
-}
+
+if (Text.defaultProps == null) {Text.defaultProps = {};}
+if (TextInput.defaultProps == null) {TextInput.defaultProps = {};}
+if (TouchableOpacity.defaultProps == null) {TouchableOpacity.defaultProps = {};}
+if (Pressable.defaultProps == null) {Pressable.defaultProps = {};}
 
 Text.defaultProps.allowFontScaling = false;
 TextInput.defaultProps.allowFontScaling = false;
@@ -37,35 +28,6 @@ TouchableOpacity.defaultProps.allowFontScaling = false;
 Pressable.defaultProps.allowFontScaling = false;
 
 const App = () => {
-  const didInitRef = useRef(false);
-
-  useEffect(() => {
-    if (didInitRef.current) {
-      return;
-    }
-    didInitRef.current = true;
-    let cleanupListeners: undefined | (() => void);
-    (async () => {
-      try {
-        cleanupListeners = await setupFcmListeners();
-        const {fcmToken, apnsToken} = await initFCM();
-        if (fcmToken) {
-          console.log('[FCM] token:', fcmToken);
-          console.log('[FCM] token suffix:', fcmToken.slice(-12));
-        } else {
-          console.log('[FCM] no permission or no token');
-        }
-        if (apnsToken) {
-          console.log('[FCM] apns:', apnsToken);
-        }
-      } catch (e: any) {
-        console.log('[FCM] init error:', e?.message || e);
-      }
-    })();
-    return () => {
-      cleanupListeners?.();
-    };
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -82,3 +44,4 @@ const App = () => {
 };
 
 export default App;
+

@@ -1,5 +1,3 @@
-// src/screens/ProfileScreen.tsx
-
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import ActionButtons from './components/ActionButtons';
@@ -19,7 +17,7 @@ const DUMMY_DATA = {
     nextRank: 'Platinum',
     currentValue: 125.0,
     remainingValue: 25.0,
-    totalValueForNextRank: 150.0, // 125.0 + 25.0
+    totalValueForNextRank: 150.0,
   },
 };
 

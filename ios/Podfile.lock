@@ -1818,7 +1818,7 @@ PODS:
     - Yoga
   - RNCPushNotificationIOS (1.11.0):
     - React-Core
-  - RNDeviceInfo (14.1.1):
+  - RNDeviceInfo (15.0.1):
     - React-Core
   - RNFastImage (8.6.3):
     - React-Core
@@ -2317,7 +2317,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 79cfba789fca205b204f3ce7948b874500129eb4
   RNCClipboard: ba9fda8e2c9f003a29f7f66793069c4d0dada955
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
-  RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
+  RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFBApp: 0c4cadae3900893d4631ea9a9effd14f853cd8e0
   RNFBMessaging: 873220424f6f6aa5c787baf5c7099e1e2ba087c9

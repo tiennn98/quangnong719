@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:628771638442:android:c683a3a3732f8389ead4d3",
+        "mobilesdk_app_id": "1:628771638442:android:504e1c6337e3b106ead4d3",
         "android_client_info": {
-          "package_name": "com.quangnong.quangnong719cskh"
+          "package_name": "com.quangnong"
         }
       },
       "oauth_client": [],
