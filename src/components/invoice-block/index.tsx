@@ -1,15 +1,15 @@
-import React, { useMemo } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, {useMemo} from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 
-import { Images } from '@/assets';
-import { InvoiceDetail } from '@/services/invoice.api';
-import { Colors } from '@/themes';
-import { formatCurrency, formatISODate } from '@/utils/tools';
-import { fontScale, scale } from 'react-native-utils-scale';
+import {Images} from '@/assets';
+import {InvoiceDetail} from '@/services/invoice.api';
+import {Colors} from '@/themes';
+import {formatCurrency, formatISODate} from '@/utils/tools';
+import {fontScale, scale} from 'react-native-utils-scale';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CText from '../text';
 
-type InvoiceStatus = 1 | 2;
+type InvoiceStatus = 1 | 2 | 3;
 
 interface InvoiceBlockProps {
   invoiceId: string;
@@ -86,7 +86,11 @@ const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
     }, [status, remainingDebt]);
 
     return (
-      <View style={[styles.container,{borderWidth:1,borderColor:getStatusDisplay(status).color}]}>
+      <View
+        style={[
+          styles.container,
+          {borderWidth: 1, borderColor: getStatusDisplay(status).color},
+        ]}>
         <View style={styles.header}>
           <View style={styles.invoiceInfo}>
             <View style={styles.iconWrapper}>
@@ -111,27 +115,32 @@ const InvoiceBlock: React.FC<InvoiceBlockProps> = React.memo(
             <CText style={styles.totalAmountText} fontSize={fontScale(16)}>
               Đã thanh toán : {formatCurrency(totalPayment)}
             </CText>
-            <CText style={styles.totalAmountText} fontSize={fontScale(16) }>
-             {Number(totalAmount) - totalPayment !== 0 && `Còn lại : ${formatCurrency(Number(totalAmount) - totalPayment)}`}
+            <CText style={styles.totalAmountText} fontSize={fontScale(16)}>
+              {Number(totalAmount) - totalPayment !== 0 &&
+                `Còn lại : ${formatCurrency(
+                  Number(totalAmount) - totalPayment,
+                )}`}
             </CText>
             {debtDisplay}
           </View>
 
-          {status === 1 && <View style={styles.buttonContainer}>
-            {!hideDetailButton && (
-              <TouchableOpacity
-                style={styles.detailButton}
-                onPress={onDetailPress}
-                activeOpacity={0.7}>
-                <CText style={styles.detailButtonText}>Xem Chi Tiết</CText>
-                <AntDesign
-                  name="right"
-                  size={fontScale(13)}
-                  color={Colors.h2}
-                />
-              </TouchableOpacity>
-            )}
-          </View>}
+          {status === 1 && (
+            <View style={styles.buttonContainer}>
+              {!hideDetailButton && (
+                <TouchableOpacity
+                  style={styles.detailButton}
+                  onPress={onDetailPress}
+                  activeOpacity={0.7}>
+                  <CText style={styles.detailButtonText}>Xem Chi Tiết</CText>
+                  <AntDesign
+                    name="right"
+                    size={fontScale(13)}
+                    color={Colors.h2}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
 
         <View style={styles.watermark}>

@@ -1,5 +1,5 @@
-import React, {useEffect, useRef} from 'react';
-import {StyleSheet} from 'react-native';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
+import {Platform, StyleSheet, InteractionManager} from 'react-native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {Colors, Fonts} from '@/themes';
 
@@ -8,40 +8,75 @@ interface Props {
   onChangeValue: (value: string) => void;
 }
 
+const PIN_COUNT = 6;
+const ONLY_DIGITS = /[^0-9]/g;
+
 const InputOTP: React.FC<Props> = ({needReset, onChangeValue}) => {
   const ref = useRef<any>(null);
+  const mountedRef = useRef(true);
 
-  // Force focus after mount (Android often needs delay)
-  useEffect(() => {
-    const t = setTimeout(() => {
+  const focusFirst = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (!mountedRef.current) {
+        return;
+      }
       ref.current?.focusField?.(0);
-    }, 300);
-
-    return () => clearTimeout(t);
+    });
   }, []);
 
   useEffect(() => {
-    if (needReset) {
-      ref.current?.onReset?.();
-      setTimeout(() => ref.current?.focusField?.(0), 200);
+    mountedRef.current = true;
+
+    if (Platform.OS === 'android') {
+      const t = setTimeout(focusFirst, 250);
+      return () => {
+        mountedRef.current = false;
+        clearTimeout(t);
+      };
     }
-  }, [needReset]);
+
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [focusFirst]);
+
+  useEffect(() => {
+    if (!needReset) {
+      return;
+    }
+
+    ref.current?.onReset?.();
+
+    if (Platform.OS === 'android') {
+      const t = setTimeout(focusFirst, 200);
+      return () => clearTimeout(t);
+    }
+  }, [needReset, focusFirst]);
+
+  const handleCodeChanged = useCallback(
+    (code: string) => {
+      const clean = (code ?? '').replace(ONLY_DIGITS, '').slice(0, PIN_COUNT);
+      onChangeValue(clean);
+    },
+    [onChangeValue],
+  );
 
   return (
     <OTPInputView
       ref={ref}
       style={styles.otpView}
-      pinCount={6}
-      autoFocusOnLoad
+      pinCount={PIN_COUNT}
+      autoFocusOnLoad={Platform.OS === 'ios'}
       keyboardType="number-pad"
-      onCodeChanged={code => onChangeValue(code)}
+      onCodeChanged={handleCodeChanged}
+      onCodeFilled={handleCodeChanged}
       codeInputFieldStyle={styles.codeInputFieldStyle}
       codeInputHighlightStyle={styles.codeInputHighlightStyle}
       textInputProps={{
-        autoFocus: true,
+        autoFocus: false,
         autoCorrect: false,
-        importantForAutofill: 'yes',
-        textContentType: 'oneTimeCode',
+        importantForAutofill: Platform.OS === 'android' ? 'yes' : 'auto',
+        textContentType: Platform.OS === 'ios' ? 'oneTimeCode' : 'none',
         showSoftInputOnFocus: true,
         keyboardType: 'number-pad',
         returnKeyType: 'done',
@@ -75,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InputOTP;
+export default memo(InputOTP);

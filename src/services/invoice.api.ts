@@ -1,15 +1,14 @@
 import {
-    KIOTCLIENTID,
-    KIOTCLIENTSECRET,
-    KIOTRETAILER,
-    KIOTURL,
-    SCOPES,
+  KIOTCLIENTID,
+  KIOTCLIENTSECRET,
+  KIOTRETAILER,
+  KIOTURL,
+  SCOPES,
 } from '@env';
-import axios, { AxiosRequestConfig } from 'axios';
-import { getTokenKiot } from './kiot.api';
+import axios, {AxiosRequestConfig} from 'axios';
+import {getTokenKiot} from './kiot.api';
 
-export interface InvoiceDetailTax {
-}
+export interface InvoiceDetailTax {}
 
 export interface InvoiceDetail {
   productId: number;
@@ -60,42 +59,38 @@ export interface InvoiceResponse {
   timestamp: string;
 }
 
-
 export const getListInvoice = async (
-    phone: string,
+  phone: string,
 ): Promise<InvoiceResponse> => {
+  const tokenResponse = await getTokenKiot();
+  const accessToken = tokenResponse.access_token;
 
-    const tokenResponse = await getTokenKiot();
-    const accessToken = tokenResponse.access_token;
+  const config: AxiosRequestConfig = {
+    params: {
+      customerCode: phone,
+    },
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+      Retailer: KIOTRETAILER,
+      Scopes: SCOPES,
+      'Client-Id': KIOTCLIENTID,
+      'Client-Secret': KIOTCLIENTSECRET,
+    },
+  };
 
-
-    const config: AxiosRequestConfig = {
-        params: {
-            customerCode: phone,
-        },
-        headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            Retailer: KIOTRETAILER,
-            Scopes: SCOPES,
-            'Client-Id': KIOTCLIENTID,
-            'Client-Secret': KIOTCLIENTSECRET,
-        },
-    };
-
-    try {
-        const response = await axios.get<InvoiceResponse>(
-            `${KIOTURL}invoices`,
-            config,
-        );
-
-        return response.data.data;
-    } catch (error: any) {
-        const message =
-            error?.response?.data?.message ||
-            error?.message ||
-            'Lấy danh sách hóa đơn thất bại';
-        throw new Error(message);
-    }
+  try {
+    const response = await axios.get<InvoiceResponse>(
+      `${KIOTURL}invoices`,
+      config,
+    );
+    return response.data;
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Lấy danh sách hóa đơn thất bại';
+    throw new Error(message);
+  }
 };

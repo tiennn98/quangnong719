@@ -13,4 +13,7 @@ export const SCREEN_NAME = {
   PROFILESCREEN: 'ProfileScreen',
   INVOICESCREEN:'InvoiceScreen',
   ABOUT_STORE_SCREEN: 'AboutStoreScreen',
+  BARCODE_CUSTOMER_SCREEN: 'BarCodeCustomerScreen',
+  BOTTOM_TAB_NAVIGATOR: 'BottomTabNavigator',
+  PROFILE_COMPLETION_SCREEN: 'ProfileCompletionScreen',
 };

@@ -1,113 +1,159 @@
-// src/components/ActionButtons.tsx
-
 import CText from '@/components/text';
-import { logout } from '@/redux/slices/authSlice';
+import { SCREEN_NAME } from '@/constants';
+import { navigate } from '@/navigators';
+import { hardLogout } from '@/services/auth.api';
 import { Colors } from '@/themes';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import {
+  ChevronRight,
+  LogOut,
+  Settings,
+  User,
+} from 'lucide-react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { fontScale, scale } from 'react-native-utils-scale';
+
+type IconKey = 'profile' | 'settings' | 'logout';
 
 interface ActionButtonProps {
-  iconName: string;
+  iconKey: IconKey;
   title: string;
   subtitle: string;
   isLogout?: boolean;
   onPress: () => void;
+  isLast?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
-  iconName,
-  title,
-  subtitle,
-  isLogout = false,
-  onPress,
-}) => {
-  const iconColor = isLogout ? Colors.red : Colors.greenPrimary;
-  const iconBackground = isLogout ? `${Colors.red}10` : `${Colors.greenPrimary}10`; // Màu nền nhạt hơn 10%
-
-  return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <View style={[styles.iconContainer, { backgroundColor: iconBackground }]}>
-        {/* <MaterialCommunityIcons name={iconName} size={24} color={iconColor} /> */}
-      </View>
-      <View style={styles.textContainer}>
-        <CText style={[styles.title, isLogout && { color: Colors.red }]}>{title}</CText>
-        <CText style={styles.subtitle}>{subtitle}</CText>
-      </View>
-      {/* <MaterialCommunityIcons name="chevron-right" size={24} color={Colors.lightText} /> */}
-    </TouchableOpacity>
-  );
+const ICON_MAP: Record<IconKey, React.ComponentType<any>> = {
+  profile: User,
+  settings: Settings,
+  logout: LogOut,
 };
 
+const ActionButton: React.FC<ActionButtonProps> = memo(
+  ({iconKey, title, subtitle, isLogout = false, onPress, isLast}) => {
+    const Icon = ICON_MAP[iconKey];
+    const iconColor = isLogout ? Colors.red : Colors.greenPrimary;
+    const iconBg = isLogout ? 'rgba(255,0,0,0.08)' : 'rgba(11,43,30,0.08)';
+
+    return (
+      <Pressable
+        onPress={onPress}
+        style={({pressed}) => [
+          styles.row,
+          pressed && styles.rowPressed,
+          !isLast && styles.rowDivider,
+        ]}>
+        <View style={[styles.iconWrap, {backgroundColor: iconBg}]}>
+          <Icon size={20} color={iconColor} />
+        </View>
+
+        <View style={styles.textWrap}>
+          <CText style={[styles.title, isLogout && {color: Colors.red}]}>
+            {title}
+          </CText>
+          <CText style={styles.subtitle}>{subtitle}</CText>
+        </View>
+
+        <ChevronRight size={18} color={'rgba(0,0,0,0.35)'} />
+      </Pressable>
+    );
+  },
+);
+
 const ActionButtons: React.FC = () => {
-    const dispatch = useDispatch();
-  const handleShowQR = () => console.log('Hiển thị mã QR');
-  const handleSettings = () => console.log('Cài đặt ứng dụng');
-  const handleLogout = () => dispatch(logout());
+
+
+  const handleEditProfile = useCallback(() => {
+    return navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN);
+  }, []);
+
+  const handleSettings = useCallback(() => {
+    // TODO: navigate(SCREEN_NAME.SETTINGS)
+  }, []);
+
+  const items = useMemo(
+    () => [
+      {
+        iconKey: 'profile' as const,
+        title: 'Chỉnh sửa thông tin cá nhân',
+        subtitle: 'Cập nhật họ tên, địa chỉ, cây trồng…',
+        onPress: handleEditProfile,
+      },
+      {
+        iconKey: 'settings' as const,
+        title: 'Cài đặt',
+        subtitle: 'Tùy chọn ứng dụng',
+        onPress: handleSettings,
+      },
+      {
+        iconKey: 'logout' as const,
+        title: 'Đăng xuất',
+        subtitle: 'Thoát khỏi tài khoản',
+        isLogout: true,
+        onPress: hardLogout(),
+      },
+    ],
+    [handleEditProfile, handleSettings],
+  );
 
   return (
-    <View style={styles.container}>
-      <ActionButton
-        iconName="qrcode-scan"
-        title="Chinh sửa thông tin cá nhân"
-        subtitle="Chinh sửa thông tin cá nhân"
-        onPress={handleShowQR}
-      />
-      <ActionButton
-        iconName="qrcode-scan"
-        title="Mã khách hàng"
-        subtitle="Hiển thị tại cửa hàng"
-        onPress={handleShowQR}
-      />
-      <ActionButton
-        iconName="cog"
-        title="Cài đặt"
-        subtitle="Tùy chọn ứng dụng"
-        onPress={handleSettings}
-      />
-      <ActionButton
-        iconName="logout"
-        title="Đăng xuất"
-        subtitle="Thoát khỏi tài khoản"
-        isLogout
-        onPress={handleLogout}
-      />
+    <View style={styles.card}>
+      {items.map((it, idx) => (
+        <ActionButton
+          key={it.iconKey}
+          {...it}
+          isLast={idx === items.length - 1}
+        />
+      ))}
     </View>
   );
 };
 
+export default ActionButtons;
+
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-    padding: 10,
-    backgroundColor: Colors.white, // Nếu muốn có nền trắng bao ngoài các nút
-    borderRadius: 16,
+  card: {
+    marginHorizontal: scale(16),
+    backgroundColor: Colors.white,
+    borderRadius: scale(16),
+    overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.08)',
   },
-  button: {
+
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    paddingVertical: scale(14),
+    paddingHorizontal: scale(14),
   },
-  iconContainer: {
-    padding: 10,
-    borderRadius: 12,
-    marginRight: 15,
+  rowPressed: {
+    backgroundColor: 'rgba(0,0,0,0.04)',
   },
-  textContainer: {
-    flex: 1,
+  rowDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0,0,0,0.08)',
   },
+
+  iconWrap: {
+    width: scale(38),
+    height: scale(38),
+    borderRadius: scale(12),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: scale(12),
+  },
+
+  textWrap: {flex: 1},
   title: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: fontScale(15),
+    fontWeight: '700',
     color: Colors.h1,
   },
   subtitle: {
-    fontSize: 12,
-    color: Colors.buttonbg,
+    marginTop: scale(2),
+    fontSize: fontScale(12),
+    color: 'rgba(0,0,0,0.55)',
   },
 });
-
-export default ActionButtons;

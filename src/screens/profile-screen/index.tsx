@@ -1,10 +1,6 @@
-// src/screens/ProfileScreen.tsx
-
 import React from 'react';
-import { ScrollView, SafeAreaView, StyleSheet } from 'react-native';
-import RankProgressCard from './components/RankProgressCard';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import ActionButtons from './components/ActionButtons';
-import CustomerInfoCard from './components/CustomerInfoCard';
 
 const DUMMY_DATA = {
   customer: {
@@ -14,14 +10,14 @@ const DUMMY_DATA = {
     customerId: 'FARM-001-2024',
     address: '123 Rural Road, Dak Lak Province',
     crops: ['Coffee', 'Pepper', 'Durian'],
-    avatarUri: 'https://i.imgur.com/example-farmer.jpg', // Thay bằng URI hình ảnh thực tế
+    avatarUri: 'https://i.imgur.com/example-farmer.jpg',
   },
   progress: {
     currentRank: 'Gold',
     nextRank: 'Platinum',
     currentValue: 125.0,
     remainingValue: 25.0,
-    totalValueForNextRank: 150.0, // 125.0 + 25.0
+    totalValueForNextRank: 150.0,
   },
 };
 
@@ -29,7 +25,7 @@ const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        <CustomerInfoCard
+        {/* <CustomerInfoCard
           name={DUMMY_DATA.customer.name}
           phone={DUMMY_DATA.customer.phone}
           rank={DUMMY_DATA.customer.rank}
@@ -45,7 +41,7 @@ const ProfileScreen: React.FC = () => {
           currentValue={DUMMY_DATA.progress.currentValue}
           remainingValue={DUMMY_DATA.progress.remainingValue}
           totalValueForNextRank={DUMMY_DATA.progress.totalValueForNextRank}
-        />
+        /> */}
 
         <ActionButtons />
       </ScrollView>
@@ -56,10 +52,9 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // Màu nền tổng thể nhạt
+    backgroundColor: '#F5F5F5',
   },
   container: {
-    paddingVertical: 20,
   },
 });
 

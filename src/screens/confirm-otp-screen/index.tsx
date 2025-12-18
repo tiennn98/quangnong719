@@ -1,69 +1,103 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   SafeAreaView,
   ScrollView,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
-import { Images } from '@/assets';
-import { CText, InputOTP } from '@/components';
+import {Images} from '@/assets';
+import {CText, InputOTP} from '@/components';
 import CButton from '@/components/button';
-import { useLogin, useSendOTP } from '@/hooks/useAuth';
-import { Colors } from '@/themes';
-import { hidePhoneNumber } from '@/utils/tools';
-import { fontScale, scale } from 'react-native-utils-scale';
-import { styles } from './styles.module';
+import {useLogin, useSendOTP} from '@/hooks/useAuth';
+import {Colors} from '@/themes';
+import {hidePhoneNumber} from '@/utils/tools';
+import {fontScale, scale} from 'react-native-utils-scale';
+import {styles} from './styles.module';
 
 const RESEND_COUNTDOWN = 300;
 
+function formatCountdown(seconds: number) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function useCountdown(initialSeconds: number) {
+  const [timeLeft, setTimeLeft] = useState(initialSeconds);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const start = useCallback(
+    (seconds = initialSeconds) => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setTimeLeft(seconds);
+
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+            }
+            timerRef.current = null;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    },
+    [initialSeconds],
+  );
+
+  const stop = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = null;
+    setTimeLeft(0);
+  }, []);
+
+  React.useEffect(() => () => stop(), [stop]);
+
+  return {timeLeft, start, stop, setTimeLeft};
+}
 
 const ConfirmOtpScreen = () => {
   const route = useRoute();
   const {phone} = route.params as {phone: string};
+
   const navigation = useNavigation();
-const loginMutation = useLogin();
+  const loginMutation = useLogin();
+  const resendOTPMutation = useSendOTP();
+
   useLayoutEffect(() => {
-    navigation.setOptions({
-      gestureEnabled: false,
-    });
+    navigation.setOptions({gestureEnabled: false});
   }, [navigation]);
 
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState<string | null>(null);
 
-  const [timeLeft, setTimeLeft] = useState(0);
+  const {timeLeft, start} = useCountdown(RESEND_COUNTDOWN);
+  React.useEffect(() => {
+    start(RESEND_COUNTDOWN);
+  }, [start]);
 
-const resendOTPMutation = useSendOTP();
-
-
-  useEffect(() => {
-    if (timeLeft === 0) {
-      setTimeLeft(RESEND_COUNTDOWN);
-    }
-  }, [timeLeft]);
-
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(intervalId);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
+  const resendLabel = useMemo(() => {
+    return timeLeft > 0
+      ? `Gửi lại OTP (${formatCountdown(timeLeft)})`
+      : 'Gửi lại OTP';
   }, [timeLeft]);
 
   const handleChangeOtp = useCallback(
@@ -81,7 +115,6 @@ const resendOTPMutation = useSendOTP();
       setOtpError('Vui lòng nhập đủ 6 số OTP');
       return;
     }
-
     loginMutation.mutate({phone, otp});
   }, [loginMutation, otp, phone]);
 
@@ -90,32 +123,28 @@ const resendOTPMutation = useSendOTP();
       return;
     }
 
-    resendOTPMutation.mutate(phone);
-  }, [phone, resendOTPMutation, timeLeft]);
+    resendOTPMutation.mutate(phone, {
+      onSuccess: () => {
+        start(RESEND_COUNTDOWN);
+      },
+    });
+  }, [phone, resendOTPMutation, timeLeft, start]);
 
   const isVerifyDisabled = loginMutation.isPending || otp.length !== 6;
-
   const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
-
-  const formatCountdown = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const resendLabel =
-    timeLeft > 0 ? `Gửi lại OTP (${formatCountdown(timeLeft)})` : 'Gửi lại OTP';
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
+        <Pressable style={{flex: 1}} onPress={Keyboard.dismiss}>
           <ScrollView
             contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled">
-            <View style={styles.contentContainer}>
+            keyboardShouldPersistTaps="always"
+            keyboardDismissMode="on-drag">
+            <Pressable onPress={() => {}} style={styles.contentContainer}>
               <View style={styles.viewImage}>
                 <Image
                   source={Images.logo}
@@ -142,9 +171,11 @@ const resendOTPMutation = useSendOTP();
 
                 <CText style={styles.labelText}>Nhập mã OTP 6 số</CText>
 
-                <InputOTP onChangeValue={handleChangeOtp} />
+                <InputOTP onChangeValue={handleChangeOtp} needReset={false} />
 
-                {otpError && <CText style={styles.errorText}>{otpError}</CText>}
+                {otpError ? (
+                  <CText style={styles.errorText}>{otpError}</CText>
+                ) : null}
 
                 <CText
                   color={Colors.h2}
@@ -190,14 +221,12 @@ const resendOTPMutation = useSendOTP();
                   />
                 </View>
               </View>
-            </View>
+            </Pressable>
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
-
-
 
 export default ConfirmOtpScreen;
