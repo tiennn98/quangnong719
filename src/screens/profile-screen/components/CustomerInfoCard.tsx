@@ -1,6 +1,7 @@
 import { Images } from '@/assets';
 import CText from '@/components/text';
 import { useGetProfile } from '@/hooks/useProfile';
+import { CropOption } from '@/screens/edit-profile/components/CropMultiSelect';
 import { Colors } from '@/themes';
 import {
   BadgeCheck,
@@ -21,20 +22,29 @@ interface CustomerInfoCardProps {
   avatarUri?: string;
   maxCropsToShow?: number;
 }
-
+const cropsData: CropOption[] = [
+  {id: 'coffee', label: 'Cà phê'},
+  {id: 'durian', label: 'Sầu riêng'},
+  {id: 'pepper', label: 'Tiêu'},
+  {id: 'rice', label: 'Lúa'},
+  {id: 'cassava', label: 'Khoai mì'},
+  {id: 'avocado', label: 'Bơ'},
+  {id: 'cashew', label: 'Điều'},
+  {id: 'banana', label: 'Chuối'},
+];
 const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   rank,
   crops,
   onEditPress,
   avatarUri,
-  maxCropsToShow = 4,
+  maxCropsToShow = 8,
 }) => {
   const {data: profile} = useGetProfile();
 
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
-  const address = profile?.address?.trim() || 'Chưa cập nhật địa chỉ';
+  const address = [profile?.address?.trim(),profile?.ward_name?.trim()].filter(Boolean).join(', ') || 'Chưa cập nhật địa chỉ';
 
   const cropList = useMemo(
     () => (Array.isArray(crops) ? crops.filter(Boolean) : []),
@@ -154,13 +164,16 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           <View style={styles.cropsWrap}>
             {shownCrops.length ? (
               <>
-                {shownCrops.map((crop, idx) => (
-                  <View key={`${crop}-${idx}`} style={styles.cropChip}>
-                    <CText style={styles.cropText} numberOfLines={1}>
-                      {crop}
-                    </CText>
-                  </View>
-                ))}
+                {shownCrops.map((crop, idx) => {
+                  cropsData.filter(item => item.id === crop);
+                  const cropLabel =
+                    cropsData.find(item => item.id === crop)?.label || crop;
+                  return (
+                    <View key={idx} style={styles.cropChip}>
+                      <CText style={styles.cropText}>{cropLabel}</CText>
+                    </View>
+                  );
+                })}
 
                 {extraCount > 0 && (
                   <View style={[styles.cropChip, styles.cropMore]}>

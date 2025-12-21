@@ -1,9 +1,9 @@
+import { URL } from '@/constants/screen-name';
+import type { LoginResponse } from '@/hooks/useAuth';
+import { logout } from '@/redux/slices/authSlice';
+import { persistor, store } from '@/redux/store';
 import axios from 'axios';
-import {URL} from '@/constants/screen-name';
-import type {LoginResponse} from '@/hooks/useAuth';
-import {persistor, store} from '@/redux/store';
-import {logout} from '@/redux/slices/authSlice';
-import {queryClient} from './react-query-client';
+import { queryClient } from './react-query-client';
 
 export const sendOTP = async (
   phone: string,

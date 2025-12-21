@@ -4,7 +4,7 @@ import InvoiceBlock from '@/components/invoice-block';
 import { useGetProfile } from '@/hooks/useProfile';
 import { Colors } from '@/themes';
 import { formatCurrency } from '@/utils/tools';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Image,
   ScrollView,
@@ -36,15 +36,14 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
-  icon, // Dữ liệu: require('...')
+  icon,
   value,
   label,
   color = Colors.h2,
 }) => (
   <View style={styles.infoBoxContainer}>
     <TouchableOpacity style={styles.infoBox} activeOpacity={0.8}>
-      {/* Xóa: <View style={styles.infoIconWrapper}>{icon}</View> */}
-      {/* Giữ lại: Dùng icon làm source cho Image */}
+      {/*<View style={styles.infoIconWrapper}>{icon}</View> */}
       <Image source={icon} style={{width: 24, height: 24}} />
       <Text style={[styles.infoBoxValue, {color}]}>{value}</Text>
       <Text style={styles.infoBoxLabel}>{label}</Text>
@@ -55,7 +54,11 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
   const {data:profile} = useGetProfile();
-
+  useEffect(() => {
+    if(profile?.full_name === profile?.phone_number){
+      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {isFromHome:true});
+    }
+  }, [profile]);
   return (
     <View style={{flex: 1}}>
       <StatusBar
@@ -109,7 +112,7 @@ const HomeScreen: React.FC = () => {
             <View style={styles.pointsContainer}>
               <CText style={styles.diamondIcon}>💎</CText>
               <CText style={styles.pointsText}>Kim cương</CText>
-              <CText style={styles.pointsValue}>{profile?.q_points || 0} điểm</CText>
+              <CText style={styles.pointsValue}>{profile?.reward_point || 0} điểm</CText>
             </View>
           </View>
 

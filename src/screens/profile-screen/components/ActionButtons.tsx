@@ -91,7 +91,7 @@ const ActionButtons: React.FC = () => {
         title: 'Đăng xuất',
         subtitle: 'Thoát khỏi tài khoản',
         isLogout: true,
-        onPress: hardLogout(),
+        onPress: () => hardLogout(),
       },
     ],
     [handleEditProfile, handleSettings],
