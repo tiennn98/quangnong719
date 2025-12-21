@@ -28,7 +28,7 @@ export interface UserProfileData {
   id: number;
   created_at: string;
   updated_at: string;
-  type_of_plants: any[];
+  type_of_plants_ids: number[];
 }
 
 export interface ProfileResponse {
@@ -97,7 +97,7 @@ export type UpdateCustomerProfilePayload = {
   address: string;        // gộp địa chỉ chi tiết + ward_name (tuỳ bạn)
   ward_name: string;      // "Phường/Xã ..."
   birth_date: string;     // ISO string "2025-12-19T17:49:19.745Z"
-  type_of_plants: string[];
+  type_of_plants: number[];
 };
 
 export type UpdateCustomerProfileResponse = {
@@ -136,7 +136,7 @@ export const buildUpdateProfilePayload = (form: {
     // Nếu user không chọn birthday -> gửi ISO rỗng?
     // Nếu backend chấp nhận null/"" thì sửa lại theo backend.
     birth_date: form.birthday ? ymdToIso(form.birthday) : '',
-    type_of_plants: Array.isArray(form.crops) ? form.crops : [],
+    type_of_plants: Array.isArray(form.crops.map(Number)) ? form.crops.map(Number) : [],
   };
 };
 
@@ -161,3 +161,23 @@ export const updateCustomerProfile = async (
     );
   }
 };
+export type PlantType = {
+  id: number;
+  code: string;
+  name: string;
+};
+
+export type PlantsResponse = {
+  msg: string;
+  statusCode: number;
+  data: {
+    plants: PlantType[];
+  };
+  length: number;
+};
+
+export async function getPlants() {
+  // Nếu axiosClient đã set baseURL = https://api-agri.nguyenphuquoc.info/api/v1
+  const res = await axiosClient.get<PlantsResponse>('/settings');
+  return res.data;
+}

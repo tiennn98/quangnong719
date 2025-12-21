@@ -1,9 +1,12 @@
+import { Images } from '@/assets';
 import CButton from '@/components/button';
 import CText from '@/components/text';
-import {goBack} from '@/navigators';
-import {Colors} from '@/themes/color';
-import {RouteProp, useRoute} from '@react-navigation/native';
-import {ChevronLeft, Copy, Share2, ScanLine, X} from 'lucide-react-native';
+import { goBack } from '@/navigators';
+import { UserProfileData } from '@/services/profile.api';
+import { Colors } from '@/themes/color';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { ChevronLeft, Copy, ScanLine, Share2, X } from 'lucide-react-native';
 import React, {
   memo,
   useCallback,
@@ -22,13 +25,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {fontScale, scale} from 'react-native-utils-scale';
-import {Images} from '@/assets';
-import {UserProfileData} from '@/services/profile.api';
-import {styles} from './style.module';
+import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { fontScale, scale, width } from 'react-native-utils-scale';
+import { styles } from './style.module';
 
 type RouteParams = {
   BarCodeCustomerScreen: UserProfileData | undefined;
@@ -55,6 +55,9 @@ const BarCodeCustomerScreen: React.FC = () => {
     const raw = (data?.phone_number ?? '').trim();
     return raw.replace(ONLY_DIGITS, '');
   }, [data?.phone_number]);
+  const reward_point = useMemo(() => {
+    return data?.reward_point != null ? data.reward_point.toString() : null;
+  }, [data?.reward_point]);
 
   const customerCode = phoneNumber || '—';
 
@@ -106,27 +109,24 @@ const BarCodeCustomerScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
-        <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={handleGoBack}
             activeOpacity={0.7}
             style={styles.backBtn}
-            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            hitSlop={{top: 10, right: 10}}>
             <ChevronLeft color={Colors.greenPrimary} size={24} />
             <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
               Mã của tôi
             </CText>
           </TouchableOpacity>
-
           <View style={styles.headerTextWrap}>
             <CText
               style={styles.hint}
-              fontSize={fontScale(14)}
-              color={Colors.h2}>
+              fontSize={fontScale(18)}
+              color={Colors.h1}>
               Xuất trình mã này tại cửa hàng để tra cứu thông tin nhanh chóng
             </CText>
           </View>
-        </View>
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -185,7 +185,7 @@ const BarCodeCustomerScreen: React.FC = () => {
                     background="#FFFFFF"
                     foregroundColor="#000000"
                     format={BarcodeFormat.CODE128}
-                    style={StyleSheet.absoluteFillObject}
+                    style={{width: width - scale(64), height: scale(220)}}
                   />
                 ) : (
                   <View style={styles.emptyBarcode}>
@@ -222,8 +222,8 @@ const BarCodeCustomerScreen: React.FC = () => {
           </CText>
 
           <InfoRow label="Họ và tên" value={fullName} />
-          <InfoRow label="Số điện thoại" value={phoneNumber || '—'} />
           <InfoRow label="Mã khách hàng" value={customerCode} bold />
+          <InfoRow label="Điểm" value={reward_point  || '—'} />
         </View>
 
         <View style={[styles.card, styles.howCard]}>

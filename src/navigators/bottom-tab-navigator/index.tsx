@@ -1,3 +1,4 @@
+import { Images } from '@/assets';
 import { CText } from '@/components';
 import { SCREEN_NAME } from '@/constants';
 import { AboutStoreScreen, HomeScreen, ProfileScreen, PromotionScreen } from '@/screens';
@@ -6,12 +7,11 @@ import { Colors, Fonts } from '@/themes';
 import {
   House,
   NotepadText,
-  Store,
   TicketPercent,
   UserRound,
 } from 'lucide-react-native';
 import React from 'react';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { width } from 'react-native-utils-scale';
 import { navigate as MoveTo } from '../navigation-service';
@@ -80,7 +80,9 @@ const BottomTabNavigator = () => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => MoveTo(SCREEN_NAME.ABOUT_STORE_SCREEN)}>
-            <Store color={Colors.greenPrimary} size={30} />
+            <View style={{marginBottom: 6, alignItems: 'center', justifyContent: 'center',width:40,height:40,borderRadius:999,backgroundColor:'#43AA64'}}>
+             <Image source={Images.logowhite} style={{width: 30, height: 30}} resizeMode="contain" />
+            </View>
             <CText
               color={Colors.greenPrimary}
               fontSize={14}>
