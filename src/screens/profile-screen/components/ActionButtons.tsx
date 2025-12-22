@@ -80,12 +80,12 @@ const ActionButtons: React.FC = () => {
         subtitle: 'Cập nhật họ tên, địa chỉ, cây trồng…',
         onPress: handleEditProfile,
       },
-      {
-        iconKey: 'settings' as const,
-        title: 'Cài đặt',
-        subtitle: 'Tùy chọn ứng dụng',
-        onPress: handleSettings,
-      },
+      // {
+      //   iconKey: 'settings' as const,
+      //   title: 'Cài đặt',
+      //   subtitle: 'Tùy chọn ứng dụng',
+      //   onPress: handleSettings,
+      // },
       {
         iconKey: 'logout' as const,
         title: 'Đăng xuất',
@@ -94,7 +94,7 @@ const ActionButtons: React.FC = () => {
         onPress: () => hardLogout(),
       },
     ],
-    [handleEditProfile, handleSettings],
+    [handleEditProfile],
   );
 
   return (

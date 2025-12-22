@@ -1,7 +1,13 @@
-// src/hooks/useLocation.ts
 import {useMemo} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {getProvinces, getWardsByProvince, ProvinceDto, WardDto} from '@/services/location.api';
+import {
+  getProvinces,
+  getDistrictsByProvince,
+  getWardsByDistrict,
+  ProvinceDto,
+  DistrictDto,
+  WardDto,
+} from '@/services/location.api';
 
 export type SelectItem = {id: string; name: string; code: number};
 
@@ -26,12 +32,34 @@ export const useProvinces = () => {
   return {...q, items};
 };
 
-export const useWards = (provinceCode?: number) => {
+export const useDistricts = (provinceCode?: number) => {
   const enabled = typeof provinceCode === 'number' && provinceCode > 0;
 
   const q = useQuery({
-    queryKey: ['location', 'wards', provinceCode],
-    queryFn: () => getWardsByProvince(provinceCode as number),
+    queryKey: ['location', 'districts', provinceCode],
+    queryFn: () => getDistrictsByProvince(provinceCode as number),
+    enabled,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
+    retry: 1,
+  });
+
+  const items = useMemo<SelectItem[]>(() => {
+    const data = normalizeList((q.data as any)?.data) as DistrictDto[];
+    return data
+      .filter(d => typeof d?.code === 'number' && !!d?.name)
+      .map(d => ({id: String(d.code), name: d.name, code: d.code}));
+  }, [q.data]);
+
+  return {...q, items, enabled};
+};
+
+export const useWards = (districtCode?: number) => {
+  const enabled = typeof districtCode === 'number' && districtCode > 0;
+
+  const q = useQuery({
+    queryKey: ['location', 'wards', districtCode],
+    queryFn: () => getWardsByDistrict(districtCode as number),
     enabled,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,

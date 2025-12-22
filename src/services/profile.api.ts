@@ -93,10 +93,11 @@ export async function updateCustomerDevice(payload: UpdateDevicePayload) {
 
 export type UpdateCustomerProfilePayload = {
   full_name: string;
-  avatar: string;         // nếu không có thì gửi ""
-  address: string;        // gộp địa chỉ chi tiết + ward_name (tuỳ bạn)
-  ward_name: string;      // "Phường/Xã ..."
-  birth_date: string;     // ISO string "2025-12-19T17:49:19.745Z"
+  avatar: string;          // nếu không có thì gửi ""
+  address: string;         // chỉ địa chỉ chi tiết
+  ward_name: string;       // Xã/Phường
+  location_name: string;   // ✅ Tỉnh + Huyện
+  birth_date: string;      // ISO string hoặc '' nếu bỏ trống
   type_of_plants: number[];
 };
 
@@ -106,37 +107,45 @@ export type UpdateCustomerProfileResponse = {
   data?: any;
 };
 
-// Helper: yyyy-mm-dd -> ISO string
 export const ymdToIso = (ymd?: string) => {
-  if (!ymd) {return new Date(0).toISOString();} // bạn có thể đổi thành '' nếu backend cho phép
+  if (!ymd) {return '';}
   const [y, m, d] = ymd.split('-').map(Number);
-  if (!y || !m || !d) {return new Date(0).toISOString();}
-  // set 12:00 để tránh lệch ngày do timezone
+  if (!y || !m || !d) {return '';}
+  // set 12:00 UTC tránh lệch ngày
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)).toISOString();
 };
 
-// Helper: build payload từ form
 export const buildUpdateProfilePayload = (form: {
   fullName: string;
   avatarUri?: string | null;
+
   addressLine: string;
-  ward?: { name: string } | null; // bạn đang lưu ward {code,name}
-  birthday?: string;              // yyyy-mm-dd
-  crops: string[];
+
+  province?: {name: string} | null;
+  district?: {name: string} | null;
+  ward?: {name: string} | null;
+
+  birthday?: string;  // yyyy-mm-dd
+  crops: Array<number | string>; // ids
 }): UpdateCustomerProfilePayload => {
-  const wardName = form.ward?.name || '';
+  const provinceName = form.province?.name?.trim() || '';
+  const districtName = form.district?.name?.trim() || '';
+  const wardName = form.ward?.name?.trim() || '';
+
+  const locationName = [provinceName, districtName].filter(Boolean).join(' - ');
+
+  const plantIds = (Array.isArray(form.crops) ? form.crops : [])
+    .map(x => Number(x))
+    .filter(n => Number.isFinite(n));
 
   return {
     full_name: (form.fullName || '').trim(),
     avatar: (form.avatarUri || '').trim(),
-    // address: tuỳ bạn muốn lưu thế nào.
-    // Option A (khuyến nghị): lưu đầy đủ "addressLine, ward_name"
-    address: [form.addressLine?.trim()].filter(Boolean).join(', '),
+    address: (form.addressLine || '').trim(),
     ward_name: wardName,
-    // Nếu user không chọn birthday -> gửi ISO rỗng?
-    // Nếu backend chấp nhận null/"" thì sửa lại theo backend.
+    location_name: locationName,
     birth_date: form.birthday ? ymdToIso(form.birthday) : '',
-    type_of_plants: Array.isArray(form.crops.map(Number)) ? form.crops.map(Number) : [],
+    type_of_plants: plantIds,
   };
 };
 

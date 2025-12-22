@@ -18,7 +18,7 @@ import reactotron from 'reactotron-react-native';
 
 interface CustomerInfoCardProps {
   rank: string;
-  crops: string[];
+  crops: number[];
   onEditPress?: () => void;
   avatarUri?: string;
   maxCropsToShow?: number;
@@ -35,7 +35,7 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
-  const address = [profile?.address?.trim(),profile?.ward_name?.trim()].filter(Boolean).join(', ') || 'Chưa cập nhật địa chỉ';
+  const address = [profile?.address?.trim(),profile?.ward_name?.trim(),profile?.location_name?.trim()].filter(Boolean).join(', ') || 'Chưa cập nhật địa chỉ';
 
   const cropList = useMemo(
     () => (Array.isArray(crops) ? crops.filter(Boolean) : []),
@@ -153,7 +153,7 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           </View>
 
           <View style={styles.cropsWrap}>
-            {profile?.type_of_plants_ids.length ? (
+            {profile?.type_of_plants_ids?.length ? (
               <>
                 {profile?.type_of_plants_ids?.map((crop, _) => {
                   reactotron.log('Crop:', crop);

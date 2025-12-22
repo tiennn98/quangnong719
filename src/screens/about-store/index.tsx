@@ -83,16 +83,16 @@ const AboutStoreScreen = () => {
           Cửa hàng Đại lý Quang Nông 719
         </CText>
 
-        <CText color={Colors.h2} fontSize={fontScale(14)}>
+        <CText color={Colors.h2} fontSize={fontScale(20)}>
           Đối tác đáng tin cậy của bà con trong nền nông nghiệp hiện đại.
           {'\n'}Chúng tôi cung cấp các sản phẩm nông nghiệp chất lượng cao, tư vấn kỹ thuật chuyên sâu và giải pháp hỗ trợ toàn diện cho bà con nông dân.
         </CText>
 
-        <CText color={Colors.h2} fontSize={fontScale(14)}>
+        <CText color={Colors.h2} fontSize={fontScale(20)}>
           Địa chỉ: 143 Thôn 8A, Eakly, Đắk Lắk
         </CText>
 
-        <CText color={Colors.h2} fontSize={fontScale(14)}>
+        <CText color={Colors.h2} fontSize={fontScale(20)}>
           Điện thoại: 0922.982.986
         </CText>
       </View>
@@ -203,7 +203,7 @@ const AboutStoreScreen = () => {
           </CText>
 
           {_renderInfoStore()}
-          {_renderSendMessageForm()}
+          {/* {_renderSendMessageForm()} */}
           {_renderFrequentlyAskedQuestions()}
         </KeyboardAvoidingScrollView>
       </FormProvider>

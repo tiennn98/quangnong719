@@ -1,10 +1,14 @@
-import { Images } from '@/assets/images';
-import { CText } from '@/components';
+import {Images} from '@/assets/images';
+import {CText} from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
-import { useGetProfile } from '@/hooks/useProfile';
-import { Colors } from '@/themes';
-import { formatCurrency } from '@/utils/tools';
-import React, { useEffect } from 'react';
+import {SCREEN_NAME} from '@/constants';
+import {useGetInvoiceList} from '@/hooks/useInvoice';
+import {useGetProfile} from '@/hooks/useProfile';
+import {navigate} from '@/navigators';
+import {InvoiceResponse} from '@/services/invoice.api';
+import {Colors} from '@/themes';
+import {formatCurrency} from '@/utils/tools';
+import React, {useEffect, useMemo} from 'react';
 import {
   Image,
   ScrollView,
@@ -14,23 +18,10 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { QuickAccessBox } from './components/QuickAccessBox';
-import { styles } from './style.module';
-import { navigate } from '@/navigators';
-import { SCREEN_NAME } from '@/constants';
-import { useGetInvoiceList } from '@/hooks/useInvoice';
-import reactotron from 'reactotron-react-native';
-import { InvoiceResponse } from '@/services/invoice.api';
+import {QuickAccessBox} from './components/QuickAccessBox';
+import {styles} from './style.module';
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
-const defaultProps = {
-  invoiceId: 'HD004632',
-  branch: 'Chi nhánh trung tâm',
-  purchaseDate: '2025-11-22',
-  totalAmount: '7,000,000 VND',
-  onDetailPress: () => console.log('Xem chi tiết hóa đơn'),
-};
-
 interface InfoBoxProps {
   icon: any;
   value: string;
@@ -56,23 +47,45 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
-  const {data:profile} = useGetProfile();
+  const {data: profile} = useGetProfile();
   const {
-      data: invoiceResponse,
-      isLoading,
-      isFetching,
-      refetch: refetchInvoices,
-    } = useGetInvoiceList(profile?.phone_number) as {
-      data?: InvoiceResponse;
-      isLoading: boolean;
-      isFetching: boolean;
-      refetch: () => Promise<any>;
-    };
+    data: invoiceResponse,
+    isLoading,
+    isFetching,
+    refetch: refetchInvoices,
+  } = useGetInvoiceList(profile?.phone_number) as {
+    data?: InvoiceResponse;
+    isLoading: boolean;
+    isFetching: boolean;
+    refetch: () => Promise<any>;
+  };
   useEffect(() => {
-    if(profile?.full_name === profile?.phone_number){
-      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {isFromHome:true});
+    if (profile?.full_name === profile?.phone_number) {
+      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {isFromHome: true});
     }
   }, [profile]);
+  const getGreetingByTime = (date = new Date()) => {
+    const h = date.getHours();
+
+    if (h >= 5 && h < 11) {
+      return 'Chào buổi sáng!';
+    }
+
+    if (h >= 11 && h < 14) {
+      return 'Chào buổi trưa!';
+    }
+
+    if (h >= 14 && h < 18) {
+      return 'Chào buổi chiều!';
+    }
+
+    if (h >= 18 && h < 22) {
+      return 'Chào buổi tối!';
+    }
+
+    return 'Chào buổi tối!';
+  };
+  const greetingTitle = useMemo(() => getGreetingByTime(), []);
   return (
     <View style={{flex: 1}}>
       <StatusBar
@@ -99,7 +112,7 @@ const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.headerHelloContainer}>
-          <CText style={styles.greetingTitle}>Chào buổi sáng!</CText>
+          <CText style={styles.greetingTitle}>{greetingTitle}</CText>
           <CText
             fontSize={fontScale(20)}
             style={{fontWeight: 'bold', paddingHorizontal: scale(10)}}>
@@ -118,15 +131,19 @@ const HomeScreen: React.FC = () => {
             <View>
               <CText style={styles.label}>Mã Khách Hàng</CText>
               <CText style={styles.customerPhone}>
-                {(profile?.phone_number || customerPhone)}
+                {profile?.phone_number || customerPhone}
               </CText>
-              <CText fontSize={fontScale(16)}>{profile?.full_name || 'Nguyễn Đức Nhâm!'}</CText>
+              <CText fontSize={fontScale(16)}>
+                {profile?.full_name || 'Nguyễn Đức Nhâm!'}
+              </CText>
             </View>
 
             <View style={styles.pointsContainer}>
               <CText style={styles.diamondIcon}>💎</CText>
-              <CText style={styles.pointsText}>Kim cương</CText>
-              <CText style={styles.pointsValue}>{profile?.reward_point || 0} điểm</CText>
+              <CText style={styles.pointsText}>Thành viên</CText>
+              <CText style={styles.pointsValue}>
+                {profile?.reward_point || 0} điểm
+              </CText>
             </View>
           </View>
 
@@ -134,7 +151,9 @@ const HomeScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.quickActionButton}
               activeOpacity={0.7}
-              onPress={()=>navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)}>
+              onPress={() =>
+                navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)
+              }>
               <Image
                 source={Images.qrcodeIcon}
                 style={styles.quickActionIcon}
@@ -169,7 +188,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.infoGrid}>
             <InfoBox
               icon={Images.voucherIcon}
-              value="2"
+              value="0"
               label="Phiếu ưu đãi"
               color={Colors.gray300}
             />
@@ -180,7 +199,7 @@ const HomeScreen: React.FC = () => {
             />
             <InfoBox
               icon={Images.eventIcon}
-              value="2"
+              value="0"
               label="Số sự kiện đã tham gia"
             />
             <InfoBox
@@ -195,20 +214,30 @@ const HomeScreen: React.FC = () => {
           <View style={{paddingVertical: scale(10)}}>
             <View style={styles.invoiceCurrentHeader}>
               <Image source={Images.listInvoice} style={styles.iconStyle} />
-              <CText fontSize={fontScale(18)} style={{fontWeight: 'bold'}}>Hóa đơn gần đây</CText>
+              <CText fontSize={fontScale(18)} style={{fontWeight: 'bold'}}>
+                Hóa đơn gần đây
+              </CText>
             </View>
-            {invoiceResponse?.data?.length  ?  <InvoiceBlock
-              invoiceId={invoiceResponse?.data[0]?.code}
-          branchName={invoiceResponse?.data[0]?.branchName}
-          purchaseDate={invoiceResponse?.data[0]?.purchaseDate}
-          totalAmount={String(invoiceResponse?.data[0]?.total)}
-          status={invoiceResponse?.data[0]?.status as any}
-          onDetailPress={() => {}}
-          totalPayment={invoiceResponse?.data[0]?.totalPayment}
-          invoiceDetails={invoiceResponse?.data[0]?.invoiceDetails}
-
-            /> : <View>
-              <CText>Không có hóa đơn gần đây</CText></View>}
+            {invoiceResponse?.data?.length ? (
+              <InvoiceBlock
+                invoiceId={invoiceResponse?.data[0]?.code}
+                branchName={invoiceResponse?.data[0]?.branchName}
+                purchaseDate={invoiceResponse?.data[0]?.purchaseDate}
+                totalAmount={String(invoiceResponse?.data[0]?.total)}
+                status={invoiceResponse?.data[0]?.status as any}
+                onDetailPress={() =>
+                  navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {
+                    invoice: invoiceResponse?.data[0],
+                  })
+                }
+                totalPayment={invoiceResponse?.data[0]?.totalPayment}
+                invoiceDetails={invoiceResponse?.data[0]?.invoiceDetails}
+              />
+            ) : (
+              <View>
+                <CText>Không có hóa đơn gần đây</CText>
+              </View>
+            )}
           </View>
 
           {/* <UpcomingEventBlock
@@ -219,14 +248,8 @@ const HomeScreen: React.FC = () => {
             /> */}
 
           <View style={styles.quickAccessGrid}>
-            <QuickAccessBox
-              icon={Images.skillCorner}
-              label="Mẹo canh tác"
-            />
-            <QuickAccessBox
-              icon={Images.helpSupport}
-              label="Hỗ trợ"
-            />
+            <QuickAccessBox icon={Images.skillCorner} label="Mẹo canh tác" />
+            <QuickAccessBox icon={Images.helpSupport} label="Hỗ trợ" />
           </View>
         </View>
       </ScrollView>

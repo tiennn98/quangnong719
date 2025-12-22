@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: Colors.primary,
-    paddingVertical: scale(16),
   },
   container: {
     // flex: 1,

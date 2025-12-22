@@ -261,7 +261,7 @@ const InvoiceScreen: React.FC = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.white,paddingVertical:scale(16)},
+  safe: {flex: 1, backgroundColor: Colors.white},
   container: {flex: 1, paddingHorizontal: scale(16)},
   viewHeader: {
     flexDirection: 'row',

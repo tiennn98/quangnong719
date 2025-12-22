@@ -19,8 +19,8 @@ const ProfileScreen: React.FC = () => {
         overScrollMode="always"
       >
         <CustomerInfoCard
-          rank="Gold"
-          crops={profile?.type_of_plants || []}
+          rank="Member"
+          crops={profile?.type_of_plants_ids || []}
           avatarUri={'https://quangnong.vn/' + (profile?.avatar || '')}
         />
 
