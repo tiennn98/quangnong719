@@ -18,6 +18,9 @@ import { QuickAccessBox } from './components/QuickAccessBox';
 import { styles } from './style.module';
 import { navigate } from '@/navigators';
 import { SCREEN_NAME } from '@/constants';
+import { useGetInvoiceList } from '@/hooks/useInvoice';
+import reactotron from 'reactotron-react-native';
+import { InvoiceResponse } from '@/services/invoice.api';
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
 const defaultProps = {
@@ -54,6 +57,17 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
   const {data:profile} = useGetProfile();
+  const {
+      data: invoiceResponse,
+      isLoading,
+      isFetching,
+      refetch: refetchInvoices,
+    } = useGetInvoiceList(profile?.phone_number) as {
+      data?: InvoiceResponse;
+      isLoading: boolean;
+      isFetching: boolean;
+      refetch: () => Promise<any>;
+    };
   useEffect(() => {
     if(profile?.full_name === profile?.phone_number){
       navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {isFromHome:true});
@@ -183,11 +197,18 @@ const HomeScreen: React.FC = () => {
               <Image source={Images.listInvoice} style={styles.iconStyle} />
               <CText fontSize={fontScale(18)} style={{fontWeight: 'bold'}}>Hóa đơn gần đây</CText>
             </View>
-            <InvoiceBlock
-            {...defaultProps}
-            status="PARTIALLY_PAID"
-            remainingDebt="500,000 VND"
-          />
+            {invoiceResponse?.data?.length  ?  <InvoiceBlock
+              invoiceId={invoiceResponse?.data[0]?.code}
+          branchName={invoiceResponse?.data[0]?.branchName}
+          purchaseDate={invoiceResponse?.data[0]?.purchaseDate}
+          totalAmount={String(invoiceResponse?.data[0]?.total)}
+          status={invoiceResponse?.data[0]?.status as any}
+          onDetailPress={() => {}}
+          totalPayment={invoiceResponse?.data[0]?.totalPayment}
+          invoiceDetails={invoiceResponse?.data[0]?.invoiceDetails}
+
+            /> : <View>
+              <CText>Không có hóa đơn gần đây</CText></View>}
           </View>
 
           {/* <UpcomingEventBlock

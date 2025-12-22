@@ -20,6 +20,8 @@ import {useGetInvoiceList} from '@/hooks/useInvoice';
 import {useGetProfile} from '@/hooks/useProfile';
 import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
 import {Colors, Fonts} from '@/themes';
+import { SCREEN_NAME } from '@/constants';
+import { navigate } from '@/navigators';
 
 type InvoiceSection = {
   title: string;
@@ -159,7 +161,9 @@ const InvoiceScreen: React.FC = () => {
           purchaseDate={item.purchaseDate}
           totalAmount={String(item.total)}
           status={item.status as any}
-          onDetailPress={() => {}}
+          onDetailPress={() =>
+         navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {invoice: item})
+        }
           totalPayment={item.totalPayment}
           invoiceDetails={item.invoiceDetails}
         />
@@ -257,7 +261,7 @@ const InvoiceScreen: React.FC = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.white},
+  safe: {flex: 1, backgroundColor: Colors.white,paddingVertical:scale(16)},
   container: {flex: 1, paddingHorizontal: scale(16)},
   viewHeader: {
     flexDirection: 'row',

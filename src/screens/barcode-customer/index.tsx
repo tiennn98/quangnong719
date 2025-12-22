@@ -70,7 +70,7 @@ const BarCodeCustomerScreen: React.FC = () => {
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
-    const t = setTimeout(() => setToast(null), 1300);
+    const t = setTimeout(() => setToast(null), 2000);
     return () => clearTimeout(t);
   }, []);
 
@@ -114,7 +114,7 @@ const BarCodeCustomerScreen: React.FC = () => {
             activeOpacity={0.7}
             style={styles.backBtn}
             hitSlop={{top: 10, right: 10}}>
-            <ChevronLeft color={Colors.greenPrimary} size={24} />
+            <ChevronLeft color={Colors.greenPrimary} size={24} style={{marginRight: scale(8),marginLeft: scale(-8)}} />
             <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
               Mã của tôi
             </CText>
@@ -147,17 +147,17 @@ const BarCodeCustomerScreen: React.FC = () => {
               <View style={{flex: 1}}>
                 <CText
                   style={styles.name}
-                  fontSize={fontScale(18)}
+                  fontSize={fontScale(22)}
                   color={Colors.h1}>
                   {fullName}
                 </CText>
 
                 <CText
                   style={styles.sub}
-                  fontSize={fontScale(13)}
+                  fontSize={fontScale(20)}
                   color={Colors.h2}>
                   Mã khách hàng:{' '}
-                  <CText style={styles.subBold}>{customerCode}</CText>
+                  <CText style={styles.subBold} fontSize={fontScale(20)}>{customerCode}</CText>
                 </CText>
               </View>
 
@@ -229,14 +229,14 @@ const BarCodeCustomerScreen: React.FC = () => {
         <View style={[styles.card, styles.howCard]}>
           <View style={styles.howHeader}>
             <View style={styles.infoDot}>
-              <CText fontSize={fontScale(14)} color={Colors.h1}>
+              <CText fontSize={fontScale(20)} color={Colors.h1}>
                 i
               </CText>
             </View>
 
             <CText
               style={styles.howTitle}
-              fontSize={fontScale(16)}
+              fontSize={fontScale(20)}
               color={Colors.h1}>
               Cách sử dụng
             </CText>
@@ -258,7 +258,7 @@ const BarCodeCustomerScreen: React.FC = () => {
       {toast ? (
         <View pointerEvents="none" style={styles.toastWrap}>
           <View style={styles.toast}>
-            <CText color="#fff" fontSize={fontScale(13)}>
+            <CText color="#fff" fontSize={fontScale(20)}>
               {toast}
             </CText>
           </View>
@@ -274,7 +274,7 @@ const BarCodeCustomerScreen: React.FC = () => {
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <CText
-                fontSize={fontScale(16)}
+                fontSize={fontScale(20)}
                 color={Colors.h1}
                 style={{fontWeight: '900'}}>
                 Mã khách hàng
@@ -294,13 +294,13 @@ const BarCodeCustomerScreen: React.FC = () => {
                 background="#FFFFFF"
                 foregroundColor="#000000"
                 format={BarcodeFormat.CODE128}
-                style={StyleSheet.absoluteFillObject}
+                style={{width: width - scale(60), height: scale(260)}}
               />
             </View>
 
             <CText
               style={{textAlign: 'center', opacity: 0.8, marginTop: scale(10)}}
-              fontSize={fontScale(13)}
+              fontSize={fontScale(20)}
               color={Colors.h2}>
               {fullName} • {customerCode}
             </CText>
@@ -338,12 +338,12 @@ const InfoRow = memo(
   ({label, value, bold}: {label: string; value: string; bold?: boolean}) => {
     return (
       <View style={styles.row}>
-        <CText style={styles.label} fontSize={fontScale(15)} color={Colors.h2}>
+        <CText style={styles.label} fontSize={fontScale(20)} color={Colors.h2}>
           {label}:
         </CText>
         <CText
           style={[styles.value, bold && styles.valueBold]}
-          fontSize={fontScale(15)}
+          fontSize={fontScale(20)}
           color={Colors.h1}>
           {value}
         </CText>
@@ -357,7 +357,7 @@ const HowItem = memo(({text}: {text: string}) => {
     <View style={styles.howItemRow}>
       <View style={styles.bullet} />
       <CText
-        fontSize={fontScale(15)}
+        fontSize={fontScale(20)}
         color={Colors.h1}
         style={styles.howItemText}>
         {text}

@@ -155,7 +155,7 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           <View style={styles.cropsWrap}>
             {profile?.type_of_plants_ids.length ? (
               <>
-                {profile?.type_of_plants_ids.map((crop, _) => {
+                {profile?.type_of_plants_ids?.map((crop, _) => {
                   reactotron.log('Crop:', crop);
                   plantsData?.data?.plants.filter(item => item.id === crop);
                   const cropLabel =
