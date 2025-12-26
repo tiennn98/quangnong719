@@ -2,7 +2,7 @@ import CAccordion, { AccordionProps } from '@/components/accordion';
 import CText from '@/components/text';
 import { Colors } from '@/themes/color';
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, SafeAreaView, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { fontScale } from 'react-native-utils-scale';
 import { styles } from './style.module';
 
@@ -11,6 +11,7 @@ import CDropdown, { DropdownItem } from '@/components/dropdown';
 import CInput from '@/components/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ContactFormValues = {
   fullName: string;

@@ -44,8 +44,8 @@ const ProfileScreen: React.FC = () => {
 };
 export default ProfileScreen;
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F5F5F5' ,paddingTop:scale(16)},
-  scroll: { flex: 1 },
+  safeArea: { flex: 1, backgroundColor: '#F5F5F5'},
+  scroll: { flex: 1  ,paddingTop: scale(16)},
   content: {
     paddingBottom: 100,
   },

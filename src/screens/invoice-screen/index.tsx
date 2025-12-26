@@ -6,7 +6,6 @@ import {
   ListRenderItemInfo,
   Platform,
   RefreshControl,
-  SafeAreaView,
   SectionList,
   StyleSheet,
   View,
@@ -22,6 +21,7 @@ import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
 import {Colors, Fonts} from '@/themes';
 import { SCREEN_NAME } from '@/constants';
 import { navigate } from '@/navigators';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type InvoiceSection = {
   title: string;
@@ -261,8 +261,8 @@ const InvoiceScreen: React.FC = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.white,paddingTop: scale(16)},
-  container: {flex: 1, paddingHorizontal: scale(16)},
+  safe: {flex: 1, backgroundColor: Colors.white},
+  container: {flex: 1, paddingHorizontal: scale(16),paddingTop: scale(16)},
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

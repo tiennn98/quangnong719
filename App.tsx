@@ -1,10 +1,9 @@
-import {useNavigation} from '@react-navigation/native';
 
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Pressable, Text, TextInput, TouchableOpacity } from 'react-native';
 import {
   initialWindowMetrics,
@@ -19,9 +18,6 @@ import { persistor, store } from '@/redux/store';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/services/react-query-client';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {SCREEN_NAME} from '@/constants';
-import {useGetProfile} from '@/hooks/useProfile';
 
 
 
@@ -36,10 +32,10 @@ TouchableOpacity.defaultProps.allowFontScaling = false;
 Pressable.defaultProps.allowFontScaling = false;
 
 const App = () => {
-  
+
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <GlobalLoading ref={globalLoadingRef} />

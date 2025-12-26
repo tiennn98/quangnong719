@@ -1,19 +1,19 @@
 import { CText, TabView } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import React, { useCallback, useMemo } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { scale } from 'react-native-utils-scale';
 
 import ActiveTabScreen from './tab/active-tab';
 import ExpiredTabScreen from './tab/expired-tab';
 import UsedTabScreen from './tab/used-tab';
-
 import { SCREEN_NAME } from '@/constants';
 import { useGetProfile } from '@/hooks/useProfile';
 import { useGetVoucherList } from '@/hooks/useVoucher';
 import { navigate } from '@/navigators';
 import type { VoucherItemDTO } from '@/services/voucher.api';
 import { groupVouchers } from './helper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PromotionScreen = () => {
   const voucherQ = useGetVoucherList(1, 10);
@@ -110,8 +110,8 @@ const PromotionScreen = () => {
 export default PromotionScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.primary,paddingTop: scale(16)},
-  container: {flex: 1, paddingHorizontal: scale(16)},
+  safe: {flex: 1, backgroundColor: Colors.primary},
+  container: {flex: 1, paddingHorizontal: scale(16),paddingTop: scale(16)},
   viewHeader: {flexDirection: 'row', justifyContent: 'space-between', marginBottom: scale(16)},
   headerLeft: {paddingRight: scale(16), flex: 1},
   headerRight: {
