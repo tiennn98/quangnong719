@@ -8,9 +8,8 @@ import InvoiceDetailScreen from '@/screens/InvoiceDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import BottomTabNavigator from '../bottom-tab-navigator';
-import { AppStackParamList } from '../typeSreen';
 
-const Stack = createNativeStackNavigator<AppStackParamList>();
+const Stack = createNativeStackNavigator<any>();
 
 const AppStackNavigator = () => {
   return (

@@ -7,6 +7,7 @@ import {
   updateCustomerDevice,
   UpdateDevicePayload,
   UpdateDeviceResponse,
+  getCustomerHome,
 } from '@/services/profile.api';
 import { queryClient } from '@/services/react-query-client';
 import {store} from '@/redux/store';
@@ -41,3 +42,13 @@ export const useUpdateCustomerDevice = () => {
   });
 };
 
+
+export const HOME_QK = ['customerHome'];
+
+export function useCustomerHome() {
+  return useQuery({
+    queryKey: HOME_QK,
+    queryFn: getCustomerHome,
+    staleTime: 60 * 1000,
+  });
+}

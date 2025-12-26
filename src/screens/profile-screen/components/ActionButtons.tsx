@@ -3,12 +3,7 @@ import { SCREEN_NAME } from '@/constants';
 import { navigate } from '@/navigators';
 import { hardLogout } from '@/services/auth.api';
 import { Colors } from '@/themes';
-import {
-  ChevronRight,
-  LogOut,
-  Settings,
-  User,
-} from 'lucide-react-native';
+import { ChevronRight, LogOut, Settings, User } from 'lucide-react-native';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
@@ -62,14 +57,12 @@ const ActionButton: React.FC<ActionButtonProps> = memo(
 );
 
 const ActionButtons: React.FC = () => {
-
-
   const handleEditProfile = useCallback(() => {
     return navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN);
   }, []);
 
   const handleSettings = useCallback(() => {
-    // TODO: navigate(SCREEN_NAME.SETTINGS)
+    //  navigate(SCREEN_NAME.SETTINGS)
   }, []);
 
   const items = useMemo(

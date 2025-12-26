@@ -93,5 +93,64 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.h1,
   },
+    // ===== Modal OTP Error (ADD ONLY) =====
+  modalWrap: {
+    margin: 0,
+    justifyContent: 'center',
+    paddingHorizontal: scale(18),
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: scale(14),
+    padding: scale(16),
+  },
+  modalTitle: {
+    fontSize: fontScale(18),
+    fontWeight: '900',
+    color: Colors.h1,
+  },
+  modalDesc: {
+    marginTop: scale(8),
+    color: Colors.h2,
+    fontSize: fontScale(14),
+    lineHeight: fontScale(20),
+  },
+  modalActionsRow: {
+    flexDirection: 'row',
+    gap: scale(10),
+    marginTop: scale(14),
+  },
+  modalBtn: {
+    flex: 1,
+    height: scale(46),
+    borderRadius: scale(12),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalBtnSecondary: {
+    backgroundColor: 'rgba(0,0,0,0.06)',
+  },
+  modalBtnPrimary: {
+    backgroundColor: Colors.greenPrimary,
+  },
+  modalBtnDisabled: {
+    backgroundColor: Colors.gray500,
+    opacity: 0.75,
+  },
+  modalBtnTextPrimary: {
+    fontWeight: '900',
+    color: Colors.white,
+  },
+  modalBtnTextSecondary: {
+    fontWeight: '900',
+    color: Colors.h1,
+  },
+  modalHint: {
+    marginTop: scale(10),
+    color: Colors.h2,
+    fontSize: fontScale(12),
+    textAlign: 'center',
+    opacity: 0.8,
+  },
 
 });

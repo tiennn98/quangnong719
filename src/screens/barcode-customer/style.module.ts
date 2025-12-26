@@ -1,4 +1,4 @@
-import { Colors } from '@/themes';
+import {Colors} from '@/themes';
 import {StyleSheet} from 'react-native';
 import {scale, fontScale} from 'react-native-utils-scale';
 export const styles = StyleSheet.create({
@@ -12,12 +12,14 @@ export const styles = StyleSheet.create({
     paddingBottom: scale(18),
   },
 
-  header: { flexDirection: 'column',
-    alignItems: 'flex-start'},
-  headerRow: {
-
+  header: {flexDirection: 'column', alignItems: 'flex-start'},
+  headerRow: {},
+  backBtn: {
+    paddingVertical: scale(16),
+    paddingRight: scale(6),
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  backBtn: {paddingVertical: scale(16), paddingRight: scale(6),flexDirection:'row',alignItems:'center'},
   headerTextWrap: {},
 
   h1: {fontWeight: '900'},

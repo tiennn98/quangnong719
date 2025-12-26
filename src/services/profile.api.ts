@@ -188,3 +188,58 @@ export async function getPlants() {
   const res = await axiosClient.get<PlantsResponse>('/settings');
   return res.data;
 }
+
+
+export type HomeCustomerDTO = {
+  id: number;
+  code: string;
+  name: string;
+  avatar_url: string | null;
+};
+
+export type HomeLoyaltyDTO = {
+  tier_code: string;
+  tier_name: string;
+  tier_icon_url: string;
+  points: number;
+  points_unit: number;
+};
+
+export type HomeDebtSummaryDTO = {
+  current_debt: number;
+  currency: string;
+  total_invoice: number;
+};
+
+export type HomeStatisticsDTO = {
+  voucher_count: number;
+  joined_event_count: number;
+};
+
+export type HomeBannerDTO = {
+  id: number;
+  title: string;
+  subtitle: string;
+  image_url: string;
+  redirect_type: string;
+  redirect_data?: Record<string, any>;
+};
+
+export type CustomerHomeDataDTO = {
+  customer: HomeCustomerDTO;
+  loyalty: HomeLoyaltyDTO;
+  debt_summary: HomeDebtSummaryDTO;
+  statistics: HomeStatisticsDTO;
+  banners: HomeBannerDTO[];
+};
+
+export type CustomerHomeResponse = {
+  msg: string;
+  statusCode: number;
+  data: CustomerHomeDataDTO;
+};
+
+export async function getCustomerHome(): Promise<CustomerHomeResponse> {
+  const res = await axiosClient.get<CustomerHomeResponse>('/customer/home');
+  return res.data;
+}

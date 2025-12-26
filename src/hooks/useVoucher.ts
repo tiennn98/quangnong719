@@ -1,15 +1,20 @@
-import {useQuery} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getVoucherList} from '@/services/voucher.api';
-
-export const VOUCHER_KEYS = {
-  list: (page: number, limit: number) => ['voucher-list', page, limit] as const,
-};
+import { getCustomerHome } from '@/services/profile.api';
 
 export function useGetVoucherList(page = 1, limit = 10) {
+  const qc = useQueryClient();
+
   return useQuery({
-    queryKey: VOUCHER_KEYS.list(page, limit),
-    queryFn: () => getVoucherList({page, limit}),
-    staleTime: 30 * 1000,
-    gcTime: 5 * 60 * 1000,
+    queryKey: ['voucherList', page, limit],
+    queryFn: async () => {
+      await qc.fetchQuery({
+        queryKey: ['customerHome'],
+        queryFn: getCustomerHome,
+        staleTime: 60 * 1000,
+      });
+      return getVoucherList({page, limit});
+    },
+    staleTime: 10 * 1000,
   });
 }

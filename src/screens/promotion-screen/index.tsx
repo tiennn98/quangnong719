@@ -1,26 +1,26 @@
-import {CText, TabView} from '@/components';
-import {Colors, Fonts} from '@/themes';
-import React, {useCallback, useMemo} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {scale} from 'react-native-utils-scale';
+import { CText, TabView } from '@/components';
+import { Colors, Fonts } from '@/themes';
+import React, { useCallback, useMemo } from 'react';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { scale } from 'react-native-utils-scale';
 
 import ActiveTabScreen from './tab/active-tab';
-import UsedTabScreen from './tab/used-tab';
 import ExpiredTabScreen from './tab/expired-tab';
+import UsedTabScreen from './tab/used-tab';
 
-import {useGetVoucherList} from '@/hooks/useVoucher';
-import {groupVouchers} from './helper';
-import type {VoucherItemDTO} from '@/services/voucher.api';
-import {navigate} from '@/navigators';
-import {SCREEN_NAME} from '@/constants';
-import {useGetProfile} from '@/hooks/useProfile';
+import { SCREEN_NAME } from '@/constants';
+import { useGetProfile } from '@/hooks/useProfile';
+import { useGetVoucherList } from '@/hooks/useVoucher';
+import { navigate } from '@/navigators';
+import type { VoucherItemDTO } from '@/services/voucher.api';
+import { groupVouchers } from './helper';
 
 const PromotionScreen = () => {
   const voucherQ = useGetVoucherList(1, 10);
   const items = (voucherQ.data?.data?.items || []) as VoucherItemDTO[];
-  
+
   const grouped = useMemo(() => groupVouchers(items), [items]);
-  
+
   const tabs = useMemo(
     () => [
       {key: 'active', title: `Đang hoạt động (${grouped.active.length})`},
@@ -29,10 +29,10 @@ const PromotionScreen = () => {
     ],
     [grouped.active.length, grouped.used.length, grouped.expired.length],
   );
-  
+
   const {data: profile} = useGetProfile() as any;
   const phoneNumber = profile?.phone_number || '';
-  
+
   const onPressUse = useCallback(
     (voucher: VoucherItemDTO) => {
       navigate(SCREEN_NAME.VOUCHER_USE_SCREEN, {
@@ -42,7 +42,7 @@ const PromotionScreen = () => {
     },
     [phoneNumber],
   );
-  
+
   const renderScene = useCallback(
     ({route}: any) => {
       if (route.key === 'active') {
@@ -54,16 +54,16 @@ const PromotionScreen = () => {
           />
         );
       }
-      
+
       if (route.key === 'used') {
         return <UsedTabScreen items={grouped.used as any} isLoading={voucherQ.isLoading} />;
       }
-      
+
       return <ExpiredTabScreen items={grouped.expired as any} isLoading={voucherQ.isLoading} />;
     },
     [grouped.active, grouped.used, grouped.expired, voucherQ.isLoading, onPressUse],
   );
-  
+
   const Header = useMemo(() => {
     const activeCount = grouped.active.length;
     return (
@@ -75,14 +75,14 @@ const PromotionScreen = () => {
           <CText fontFamily={Fonts.REGULAR} color={Colors.greenPrimary} fontSize={14}>
             Quản lý và sử dụng các mã ưu đãi của bạn
           </CText>
-          
+
           {voucherQ.isError ? (
             <CText style={{marginTop: scale(6)}} color="#EF4444" fontSize={12}>
               {(voucherQ.error as any)?.message || 'Không tải được voucher'}
             </CText>
           ) : null}
         </View>
-        
+
         <View style={styles.headerRight}>
           <CText align="center" fontFamily={Fonts.REGULAR} color={Colors.greenPrimary} fontSize={12}>
             {voucherQ.isLoading ? 'Đang tải…' : `${activeCount} mã đang hoạt động`}
@@ -91,12 +91,12 @@ const PromotionScreen = () => {
       </View>
     );
   }, [grouped.active.length, voucherQ.isLoading, voucherQ.isError, voucherQ.error]);
-  
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         {Header}
-        
+
         <TabView
           tabBarContainerStyle={styles.tabBar}
           renderScene={renderScene}

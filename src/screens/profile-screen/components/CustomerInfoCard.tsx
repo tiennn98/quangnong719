@@ -1,8 +1,8 @@
-import { Images } from '@/assets';
+import {Images} from '@/assets';
 import CText from '@/components/text';
-import { useGetPlant } from '@/hooks/usePlant';
-import { useGetProfile } from '@/hooks/useProfile';
-import { Colors } from '@/themes';
+import {useGetPlant} from '@/hooks/usePlant';
+import {useGetProfile} from '@/hooks/useProfile';
+import {Colors} from '@/themes';
 import {
   BadgeCheck,
   Leaf,
@@ -11,9 +11,9 @@ import {
   ShieldCheck,
   User,
 } from 'lucide-react-native';
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { fontScale, scale } from 'react-native-utils-scale';
+import React, {memo, useCallback, useMemo, useState} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {fontScale, scale} from 'react-native-utils-scale';
 import reactotron from 'reactotron-react-native';
 
 interface CustomerInfoCardProps {
@@ -31,11 +31,18 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   maxCropsToShow = 8,
 }) => {
   const {data: profile} = useGetProfile();
-  const {data:plantsData} = useGetPlant();
+  const {data: plantsData} = useGetPlant();
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
-  const address = [profile?.address?.trim(),profile?.ward_name?.trim(),profile?.location_name?.trim()].filter(Boolean).join(', ') || 'Chưa cập nhật địa chỉ';
+  const address =
+    [
+      profile?.address?.trim(),
+      profile?.ward_name?.trim(),
+      profile?.location_name?.trim(),
+    ]
+      .filter(Boolean)
+      .join(', ') || 'Chưa cập nhật địa chỉ';
 
   const cropList = useMemo(
     () => (Array.isArray(crops) ? crops.filter(Boolean) : []),
@@ -159,7 +166,8 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
                   reactotron.log('Crop:', crop);
                   plantsData?.data?.plants.filter(item => item.id === crop);
                   const cropLabel =
-                    plantsData?.data?.plants.find(item => item.id === crop)?.name || crop;
+                    plantsData?.data?.plants.find(item => item.id === crop)
+                      ?.name || crop;
                   return (
                     <View key={crop} style={styles.cropChip}>
                       <CText style={styles.cropText}>{cropLabel}</CText>

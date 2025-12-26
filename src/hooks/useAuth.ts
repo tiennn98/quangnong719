@@ -34,16 +34,9 @@ export const useLogin = () => {
       const token = res?.data?.access_token;
       const newCustomer = res?.data?.new_customer;
       if (!token) {
-        Alert.alert('Lỗi', 'Không nhận được access token từ máy chủ.');
         return;
       }
       dispatch(setAccessToken({accessToken: token, new_customer: newCustomer}));
-    },
-
-    onError: (error: Error) => {
-      Alert.alert('Thông báo', error.message || 'Mã OTP không chính xác!');
-        navigate('ProfileCompletionScreen');
-
     },
   });
 };
