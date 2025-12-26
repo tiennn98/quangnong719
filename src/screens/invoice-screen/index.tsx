@@ -261,12 +261,11 @@ const InvoiceScreen: React.FC = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.white},
+  safe: {flex: 1, backgroundColor: Colors.white,paddingTop: scale(16)},
   container: {flex: 1, paddingHorizontal: scale(16)},
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: scale(16),
   },
   headerLeft: {flex: 1},
   headerRight: {

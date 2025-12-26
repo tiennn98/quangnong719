@@ -38,14 +38,6 @@ export const useLogin = () => {
         return;
       }
       dispatch(setAccessToken({accessToken: token, new_customer: newCustomer}));
-
-      if(!newCustomer ) {
-        return;
-      }else{
-        navigate('ProfileCompletionScreen');
-      }
-
-      Alert.alert('Thành công', 'Xác minh OTP thành công!');
     },
 
     onError: (error: Error) => {

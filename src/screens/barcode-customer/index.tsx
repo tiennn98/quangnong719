@@ -1,12 +1,12 @@
-import { Images } from '@/assets';
+import {Images} from '@/assets';
 import CButton from '@/components/button';
 import CText from '@/components/text';
-import { goBack } from '@/navigators';
-import { UserProfileData } from '@/services/profile.api';
-import { Colors } from '@/themes/color';
+import {goBack} from '@/navigators';
+import {UserProfileData} from '@/services/profile.api';
+import {Colors} from '@/themes/color';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { ChevronLeft, Copy, ScanLine, Share2, X } from 'lucide-react-native';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {ChevronLeft, Copy, ScanLine, Share2, X} from 'lucide-react-native';
 import React, {
   memo,
   useCallback,
@@ -21,14 +21,13 @@ import {
   Modal,
   ScrollView,
   Share,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { fontScale, scale, width } from 'react-native-utils-scale';
-import { styles } from './style.module';
+import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {fontScale, scale, width} from 'react-native-utils-scale';
+import {styles} from './style.module';
 
 type RouteParams = {
   BarCodeCustomerScreen: UserProfileData | undefined;
@@ -109,24 +108,25 @@ const BarCodeCustomerScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
-          <TouchableOpacity
-            onPress={handleGoBack}
-            activeOpacity={0.7}
-            style={styles.backBtn}
-            hitSlop={{top: 10, right: 10}}>
-            <ChevronLeft color={Colors.greenPrimary} size={24} style={{marginRight: scale(8),marginLeft: scale(-8)}} />
-            <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
-              Mã của tôi
-            </CText>
-          </TouchableOpacity>
-          <View style={styles.headerTextWrap}>
-            <CText
-              style={styles.hint}
-              fontSize={fontScale(18)}
-              color={Colors.h1}>
-              Xuất trình mã này tại cửa hàng để tra cứu thông tin nhanh chóng
-            </CText>
-          </View>
+        <TouchableOpacity
+          onPress={handleGoBack}
+          activeOpacity={0.7}
+          style={styles.backBtn}
+          hitSlop={{top: 10, right: 10}}>
+          <ChevronLeft
+            color={Colors.greenPrimary}
+            size={24}
+            style={{marginRight: scale(8), marginLeft: scale(-8)}}
+          />
+          <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
+            Mã của tôi
+          </CText>
+        </TouchableOpacity>
+        <View style={styles.headerTextWrap}>
+          <CText style={styles.hint} fontSize={fontScale(18)} color={Colors.h1}>
+            Xuất trình mã này tại cửa hàng để tra cứu thông tin nhanh chóng
+          </CText>
+        </View>
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -157,7 +157,9 @@ const BarCodeCustomerScreen: React.FC = () => {
                   fontSize={fontScale(20)}
                   color={Colors.h2}>
                   Mã khách hàng:{' '}
-                  <CText style={styles.subBold} fontSize={fontScale(20)}>{customerCode}</CText>
+                  <CText style={styles.subBold} fontSize={fontScale(20)}>
+                    {customerCode}
+                  </CText>
                 </CText>
               </View>
 
@@ -223,7 +225,7 @@ const BarCodeCustomerScreen: React.FC = () => {
 
           <InfoRow label="Họ và tên" value={fullName} />
           <InfoRow label="Mã khách hàng" value={customerCode} bold />
-          <InfoRow label="Điểm" value={reward_point  || '—'} />
+          <InfoRow label="Điểm" value={reward_point || '—'} />
         </View>
 
         <View style={[styles.card, styles.howCard]}>

@@ -6,7 +6,7 @@ import {Keyboard, Pressable, ScrollView, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import ReactNativeModal from 'react-native-modal';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {fontScale, scale} from 'react-native-utils-scale';
+import {fontScale, scale, width} from 'react-native-utils-scale';
 import * as yup from 'yup';
 
 import CButton from '@/components/button';
@@ -14,21 +14,20 @@ import CInput from '@/components/input';
 import CText from '@/components/text';
 
 import {useGetProfile, useUpdateCustomerProfile} from '@/hooks/useProfile';
-import {useProvinces, useDistricts, useWards} from '@/hooks/useLocation';
+import {useProvinces, useWards} from '@/hooks/useLocation';
 import {useGetPlant} from '@/hooks/usePlant';
-import {goBack} from '@/navigators';
+import {goBack, navigate} from '@/navigators';
 import {buildUpdateProfilePayload} from '@/services/profile.api';
 import {Colors} from '@/themes';
 
 import CropMultiSelect, {CropOption} from './components/CropMultiSelect';
-import FadeUp from './components/FadeUp';
 import HeaderBar from './components/HeaderBar';
 import HeroCard from './components/HeroCard';
 import LabelRow from './components/LabelRow';
 import PickerModal, {PickerItem} from './components/PickerModal';
 import SelectBox from './components/SelectBox';
 import {styles} from './style.module';
-import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
+import {SCREEN_NAME} from '@/constants';
 
 const removeDiacritics = (s: string) =>
   (s || '')
@@ -54,37 +53,28 @@ const stripLeadingAdminPrefix = (s?: string | null) =>
     )
     .trim();
 
-const parseLocationName = (locationName?: string | null) => {
+const parseProvinceFromLocationName = (locationName?: string | null) => {
   const raw = (locationName || '').trim();
-  if (!raw) {
-    return {provinceRaw: '', districtRaw: ''};
-  }
+  if (!raw) {return '';}
 
-  let parts = raw.includes(',')
+  const parts = raw.includes(',')
     ? raw
         .split(',')
         .map(s => s.trim())
         .filter(Boolean)
-    : [];
+    : raw.includes(' - ')
+    ? raw
+        .split(' - ')
+        .map(s => s.trim())
+        .filter(Boolean)
+    : raw.includes('-')
+    ? raw
+        .split('-')
+        .map(s => s.trim())
+        .filter(Boolean)
+    : [raw];
 
-  if (!parts.length && raw.includes(' - ')) {
-    parts = raw
-      .split(' - ')
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
-
-  if (!parts.length && raw.includes('-')) {
-    parts = raw
-      .split('-')
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
-
-  return {
-    provinceRaw: parts[0] || '',
-    districtRaw: parts[1] || '',
-  };
+  return parts[0] || '';
 };
 
 type OptionObj = {id: string; name: string; code: number};
@@ -93,18 +83,18 @@ type FormValues = {
   avatarUri?: string | null;
   fullName: string;
   province: OptionObj | null;
-  district: OptionObj | null;
   ward: OptionObj | null;
   addressLine: string;
   birthday?: string;
   crops: string[];
 };
 
-type PlantSetting = {id: number; code: string; name: string};
+type PickerKind = 'province' | 'ward';
+
 type SettingsResponse = {
   msg: string;
   statusCode: number;
-  data: {plants: PlantSetting[]};
+  data: {plants: Array<{id: number; code: string; name: string}>};
   length: number;
 };
 
@@ -118,8 +108,6 @@ type ProfileDTO = {
   type_of_plants_ids?: Array<number | string> | null;
 };
 
-type PickerKind = 'province' | 'district' | 'ward';
-
 const MIN_BIRTHDAY = new Date(1950, 0, 1);
 const MAX_BIRTHDAY = new Date();
 
@@ -131,21 +119,15 @@ const formatYmd = (d: Date) => {
 };
 
 const parseYmd = (ymd?: string) => {
-  if (!ymd) {
-    return null;
-  }
+  if (!ymd) {return null;}
   const [y, m, d] = ymd.split('-').map(Number);
-  if (!y || !m || !d) {
-    return null;
-  }
+  if (!y || !m || !d) {return null;}
   return new Date(y, m - 1, d);
 };
 
 const displayBirthday = (ymd?: string) => {
   const dt = parseYmd(ymd);
-  if (!dt) {
-    return '';
-  }
+  if (!dt) {return '';}
   const dd = String(dt.getDate()).padStart(2, '0');
   const mm = String(dt.getMonth() + 1).padStart(2, '0');
   const yyyy = dt.getFullYear();
@@ -156,16 +138,11 @@ const schema: yup.ObjectSchema<FormValues> = yup.object({
   avatarUri: yup.string().optional().nullable(),
   fullName: yup.string().trim().required('Vui lòng nhập Họ và tên'),
   province: yup.mixed().required('Vui lòng chọn Tỉnh/Thành').nullable(false),
-  district: yup.mixed().required('Vui lòng chọn Quận/Huyện').nullable(false),
   ward: yup.mixed().required('Vui lòng chọn Phường/Xã').nullable(false),
   addressLine: yup
     .string()
     .trim()
-    .when('ward', {
-      is: (v: any) => !!v,
-      then: s => s.required('Vui lòng nhập Địa chỉ (thôn/ấp/số nhà)'),
-      otherwise: s => s.default(''),
-    }),
+    .required('Vui lòng nhập Địa chỉ (thôn/ấp/số nhà)'),
   birthday: yup.string().optional(),
   crops: yup
     .array()
@@ -197,7 +174,6 @@ const ProfileCompletionScreen: React.FC = () => {
       avatarUri: null,
       fullName: '',
       province: null,
-      district: null,
       ward: null,
       addressLine: '',
       birthday: '',
@@ -220,13 +196,11 @@ const ProfileCompletionScreen: React.FC = () => {
 
   const fullName = useWatch({control, name: 'fullName'});
   const province = useWatch({control, name: 'province'});
-  const district = useWatch({control, name: 'district'});
   const ward = useWatch({control, name: 'ward'});
   const birthday = useWatch({control, name: 'birthday'});
   const crops = useWatch({control, name: 'crops'});
 
-  const districtsQ = useDistricts(province?.code) as any;
-  const wardsQ = useWards(district?.code) as any;
+  const wardsQ = useWards(province?.code) as any;
 
   const plants = plantsData?.data?.plants ?? [];
   const cropsOptions = useMemo<CropOption[]>(
@@ -244,9 +218,7 @@ const ProfileCompletionScreen: React.FC = () => {
       const out: string[] = [];
       for (const x of raw) {
         const s = String(x);
-        if (plantIdSet.size && !plantIdSet.has(s)) {
-          continue;
-        }
+        if (plantIdSet.size && !plantIdSet.has(s)) {continue;}
         out.push(s);
       }
       return Array.from(new Set(out));
@@ -255,13 +227,10 @@ const ProfileCompletionScreen: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!profile) {
-      return;
-    }
+    if (!profile) {return;}
 
-    const {provinceRaw, districtRaw} = parseLocationName(profile.location_name);
+    const provinceRaw = parseProvinceFromLocationName(profile.location_name);
     const provinceName = stripLeadingAdminPrefix(provinceRaw);
-    const districtName = stripLeadingAdminPrefix(districtRaw);
     const wardName = stripLeadingAdminPrefix(profile.ward_name);
 
     reset(
@@ -271,9 +240,6 @@ const ProfileCompletionScreen: React.FC = () => {
 
         province: provinceName
           ? ({id: '', name: provinceName, code: 0} as any)
-          : null,
-        district: districtName
-          ? ({id: '', name: districtName, code: 0} as any)
           : null,
         ward: wardName ? ({id: '', name: wardName, code: 0} as any) : null,
 
@@ -288,25 +254,18 @@ const ProfileCompletionScreen: React.FC = () => {
   }, [profile, reset, normalizePlantIds]);
 
   useEffect(() => {
-    if (!plantIdSet.size) {
-      return;
-    }
+    if (!plantIdSet.size) {return;}
     const cur = getValues('crops') || [];
     const next = cur.filter(id => plantIdSet.has(String(id)));
-    if (next.length !== cur.length) {
-      setValue('crops', next, {shouldDirty: true});
-    }
+    if (next.length !== cur.length)
+      {setValue('crops', next, {shouldDirty: true});}
   }, [plantIdSet, getValues, setValue]);
 
   useEffect(() => {
-    if (!provincesQ.items?.length) {
-      return;
-    }
+    if (!provincesQ.items?.length) {return;}
 
     const cur = getValues('province');
-    if (!cur?.name || cur.code) {
-      return;
-    }
+    if (!cur?.name || cur.code) {return;}
 
     const target = normPlace(cur.name);
 
@@ -317,9 +276,7 @@ const ProfileCompletionScreen: React.FC = () => {
       );
     });
 
-    if (!found) {
-      return;
-    }
+    if (!found) {return;}
 
     setValue(
       'province',
@@ -329,44 +286,10 @@ const ProfileCompletionScreen: React.FC = () => {
   }, [provincesQ.items, getValues, setValue]);
 
   useEffect(() => {
-    if (!districtsQ.items?.length) {
-      return;
-    }
-
-    const cur = getValues('district');
-    if (!cur?.name || cur.code) {
-      return;
-    }
-
-    const target = normPlace(cur.name);
-
-    const found = districtsQ.items.find((d: any) => {
-      const dNorm = normPlace(d.name);
-      return (
-        dNorm === target || target.includes(dNorm) || dNorm.includes(target)
-      );
-    });
-
-    if (!found) {
-      return;
-    }
-
-    setValue(
-      'district',
-      {id: found.id, name: found.name, code: found.code},
-      {shouldDirty: false},
-    );
-  }, [districtsQ.items, getValues, setValue]);
-
-  useEffect(() => {
-    if (!wardsQ.items?.length) {
-      return;
-    }
+    if (!wardsQ.items?.length) {return;}
 
     const cur = getValues('ward');
-    if (!cur?.name || cur.code) {
-      return;
-    }
+    if (!cur?.name || cur.code) {return;}
 
     const target = normPlace(cur.name);
 
@@ -377,9 +300,7 @@ const ProfileCompletionScreen: React.FC = () => {
       );
     });
 
-    if (!found) {
-      return;
-    }
+    if (!found) {return;}
 
     setValue(
       'ward',
@@ -390,33 +311,21 @@ const ProfileCompletionScreen: React.FC = () => {
 
   const progress = useMemo(() => {
     let done = 0;
-    if (fullName?.trim()) {
-      done++;
-    }
-    if (province) {
-      done++;
-    }
-    if (district) {
-      done++;
-    }
-    if (ward) {
-      done++;
-    }
-    if (crops?.length > 0) {
-      done++;
-    }
-    return done / 5;
-  }, [fullName, province, district, ward, crops]);
+    if (fullName?.trim()) {done++;}
+    if (province) {done++;}
+    if (ward) {done++;}
+    if (crops?.length > 0) {done++;}
+    return done / 4;
+  }, [fullName, province, ward, crops]);
 
   const missing = useMemo(
     () => ({
       fullName: !fullName?.trim(),
       province: !province,
-      district: !district,
       ward: !ward,
       crops: !crops || crops.length === 0,
     }),
-    [fullName, province, district, ward, crops],
+    [fullName, province, ward, crops],
   );
 
   const showError = useCallback(
@@ -437,14 +346,10 @@ const ProfileCompletionScreen: React.FC = () => {
   }, []);
 
   const pickerItems = useMemo<PickerItem[]>(() => {
-    if (pickerKind === 'province') {
-      return provincesQ.items || [];
-    }
-    if (pickerKind === 'district') {
-      return districtsQ.items || [];
-    }
-    return wardsQ.items || [];
-  }, [pickerKind, provincesQ.items, districtsQ.items, wardsQ.items]);
+    return pickerKind === 'province'
+      ? provincesQ.items || []
+      : wardsQ.items || [];
+  }, [pickerKind, provincesQ.items, wardsQ.items]);
 
   const onSelectPickerItem = useCallback(
     (it: PickerItem) => {
@@ -454,17 +359,7 @@ const ProfileCompletionScreen: React.FC = () => {
           {id: it.id, name: it.name, code: it.code},
           {shouldDirty: true},
         );
-        setValue('district', null, {shouldDirty: true});
         setValue('ward', null, {shouldDirty: true});
-        setValue('addressLine', '', {shouldDirty: true});
-      } else if (pickerKind === 'district') {
-        setValue(
-          'district',
-          {id: it.id, name: it.name, code: it.code},
-          {shouldDirty: true},
-        );
-        setValue('ward', null, {shouldDirty: true});
-        setValue('addressLine', '', {shouldDirty: true});
       } else {
         setValue(
           'ward',
@@ -512,15 +407,14 @@ const ProfileCompletionScreen: React.FC = () => {
         avatarUri: values.avatarUri,
         addressLine: values.addressLine,
         province: values.province,
-        district: values.district,
         ward: values.ward,
         birthday: values.birthday,
         crops: plantIds,
-      });
+      } as any);
 
       await updateProfile(payload);
       await refetchProfile();
-      goBack();
+      navigate(SCREEN_NAME.HOME);
     },
     [updateProfile, refetchProfile],
   );
@@ -529,15 +423,12 @@ const ProfileCompletionScreen: React.FC = () => {
     const order: Array<keyof FormValues> = [
       'fullName',
       'province',
-      'district',
       'ward',
       'addressLine',
       'crops',
     ];
     const firstKey = order.find(k => !!formErrors?.[k]);
-    if (!firstKey) {
-      return;
-    }
+    if (!firstKey) {return;}
 
     Keyboard.dismiss();
     setTimeout(() => {
@@ -549,15 +440,13 @@ const ProfileCompletionScreen: React.FC = () => {
     }, 60);
   }, []);
 
-  const addressEnabled = !!ward;
-
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <HeaderBar title="Chỉnh sửa hồ sơ" onBack={() => goBack()} />
 
       <FormProvider {...form}>
         <View style={{flex: 1}}>
-          <KeyboardAvoidingScrollView
+          <ScrollView
             ref={scrollRef}
             style={{flex: 1}}
             contentContainerStyle={[
@@ -624,58 +513,19 @@ const ProfileCompletionScreen: React.FC = () => {
 
               <View
                 style={{marginTop: scale(12)}}
-                onLayout={e =>
-                  (yMapRef.current.district = e.nativeEvent.layout.y)
-                }>
-                <LabelRow
-                  label="Quận/Huyện"
-                  required
-                  missing={missing.district}
-                />
-                <SelectBox
-                  value={district?.name || 'Bấm để chọn Quận/Huyện'}
-                  onPress={() => openPicker('district')}
-                  disabled={
-                    !province?.code ||
-                    !!districtsQ.isLoading ||
-                    districtsQ.enabled === false
-                  }
-                  hint={
-                    !province?.code
-                      ? 'Vui lòng chọn Tỉnh/Thành trước'
-                      : undefined
-                  }
-                  error={showError('district')}
-                  placeholderLike={!district}
-                />
-                {districtsQ.isError ? (
-                  <CText style={styles.err}>
-                    {(districtsQ.error as any)?.message ||
-                      'Không thể tải danh sách Quận/Huyện'}
-                  </CText>
-                ) : null}
-                {showError('district') ? (
-                  <CText style={styles.err}>
-                    {errors.district?.message as any}
-                  </CText>
-                ) : null}
-              </View>
-
-              <View
-                style={{marginTop: scale(12)}}
                 onLayout={e => (yMapRef.current.ward = e.nativeEvent.layout.y)}>
                 <LabelRow label="Phường/Xã" required missing={missing.ward} />
                 <SelectBox
                   value={ward?.name || 'Bấm để chọn Phường/Xã'}
                   onPress={() => openPicker('ward')}
                   disabled={
-                    !district?.code ||
+                    !province?.code ||
                     !!wardsQ.isLoading ||
                     wardsQ.enabled === false
                   }
                   hint={
-                    !district?.code
-                      ? 'Vui lòng chọn Quận/Huyện trước'
+                    !province?.code
+                      ? 'Vui lòng chọn Tỉnh/Thành trước'
                       : undefined
                   }
                   error={showError('ward')}
@@ -694,39 +544,30 @@ const ProfileCompletionScreen: React.FC = () => {
                 ) : null}
               </View>
 
-              <FadeUp show={addressEnabled} style={{marginTop: scale(12)}}>
-                <View
-                  onLayout={e =>
-                    (yMapRef.current.addressLine = e.nativeEvent.layout.y)
-                  }>
-                  <LabelRow
-                    label="Địa chỉ (thôn/ấp/số nhà)"
-                    required
-                    icon={<MapPin size={16} color={Colors.greenPrimary} />}
-                  />
-                  <CInput
-                    name="addressLine"
-                    placeholder="Ví dụ: 143, thôn 8A"
-                    fontSize={fontScale(16)}
-                    editable={addressEnabled}
-                  />
-                  {showError('addressLine') ? (
-                    <CText style={styles.err}>
-                      {errors.addressLine?.message as any}
-                    </CText>
-                  ) : null}
-                  <CText style={styles.hint}>
-                    Gợi ý: nhập càng rõ càng dễ giao hàng & tư vấn đúng vườn
+              <View
+                style={{marginTop: scale(12)}}
+                onLayout={e =>
+                  (yMapRef.current.addressLine = e.nativeEvent.layout.y)
+                }>
+                <LabelRow
+                  label="Địa chỉ (thôn/ấp/số nhà)"
+                  required
+                  icon={<MapPin size={16} color={Colors.greenPrimary} />}
+                />
+                <CInput
+                  name="addressLine"
+                  placeholder="Ví dụ: 143, thôn 8A"
+                  fontSize={fontScale(16)}
+                />
+                {showError('addressLine') ? (
+                  <CText style={styles.err}>
+                    {errors.addressLine?.message as any}
                   </CText>
-                </View>
-              </FadeUp>
-
-              {!addressEnabled ? (
-                <CText style={[styles.hint, {marginTop: scale(12)}]}>
-                  Chọn xong Phường/Xã thì hệ thống mới cho nhập địa chỉ chi
-                  tiết.
+                ) : null}
+                <CText style={styles.hint}>
+                  Gợi ý: nhập càng rõ càng dễ giao hàng & tư vấn đúng vườn
                 </CText>
-              ) : null}
+              </View>
 
               <View style={{marginTop: scale(12)}}>
                 <LabelRow
@@ -774,7 +615,8 @@ const ProfileCompletionScreen: React.FC = () => {
                   <CText style={styles.hint}>
                     Đang tải danh sách cây trồng...
                   </CText>
-                ) : plantsQ.isError ? (
+                ) : null}
+                {plantsQ.isError ? (
                   <CText style={styles.err}>
                     {(plantsQ.error as any)?.message ||
                       'Không tải được danh sách cây trồng'}
@@ -804,41 +646,37 @@ const ProfileCompletionScreen: React.FC = () => {
             </View>
 
             <View style={{height: scale(24)}} />
-             <View
-            style={[
-              styles.bottomBar,
-              {
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                paddingBottom: insets.bottom + scale(12),
-              },
-            ]}>
-            {Object.keys(errors).length ? (
-              <CText style={styles.bottomHint}>
-                Vui lòng kiểm tra lại các mục bắt buộc (*)
-              </CText>
-            ) : null}
+            <View
+              style={[
+                styles.bottomBar,
+                {
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  paddingBottom: insets.bottom + scale(12),
+                },
+              ]}>
+              {Object.keys(errors).length ? (
+                <CText style={styles.bottomHint}>
+                  Vui lòng kiểm tra lại các mục bắt buộc (*)
+                </CText>
+              ) : null}
 
-            <CButton
-              title={submitting ? 'Đang hoàn tất...' : 'Hoàn tất'}
-              onPress={handleSubmit(onSubmit, onInvalid)}
-              disabled={submitDisabled}
-              isLoading={submitting}
-              style={styles.cta}
-            />
-          </View>
-          </KeyboardAvoidingScrollView>
+              <CButton
+                title={submitting ? 'Đang hoàn tất...' : 'Hoàn tất'}
+                onPress={handleSubmit(onSubmit, onInvalid)}
+                disabled={submitDisabled}
+                isLoading={submitting}
+                style={styles.cta}
+              />
+            </View>
+          </ScrollView>
 
           <PickerModal
             visible={pickerVisible}
             title={
-              pickerKind === 'province'
-                ? 'Chọn Tỉnh/Thành'
-                : pickerKind === 'district'
-                ? 'Chọn Quận/Huyện'
-                : 'Chọn Phường/Xã'
+              pickerKind === 'province' ? 'Chọn Tỉnh/Thành' : 'Chọn Phường/Xã'
             }
             items={pickerItems}
             onClose={() => setPickerVisible(false)}
@@ -846,8 +684,6 @@ const ProfileCompletionScreen: React.FC = () => {
             loading={
               pickerKind === 'province'
                 ? !!provincesQ.isLoading
-                : pickerKind === 'district'
-                ? !!districtsQ.isLoading
                 : !!wardsQ.isLoading
             }
             errorText={
@@ -855,19 +691,13 @@ const ProfileCompletionScreen: React.FC = () => {
                 ? provincesQ.isError
                   ? (provincesQ.error as any)?.message
                   : undefined
-                : pickerKind === 'district'
-                ? districtsQ.isError
-                  ? (districtsQ.error as any)?.message
-                  : undefined
                 : wardsQ.isError
                 ? (wardsQ.error as any)?.message
                 : undefined
             }
             emptyText={
-              pickerKind === 'district' && province
-                ? 'Tỉnh/Thành này chưa có danh sách Quận/Huyện'
-                : pickerKind === 'ward' && district
-                ? 'Quận/Huyện này chưa có danh sách Phường/Xã'
+              pickerKind === 'ward' && province
+                ? 'Tỉnh/Thành này chưa có danh sách Phường/Xã'
                 : 'Không có dữ liệu'
             }
           />
@@ -890,17 +720,20 @@ const ProfileCompletionScreen: React.FC = () => {
                   </Pressable>
                 </View>
 
-                <View style={{alignItems: 'center', marginTop: scale(12)}}>
-                  <DatePicker
+                <DatePicker
                   date={tempBirthday}
-                  theme="light"
                   onDateChange={setTempBirthday}
                   mode="date"
                   locale="vi"
+                  theme="light"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: width - scale(60),
+                  }}
                   minimumDate={MIN_BIRTHDAY}
                   maximumDate={MAX_BIRTHDAY}
                 />
-                </View>
 
                 <View
                   style={{

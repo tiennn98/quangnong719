@@ -1,10 +1,15 @@
+import {useNavigation} from '@react-navigation/native';
+
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Pressable, Text, TextInput, TouchableOpacity } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
@@ -14,6 +19,9 @@ import { persistor, store } from '@/redux/store';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/services/react-query-client';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {SCREEN_NAME} from '@/constants';
+import {useGetProfile} from '@/hooks/useProfile';
 
 
 
@@ -28,7 +36,7 @@ TouchableOpacity.defaultProps.allowFontScaling = false;
 Pressable.defaultProps.allowFontScaling = false;
 
 const App = () => {
-
+  
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>

@@ -45,7 +45,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Quang Nông 719 cần quyền truy cập vị trí để gợi ý cửa hàng gần bạn và hỗ trợ giao hàng chính xác.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs access to your Microphone.</string>
 	<key>UIAppFonts</key>

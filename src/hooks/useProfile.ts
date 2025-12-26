@@ -1,26 +1,43 @@
-import {getProfile, updateCustomerProfile, UpdateCustomerProfilePayload, UpdateCustomerProfileResponse, UserProfileData} from '@/services/profile.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  getProfile,
+  updateCustomerProfile,
+  UpdateCustomerProfilePayload,
+  UpdateCustomerProfileResponse,
+  updateCustomerDevice,
+  UpdateDevicePayload,
+  UpdateDeviceResponse,
+} from '@/services/profile.api';
 import { queryClient } from '@/services/react-query-client';
-import {useMutation, useQuery} from '@tanstack/react-query';
-
-const PROFILE_QUERY_KEY = 'userProfile';
+import {store} from '@/redux/store';
 
 export const useGetProfile = () => {
-  return useQuery<UserProfileData, Error>({
-    queryKey: [PROFILE_QUERY_KEY],
+  const token = store.getState().auth.accessToken;
+  return useQuery({
+    queryKey: ['profile', 'me'],
     queryFn: getProfile,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    retry: 1,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    retry: 1, enabled: !!token,
   });
 };
 
 export const useUpdateCustomerProfile = () => {
-  return useMutation<UpdateCustomerProfileResponse, Error, UpdateCustomerProfilePayload>({
-    mutationFn: (payload) => updateCustomerProfile(payload),
-    onSuccess: () => {
-      // Invalidate or refetch the profile query to get updated data
-      queryClient.invalidateQueries([PROFILE_QUERY_KEY]);
-      queryClient.refetchQueries([PROFILE_QUERY_KEY]);
+  return useMutation<
+    UpdateCustomerProfileResponse,
+    Error,
+    UpdateCustomerProfilePayload
+  >({
+    mutationFn: updateCustomerProfile,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
     },
   });
 };
+
+export const useUpdateCustomerDevice = () => {
+  return useMutation<UpdateDeviceResponse, Error, UpdateDevicePayload>({
+    mutationFn: updateCustomerDevice,
+  });
+};
+

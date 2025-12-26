@@ -1,8 +1,10 @@
 import { useGetProfile } from '@/hooks/useProfile';
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import {  ScrollView, StyleSheet } from 'react-native';
 import ActionButtons from './components/ActionButtons';
 import CustomerInfoCard from './components/CustomerInfoCard';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {scale} from 'react-native-utils-scale';
 
 const ProfileScreen: React.FC = () => {
   const {data:profile} =   useGetProfile();
@@ -40,16 +42,11 @@ const ProfileScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
+export default ProfileScreen;
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F5F5F5' },
+  safeArea: { flex: 1, backgroundColor: '#F5F5F5' ,paddingTop:scale(16)},
   scroll: { flex: 1 },
   content: {
-    paddingVertical: 16,
     paddingBottom: 100,
-
-
   },
 });
-
-export default ProfileScreen;

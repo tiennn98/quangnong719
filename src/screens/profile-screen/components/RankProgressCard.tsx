@@ -8,16 +8,22 @@ import {fontScale, scale} from 'react-native-utils-scale';
 interface RankProgressCardProps {
   currentRank: string;
   nextRank: string;
-  currentValue: number; // ví dụ: 125 (triệu)
-  remainingValue: number; // ví dụ: 25 (triệu)
-  totalValueForNextRank: number; // ví dụ: 150 (triệu)
+  currentValue: number;
+  remainingValue: number;
+  totalValueForNextRank: number;
 }
 
 const clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(max, n));
 
 const RankProgressCard: React.FC<RankProgressCardProps> = memo(
-  ({currentRank, nextRank, currentValue, remainingValue, totalValueForNextRank}) => {
+  ({
+    currentRank,
+    nextRank,
+    currentValue,
+    remainingValue,
+    totalValueForNextRank,
+  }) => {
     const ratio = useMemo(() => {
       if (!totalValueForNextRank || totalValueForNextRank <= 0) {
         return 0;
@@ -25,17 +31,22 @@ const RankProgressCard: React.FC<RankProgressCardProps> = memo(
       return clamp(currentValue / totalValueForNextRank, 0, 1);
     }, [currentValue, totalValueForNextRank]);
 
-    const currentText = useMemo(() => `${currentValue.toFixed(1)}M VND`, [currentValue]);
-    const remainingText = useMemo(() => `${remainingValue.toFixed(1)}M nữa`, [remainingValue]);
+    const currentText = useMemo(
+      () => `${currentValue.toFixed(1)}M VND`,
+      [currentValue],
+    );
+    const remainingText = useMemo(
+      () => `${remainingValue.toFixed(1)}M nữa`,
+      [remainingValue],
+    );
 
     /** ===== Animations ===== */
-    const appear = useRef(new Animated.Value(0)).current; // 0->1 fade
-    const lift = useRef(new Animated.Value(10)).current; // 10->0 slide up
-    const progress = useRef(new Animated.Value(0)).current; // 0->ratio
-    const sparkle = useRef(new Animated.Value(0.9)).current; // pop
+    const appear = useRef(new Animated.Value(0)).current;
+    const lift = useRef(new Animated.Value(10)).current;
+    const progress = useRef(new Animated.Value(0)).current;
+    const sparkle = useRef(new Animated.Value(0.9)).current;
 
     useEffect(() => {
-      // reset (để dùng lại khi component remount)
       appear.setValue(0);
       lift.setValue(10);
       progress.setValue(0);
@@ -54,13 +65,13 @@ const RankProgressCard: React.FC<RankProgressCardProps> = memo(
           easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
-        // progress chạy sau 1 nhịp cho “đã mắt”
+
         Animated.timing(progress, {
           toValue: ratio,
           duration: 700,
           delay: 120,
           easing: Easing.out(Easing.cubic),
-          useNativeDriver: false, // vì dùng width/flex
+          useNativeDriver: false,
         }),
         Animated.sequence([
           Animated.delay(180),
@@ -80,7 +91,6 @@ const RankProgressCard: React.FC<RankProgressCardProps> = memo(
       ]).start();
     }, [appear, lift, progress, sparkle, ratio]);
 
-    // Dùng width theo % để tránh flex fractional có thể “kỳ” khi ratio update
     const fillWidth = progress.interpolate({
       inputRange: [0, 1],
       outputRange: ['0%', '100%'],
@@ -150,7 +160,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.08)',
   },
 
-  titleRow: {flexDirection: 'row', alignItems: 'center', marginBottom: scale(12)},
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: scale(12),
+  },
   iconBadge: {
     width: scale(32),
     height: scale(32),

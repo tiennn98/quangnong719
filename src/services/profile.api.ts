@@ -1,9 +1,8 @@
-import { URL } from '@/constants/screen-name';
-import { store } from '@/redux/store';
+import {URL} from '@/constants/screen-name';
+import {store} from '@/redux/store';
 import axios from 'axios';
-import { Alert } from 'react-native';
 import reactotron from 'reactotron-react-native';
-import { axiosClient } from './axiosClient';
+import {axiosClient} from './axiosClient';
 
 export interface UserProfileData {
   phone_number: string;
@@ -13,21 +12,27 @@ export interface UserProfileData {
   kiotviet_customer_id: string;
   kiotviet_customer_code: string;
   address: string | null;
+
   loyalty_points: number;
   is_active: boolean;
   q_points: number | null;
+
   total_invoiced: number;
   total_revenue: number;
   total_point: number;
   reward_point: number;
   debt: number;
+
   gender: string | null;
   birth_date: string | null;
+
   location_name: string | null;
   ward_name: string | null;
+
   id: number;
   created_at: string;
   updated_at: string;
+
   type_of_plants_ids: number[];
 }
 
@@ -37,39 +42,39 @@ export interface ProfileResponse {
   data: UserProfileData;
 }
 
-export const getProfile = async (): Promise<UserProfileData> => {
+const getAccessTokenOrThrow = () => {
   const token = store.getState().auth.accessToken;
-    reactotron.log('TOKEN IN PROFILE SERVICE:', token);
+  reactotron.log('TOKEN IN PROFILE SERVICE:', token);
   if (!token) {
-    Alert.alert(
-      'Lỗi',
-      'Unauthorized: Không tìm thấy accessToken trong store.',
-    );
     throw new Error('Unauthorized: Không tìm thấy accessToken trong store.');
   }
-
-  try {
-    const response = await axios.get<ProfileResponse>(
-      `${URL}/customer/profile`,
-      {
-        headers: {
-          accept: 'application/json',
-
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    return response.data.data;
-  } catch (error: any) {
-    const message =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Lấy thông tin Profile thất bại';
-    throw new Error(message);
-  }
+  return token;
 };
 
+const authHeaders = () => {
+  const token = getAccessTokenOrThrow();
+  return {
+    accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+export const getProfile = async (): Promise<UserProfileData> => {
+  try {
+    const res = await axios.get<ProfileResponse>(`${URL}/customer/profile`, {
+      headers: authHeaders(),
+    });
+    return res.data.data;
+  } catch (error: any) {
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data?.msg ||
+      error?.message ||
+      'Lấy thông tin Profile thất bại';
+    throw new Error(msg);
+  }
+};
 
 export type UpdateDevicePayload = {
   device_id: string;
@@ -90,14 +95,13 @@ export async function updateCustomerDevice(payload: UpdateDevicePayload) {
   return res.data;
 }
 
-
 export type UpdateCustomerProfilePayload = {
   full_name: string;
-  avatar: string;          // nếu không có thì gửi ""
-  address: string;         // chỉ địa chỉ chi tiết
-  ward_name: string;       // Xã/Phường
-  location_name: string;   // ✅ Tỉnh + Huyện
-  birth_date: string;      // ISO string hoặc '' nếu bỏ trống
+  avatar: string;
+  address: string;
+  location_name: string;
+  ward_name: string;
+  birth_date: string;
   type_of_plants: number[];
 };
 
@@ -107,11 +111,15 @@ export type UpdateCustomerProfileResponse = {
   data?: any;
 };
 
-export const ymdToIso = (ymd?: string) => {
-  if (!ymd) {return '';}
+export const ymdToIsoZ = (ymd?: string) => {
+  if (!ymd) {
+    return '';
+  }
   const [y, m, d] = ymd.split('-').map(Number);
-  if (!y || !m || !d) {return '';}
-  // set 12:00 UTC tránh lệch ngày
+  if (!y || !m || !d) {
+    return '';
+  }
+
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)).toISOString();
 };
 
@@ -122,17 +130,13 @@ export const buildUpdateProfilePayload = (form: {
   addressLine: string;
 
   province?: {name: string} | null;
-  district?: {name: string} | null;
   ward?: {name: string} | null;
 
-  birthday?: string;  // yyyy-mm-dd
-  crops: Array<number | string>; // ids
+  birthday?: string;
+  crops: Array<number | string>;
 }): UpdateCustomerProfilePayload => {
-  const provinceName = form.province?.name?.trim() || '';
-  const districtName = form.district?.name?.trim() || '';
-  const wardName = form.ward?.name?.trim() || '';
-
-  const locationName = [provinceName, districtName].filter(Boolean).join(' - ');
+  const locationName = (form.province?.name || '').trim();
+  const wardName = (form.ward?.name || '').trim();
 
   const plantIds = (Array.isArray(form.crops) ? form.crops : [])
     .map(x => Number(x))
@@ -142,9 +146,9 @@ export const buildUpdateProfilePayload = (form: {
     full_name: (form.fullName || '').trim(),
     avatar: (form.avatarUri || '').trim(),
     address: (form.addressLine || '').trim(),
+    location_name: `Tỉnh ${locationName}`,
     ward_name: wardName,
-    location_name: locationName,
-    birth_date: form.birthday ? ymdToIso(form.birthday) : '',
+    birth_date: form.birthday ? ymdToIsoZ(form.birthday) : '',
     type_of_plants: plantIds,
   };
 };
@@ -154,14 +158,14 @@ export const updateCustomerProfile = async (
 ): Promise<UpdateCustomerProfileResponse> => {
   try {
     const res = await axios.put(`${URL}/customer/profile`, payload, {
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${store.getState().auth.accessToken}`,
-      },
+      headers: authHeaders(),
     });
     return res.data;
   } catch (error: any) {
+    console.log('UPDATE_PROFILE_STATUS:', error?.response?.status);
+    console.log('UPDATE_PROFILE_DATA:', error?.response?.data);
+    console.log('UPDATE_PROFILE_PAYLOAD:', payload);
+
     throw new Error(
       error?.response?.data?.message ||
         error?.response?.data?.msg ||
@@ -170,23 +174,17 @@ export const updateCustomerProfile = async (
     );
   }
 };
-export type PlantType = {
-  id: number;
-  code: string;
-  name: string;
-};
+
+export type PlantType = {id: number; code: string; name: string};
 
 export type PlantsResponse = {
   msg: string;
   statusCode: number;
-  data: {
-    plants: PlantType[];
-  };
+  data: {plants: PlantType[]};
   length: number;
 };
 
 export async function getPlants() {
-  // Nếu axiosClient đã set baseURL = https://api-agri.nguyenphuquoc.info/api/v1
   const res = await axiosClient.get<PlantsResponse>('/settings');
   return res.data;
 }

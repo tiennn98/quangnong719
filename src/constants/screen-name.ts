@@ -17,4 +17,5 @@ export const SCREEN_NAME = {
   BOTTOM_TAB_NAVIGATOR: 'BottomTabNavigator',
   PROFILE_COMPLETION_SCREEN: 'ProfileCompletionScreen',
   INVOICE_DETAIL_SCREEN: 'InvoiceDetailScreen',
+  VOUCHER_USE_SCREEN: 'VoucherUseScreen',
 };
