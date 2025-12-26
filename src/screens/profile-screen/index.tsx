@@ -1,61 +1,52 @@
+import { useGetProfile } from '@/hooks/useProfile';
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import {  ScrollView, StyleSheet } from 'react-native';
 import ActionButtons from './components/ActionButtons';
-
-const DUMMY_DATA = {
-  customer: {
-    name: 'Nguyen Van Minh',
-    phone: '84 912 345 678',
-    rank: 'Gold',
-    customerId: 'FARM-001-2024',
-    address: '123 Rural Road, Dak Lak Province',
-    crops: ['Coffee', 'Pepper', 'Durian'],
-    avatarUri: 'https://i.imgur.com/example-farmer.jpg',
-  },
-  progress: {
-    currentRank: 'Gold',
-    nextRank: 'Platinum',
-    currentValue: 125.0,
-    remainingValue: 25.0,
-    totalValueForNextRank: 150.0,
-  },
-};
+import CustomerInfoCard from './components/CustomerInfoCard';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {scale} from 'react-native-utils-scale';
 
 const ProfileScreen: React.FC = () => {
+  const {data:profile} =   useGetProfile();
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* <CustomerInfoCard
-          name={DUMMY_DATA.customer.name}
-          phone={DUMMY_DATA.customer.phone}
-          rank={DUMMY_DATA.customer.rank}
-          customerId={DUMMY_DATA.customer.customerId}
-          address={DUMMY_DATA.customer.address}
-          crops={DUMMY_DATA.customer.crops}
-          avatarUri={DUMMY_DATA.customer.avatarUri}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        scrollEnabled={true}
+        bounces={true}
+        alwaysBounceVertical={true}
+        overScrollMode="always"
+      >
+        <CustomerInfoCard
+          rank="Member"
+          crops={profile?.type_of_plants_ids || []}
+          avatarUri={'https://quangnong.vn/' + (profile?.avatar || '')}
         />
 
-        <RankProgressCard
-          currentRank={DUMMY_DATA.progress.currentRank}
-          nextRank={DUMMY_DATA.progress.nextRank}
-          currentValue={DUMMY_DATA.progress.currentValue}
-          remainingValue={DUMMY_DATA.progress.remainingValue}
-          totalValueForNextRank={DUMMY_DATA.progress.totalValueForNextRank}
+        {/* <RankProgressCard
+          currentRank="Gold"
+          nextRank="Platinum"
+          currentValue={125}
+          remainingValue={25}
+          totalValueForNextRank={150}
         /> */}
 
         <ActionButtons />
+
+        {/* ✅ Spacer: ép content dài hơn màn hình để chắc chắn có scroll */}
+        {/* <View style={{ height: 250 }} /> */}
       </ScrollView>
     </SafeAreaView>
   );
 };
-
+export default ProfileScreen;
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  container: {
+  safeArea: { flex: 1, backgroundColor: '#F5F5F5'},
+  scroll: { flex: 1  ,paddingTop: scale(16)},
+  content: {
+    paddingBottom: 100,
   },
 });
-
-export default ProfileScreen;

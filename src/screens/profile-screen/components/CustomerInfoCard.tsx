@@ -1,7 +1,8 @@
-import { Images } from '@/assets';
+import {Images} from '@/assets';
 import CText from '@/components/text';
-import { useGetProfile } from '@/hooks/useProfile';
-import { Colors } from '@/themes';
+import {useGetPlant} from '@/hooks/usePlant';
+import {useGetProfile} from '@/hooks/useProfile';
+import {Colors} from '@/themes';
 import {
   BadgeCheck,
   Leaf,
@@ -10,31 +11,38 @@ import {
   ShieldCheck,
   User,
 } from 'lucide-react-native';
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { fontScale, scale } from 'react-native-utils-scale';
+import React, {memo, useCallback, useMemo, useState} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {fontScale, scale} from 'react-native-utils-scale';
+import reactotron from 'reactotron-react-native';
 
 interface CustomerInfoCardProps {
   rank: string;
-  crops: string[];
+  crops: number[];
   onEditPress?: () => void;
   avatarUri?: string;
   maxCropsToShow?: number;
 }
-
 const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   rank,
   crops,
   onEditPress,
   avatarUri,
-  maxCropsToShow = 4,
+  maxCropsToShow = 8,
 }) => {
   const {data: profile} = useGetProfile();
-
+  const {data: plantsData} = useGetPlant();
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
-  const address = profile?.address?.trim() || 'Chưa cập nhật địa chỉ';
+  const address =
+    [
+      profile?.address?.trim(),
+      profile?.ward_name?.trim(),
+      profile?.location_name?.trim(),
+    ]
+      .filter(Boolean)
+      .join(', ') || 'Chưa cập nhật địa chỉ';
 
   const cropList = useMemo(
     () => (Array.isArray(crops) ? crops.filter(Boolean) : []),
@@ -152,15 +160,20 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           </View>
 
           <View style={styles.cropsWrap}>
-            {shownCrops.length ? (
+            {profile?.type_of_plants_ids?.length ? (
               <>
-                {shownCrops.map((crop, idx) => (
-                  <View key={`${crop}-${idx}`} style={styles.cropChip}>
-                    <CText style={styles.cropText} numberOfLines={1}>
-                      {crop}
-                    </CText>
-                  </View>
-                ))}
+                {profile?.type_of_plants_ids?.map((crop, _) => {
+                  reactotron.log('Crop:', crop);
+                  plantsData?.data?.plants.filter(item => item.id === crop);
+                  const cropLabel =
+                    plantsData?.data?.plants.find(item => item.id === crop)
+                      ?.name || crop;
+                  return (
+                    <View key={crop} style={styles.cropChip}>
+                      <CText style={styles.cropText}>{cropLabel}</CText>
+                    </View>
+                  );
+                })}
 
                 {extraCount > 0 && (
                   <View style={[styles.cropChip, styles.cropMore]}>

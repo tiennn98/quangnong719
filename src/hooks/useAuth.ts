@@ -3,6 +3,7 @@ import {Alert} from 'react-native';
 import {useAppDispatch} from '@/redux/store';
 import {setAccessToken} from '@/redux/slices/authSlice';
 import {authLogin, sendOTP} from '@/services/auth.api';
+import { navigate } from '@/navigators';
 
 export type ApiResponse<T> = {
   msg: string;
@@ -12,6 +13,7 @@ export type ApiResponse<T> = {
 
 export type LoginDataPayload = {
   access_token: string;
+  new_customer: boolean;
 };
 
 export type LoginResponse = ApiResponse<LoginDataPayload>;
@@ -30,19 +32,11 @@ export const useLogin = () => {
 
     onSuccess: (res) => {
       const token = res?.data?.access_token;
-
+      const newCustomer = res?.data?.new_customer;
       if (!token) {
-        Alert.alert('Lỗi', 'Không nhận được access token từ máy chủ.');
         return;
       }
-
-      dispatch(setAccessToken(token));
-
-      Alert.alert('Thành công', 'Xác minh OTP thành công!');
-    },
-
-    onError: (error: Error) => {
-      Alert.alert('Thông báo', error.message || 'Mã OTP không chính xác!');
+      dispatch(setAccessToken({accessToken: token, new_customer: newCustomer}));
     },
   });
 };

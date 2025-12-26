@@ -1,4 +1,4 @@
-import { Colors } from '@/themes';
+import {Colors} from '@/themes';
 import {StyleSheet} from 'react-native';
 import {scale, fontScale} from 'react-native-utils-scale';
 export const styles = StyleSheet.create({
@@ -12,17 +12,18 @@ export const styles = StyleSheet.create({
     paddingBottom: scale(18),
   },
 
-  header: {marginBottom: scale(8)},
-  headerRow: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: scale(10),
+  header: {flexDirection: 'column', alignItems: 'flex-start'},
+  headerRow: {},
+  backBtn: {
+    paddingVertical: scale(16),
+    paddingRight: scale(6),
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  backBtn: {paddingVertical: scale(4), paddingRight: scale(6)},
-  headerTextWrap: {flex: 1},
+  headerTextWrap: {},
 
   h1: {fontWeight: '900'},
-  hint: {marginTop: scale(4), opacity: 0.82, lineHeight: fontScale(20)},
+  hint: {opacity: 0.82},
 
   card: {
     backgroundColor: '#FFFFFF',

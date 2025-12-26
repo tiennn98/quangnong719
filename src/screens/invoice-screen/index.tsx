@@ -6,7 +6,6 @@ import {
   ListRenderItemInfo,
   Platform,
   RefreshControl,
-  SafeAreaView,
   SectionList,
   StyleSheet,
   View,
@@ -20,6 +19,9 @@ import {useGetInvoiceList} from '@/hooks/useInvoice';
 import {useGetProfile} from '@/hooks/useProfile';
 import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
 import {Colors, Fonts} from '@/themes';
+import { SCREEN_NAME } from '@/constants';
+import { navigate } from '@/navigators';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type InvoiceSection = {
   title: string;
@@ -159,7 +161,9 @@ const InvoiceScreen: React.FC = () => {
           purchaseDate={item.purchaseDate}
           totalAmount={String(item.total)}
           status={item.status as any}
-          onDetailPress={() => {}}
+          onDetailPress={() =>
+         navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {invoice: item})
+        }
           totalPayment={item.totalPayment}
           invoiceDetails={item.invoiceDetails}
         />
@@ -258,11 +262,10 @@ export default InvoiceScreen;
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: Colors.white},
-  container: {flex: 1, paddingHorizontal: scale(16)},
+  container: {flex: 1, paddingHorizontal: scale(16),paddingTop: scale(16)},
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: scale(16),
   },
   headerLeft: {flex: 1},
   headerRight: {

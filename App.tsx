@@ -1,10 +1,14 @@
+
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
 import React from 'react';
 import { Pressable, Text, TextInput, TouchableOpacity } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
@@ -31,7 +35,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <GlobalLoading ref={globalLoadingRef} />

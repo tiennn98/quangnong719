@@ -1,6 +1,6 @@
-import {Colors, Fonts} from '@/themes';
-import React, {useState} from 'react';
-import {Controller, useFormContext} from 'react-hook-form';
+import { Colors, Fonts } from '@/themes';
+import React, { useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 import {
   StyleProp,
   StyleSheet,
@@ -9,9 +9,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {fontScale, scale} from 'react-native-utils-scale';
+import { fontScale, scale } from 'react-native-utils-scale';
 import CText from '../text';
-import {Phone} from 'lucide-react-native';
+import { Phone } from 'lucide-react-native';
 
 interface Props extends TextInputProps {
   name: string;
@@ -33,27 +33,32 @@ const CInput = ({
 }: Props) => {
   const {
     control,
-    formState: {errors},
+    formState: { errors },
   } = useFormContext();
+
   const [isFocus, setIsFocus] = useState(false);
+  const errMsg = (errors as any)?.[name]?.message;
 
   return (
     <View>
       <View
         style={[
           styles.viewInput,
-          {height: scale(height)},
-          isFocus ? styles.focusBorder : errors[name] && styles.errorBorder,
-          disabled && {backgroundColor: Colors.gray300},
+          { height: scale(height) },
+          isFocus ? styles.focusBorder : null,
+          errMsg ? styles.errorBorder : null,
+          disabled ? styles.disabledBg : null,
           style,
-        ]}>
-        {isIconPhone && <Phone color={Colors.primary} size={24} />}
+        ]}
+      >
+        {isIconPhone ? <Phone color={Colors.primary} size={22} /> : null}
+
         <Controller
           name={name}
           control={control}
-          render={({field: {onChange, onBlur, value}}) => (
+          render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={[styles.input, {fontSize: fontSize}]}
+              style={[styles.input, { fontSize }]}
               onBlur={() => {
                 setIsFocus(false);
                 onBlur();
@@ -62,17 +67,17 @@ const CInput = ({
               editable={!disabled}
               selectTextOnFocus={!disabled}
               onChangeText={text => onChange(text)}
-              value={value}
+              value={(value ?? '') as any}
               placeholderTextColor={Colors.gray500}
               {...props}
             />
           )}
-          {...props}
         />
       </View>
-      {errors[name] && (
-        <CText style={{marginTop: scale(4)}} color={Colors.red}>
-          {errors[name].message as any}
+
+      {!!errMsg && (
+        <CText style={{ marginTop: scale(4) }} color={Colors.red}>
+          {errMsg as any}
         </CText>
       )}
     </View>
@@ -84,13 +89,14 @@ export default CInput;
 const styles = StyleSheet.create({
   viewInput: {
     paddingHorizontal: scale(12),
-    justifyContent: 'space-between',
-    marginTop: scale(4),
     borderRadius: scale(8),
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.white,
     gap: scale(8),
+
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.14)',
   },
   input: {
     color: Colors.text,
@@ -98,6 +104,9 @@ const styles = StyleSheet.create({
     fontSize: fontScale(14),
     flex: 1,
     height: scale(40),
+  },
+  disabledBg: {
+    backgroundColor: Colors.gray300,
   },
   focusBorder: {
     borderColor: Colors.primary,

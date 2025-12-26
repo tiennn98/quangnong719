@@ -1,9 +1,12 @@
+import {Images} from '@/assets';
 import CButton from '@/components/button';
 import CText from '@/components/text';
 import {goBack} from '@/navigators';
+import {UserProfileData} from '@/services/profile.api';
 import {Colors} from '@/themes/color';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {RouteProp, useRoute} from '@react-navigation/native';
-import {ChevronLeft, Copy, Share2, ScanLine, X} from 'lucide-react-native';
+import {ChevronLeft, Copy, ScanLine, Share2, X} from 'lucide-react-native';
 import React, {
   memo,
   useCallback,
@@ -18,16 +21,12 @@ import {
   Modal,
   ScrollView,
   Share,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {fontScale, scale} from 'react-native-utils-scale';
-import {Images} from '@/assets';
-import {UserProfileData} from '@/services/profile.api';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {fontScale, scale, width} from 'react-native-utils-scale';
 import {styles} from './style.module';
 
 type RouteParams = {
@@ -55,6 +54,9 @@ const BarCodeCustomerScreen: React.FC = () => {
     const raw = (data?.phone_number ?? '').trim();
     return raw.replace(ONLY_DIGITS, '');
   }, [data?.phone_number]);
+  const reward_point = useMemo(() => {
+    return data?.reward_point != null ? data.reward_point.toString() : null;
+  }, [data?.reward_point]);
 
   const customerCode = phoneNumber || '—';
 
@@ -67,7 +69,7 @@ const BarCodeCustomerScreen: React.FC = () => {
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
-    const t = setTimeout(() => setToast(null), 1300);
+    const t = setTimeout(() => setToast(null), 2000);
     return () => clearTimeout(t);
   }, []);
 
@@ -106,26 +108,24 @@ const BarCodeCustomerScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            onPress={handleGoBack}
-            activeOpacity={0.7}
-            style={styles.backBtn}
-            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <ChevronLeft color={Colors.greenPrimary} size={24} />
-            <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
-              Mã của tôi
-            </CText>
-          </TouchableOpacity>
-
-          <View style={styles.headerTextWrap}>
-            <CText
-              style={styles.hint}
-              fontSize={fontScale(14)}
-              color={Colors.h2}>
-              Xuất trình mã này tại cửa hàng để tra cứu thông tin nhanh chóng
-            </CText>
-          </View>
+        <TouchableOpacity
+          onPress={handleGoBack}
+          activeOpacity={0.7}
+          style={styles.backBtn}
+          hitSlop={{top: 10, right: 10}}>
+          <ChevronLeft
+            color={Colors.greenPrimary}
+            size={24}
+            style={{marginRight: scale(8), marginLeft: scale(-8)}}
+          />
+          <CText style={styles.h1} fontSize={fontScale(30)} color={Colors.h1}>
+            Mã của tôi
+          </CText>
+        </TouchableOpacity>
+        <View style={styles.headerTextWrap}>
+          <CText style={styles.hint} fontSize={fontScale(18)} color={Colors.h1}>
+            Xuất trình mã này tại cửa hàng để tra cứu thông tin nhanh chóng
+          </CText>
         </View>
       </View>
       <ScrollView
@@ -147,17 +147,19 @@ const BarCodeCustomerScreen: React.FC = () => {
               <View style={{flex: 1}}>
                 <CText
                   style={styles.name}
-                  fontSize={fontScale(18)}
+                  fontSize={fontScale(22)}
                   color={Colors.h1}>
                   {fullName}
                 </CText>
 
                 <CText
                   style={styles.sub}
-                  fontSize={fontScale(13)}
+                  fontSize={fontScale(20)}
                   color={Colors.h2}>
                   Mã khách hàng:{' '}
-                  <CText style={styles.subBold}>{customerCode}</CText>
+                  <CText style={styles.subBold} fontSize={fontScale(20)}>
+                    {customerCode}
+                  </CText>
                 </CText>
               </View>
 
@@ -185,7 +187,7 @@ const BarCodeCustomerScreen: React.FC = () => {
                     background="#FFFFFF"
                     foregroundColor="#000000"
                     format={BarcodeFormat.CODE128}
-                    style={StyleSheet.absoluteFillObject}
+                    style={{width: width - scale(64), height: scale(220)}}
                   />
                 ) : (
                   <View style={styles.emptyBarcode}>
@@ -222,21 +224,21 @@ const BarCodeCustomerScreen: React.FC = () => {
           </CText>
 
           <InfoRow label="Họ và tên" value={fullName} />
-          <InfoRow label="Số điện thoại" value={phoneNumber || '—'} />
           <InfoRow label="Mã khách hàng" value={customerCode} bold />
+          <InfoRow label="Điểm" value={reward_point || '—'} />
         </View>
 
         <View style={[styles.card, styles.howCard]}>
           <View style={styles.howHeader}>
             <View style={styles.infoDot}>
-              <CText fontSize={fontScale(14)} color={Colors.h1}>
+              <CText fontSize={fontScale(20)} color={Colors.h1}>
                 i
               </CText>
             </View>
 
             <CText
               style={styles.howTitle}
-              fontSize={fontScale(16)}
+              fontSize={fontScale(20)}
               color={Colors.h1}>
               Cách sử dụng
             </CText>
@@ -258,7 +260,7 @@ const BarCodeCustomerScreen: React.FC = () => {
       {toast ? (
         <View pointerEvents="none" style={styles.toastWrap}>
           <View style={styles.toast}>
-            <CText color="#fff" fontSize={fontScale(13)}>
+            <CText color="#fff" fontSize={fontScale(20)}>
               {toast}
             </CText>
           </View>
@@ -274,7 +276,7 @@ const BarCodeCustomerScreen: React.FC = () => {
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <CText
-                fontSize={fontScale(16)}
+                fontSize={fontScale(20)}
                 color={Colors.h1}
                 style={{fontWeight: '900'}}>
                 Mã khách hàng
@@ -294,13 +296,13 @@ const BarCodeCustomerScreen: React.FC = () => {
                 background="#FFFFFF"
                 foregroundColor="#000000"
                 format={BarcodeFormat.CODE128}
-                style={StyleSheet.absoluteFillObject}
+                style={{width: width - scale(60), height: scale(260)}}
               />
             </View>
 
             <CText
               style={{textAlign: 'center', opacity: 0.8, marginTop: scale(10)}}
-              fontSize={fontScale(13)}
+              fontSize={fontScale(20)}
               color={Colors.h2}>
               {fullName} • {customerCode}
             </CText>
@@ -338,12 +340,12 @@ const InfoRow = memo(
   ({label, value, bold}: {label: string; value: string; bold?: boolean}) => {
     return (
       <View style={styles.row}>
-        <CText style={styles.label} fontSize={fontScale(15)} color={Colors.h2}>
+        <CText style={styles.label} fontSize={fontScale(20)} color={Colors.h2}>
           {label}:
         </CText>
         <CText
           style={[styles.value, bold && styles.valueBold]}
-          fontSize={fontScale(15)}
+          fontSize={fontScale(20)}
           color={Colors.h1}>
           {value}
         </CText>
@@ -357,7 +359,7 @@ const HowItem = memo(({text}: {text: string}) => {
     <View style={styles.howItemRow}>
       <View style={styles.bullet} />
       <CText
-        fontSize={fontScale(15)}
+        fontSize={fontScale(20)}
         color={Colors.h1}
         style={styles.howItemText}>
         {text}

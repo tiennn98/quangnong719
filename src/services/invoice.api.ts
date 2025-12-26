@@ -68,6 +68,8 @@ export const getListInvoice = async (
   const config: AxiosRequestConfig = {
     params: {
       customerCode: phone,
+      pageSize: 20,
+      pageNumber: 1,
     },
     headers: {
       accept: 'application/json',
