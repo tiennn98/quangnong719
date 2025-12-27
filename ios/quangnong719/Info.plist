@@ -42,6 +42,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>CodePushServerURL</key>
+	<string>https://api.revopush.org</string>
+	<key>CodePushDeploymentKey</key>
+	<string>nvFzf7P3YTdsc3F1tRzO-woBt3U0Vy4BUYOXXg</string>
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
