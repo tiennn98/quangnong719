@@ -1,16 +1,20 @@
-import { CText } from '@/components';
+import {CText} from '@/components';
 import HeaderBack from '@/components/HeaderBack';
-import { Colors, Fonts } from '@/themes';
-import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { fontScale, scale, width } from 'react-native-utils-scale';
+import {Colors, Fonts} from '@/themes';
+import React, {useMemo} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {fontScale, scale, width} from 'react-native-utils-scale';
 
 const fmtDate = (iso?: string) => {
-  if (!iso) {return '--';}
+  if (!iso) {
+    return '--';
+  }
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) {return String(iso).slice(0, 10);}
+  if (Number.isNaN(d.getTime())) {
+    return String(iso).slice(0, 10);
+  }
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yyyy = d.getFullYear();
@@ -19,6 +23,7 @@ const fmtDate = (iso?: string) => {
 
 const VoucherUseScreen = ({route}: any) => {
   const voucher = route?.params?.voucher;
+  const insets = useSafeAreaInsets();
 
   const desc = useMemo(() => {
     return [
@@ -30,12 +35,16 @@ const VoucherUseScreen = ({route}: any) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <View
+      style={[
+        styles.safe,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <HeaderBack title="Sử dụng voucher" />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
-
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
           <CText fontFamily={Fonts.BOLD} fontSize={16} color={Colors.h1}>
             {voucher?.name || 'Voucher ưu đãi'}
@@ -66,7 +75,7 @@ const VoucherUseScreen = ({route}: any) => {
 
             <View style={{marginTop: scale(10), alignItems: 'center'}}>
               <BarcodeCreatorView
-                value={ (voucher?.code ?? '')}
+                value={voucher?.code ?? ''}
                 background="#FFFFFF"
                 foregroundColor="#000000"
                 format={BarcodeFormat.CODE128}
@@ -91,14 +100,18 @@ const VoucherUseScreen = ({route}: any) => {
 
           <View style={{marginTop: scale(10), gap: scale(8)}}>
             {desc.map((t, idx) => (
-              <CText key={idx} fontFamily={Fonts.REGULAR} fontSize={13} color={Colors.h2}>
+              <CText
+                key={idx}
+                fontFamily={Fonts.REGULAR}
+                fontSize={13}
+                color={Colors.h2}>
                 {t}
               </CText>
             ))}
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -106,14 +119,22 @@ export default VoucherUseScreen;
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: Colors.primary},
-  content: {paddingHorizontal: scale(16), paddingVertical: scale(16), gap: scale(12)},
+  content: {
+    paddingHorizontal: scale(16),
+    paddingVertical: scale(16),
+    gap: scale(12),
+  },
   card: {
     backgroundColor: Colors.white,
     borderRadius: scale(14),
     padding: scale(14),
     gap: scale(10),
   },
-  rowBetween: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   barcodeWrap: {
     marginTop: scale(8),
     borderRadius: scale(12),

@@ -1,15 +1,20 @@
-import { useGetProfile } from '@/hooks/useProfile';
+import {useGetProfile} from '@/hooks/useProfile';
 import React from 'react';
-import {  ScrollView, StyleSheet } from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {scale} from 'react-native-utils-scale';
 import ActionButtons from './components/ActionButtons';
 import CustomerInfoCard from './components/CustomerInfoCard';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {scale} from 'react-native-utils-scale';
 
 const ProfileScreen: React.FC = () => {
-  const {data:profile} =   useGetProfile();
+  const {data: profile} = useGetProfile();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View
+      style={[
+        styles.safeArea,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -18,8 +23,7 @@ const ProfileScreen: React.FC = () => {
         scrollEnabled={true}
         bounces={true}
         alwaysBounceVertical={true}
-        overScrollMode="always"
-      >
+        overScrollMode="always">
         <CustomerInfoCard
           rank="Member"
           crops={profile?.type_of_plants_ids || []}
@@ -39,13 +43,14 @@ const ProfileScreen: React.FC = () => {
         {/* ✅ Spacer: ép content dài hơn màn hình để chắc chắn có scroll */}
         {/* <View style={{ height: 250 }} /> */}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 export default ProfileScreen;
+
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F5F5F5'},
-  scroll: { flex: 1  ,paddingTop: scale(16)},
+  safeArea: {flex: 1, backgroundColor: '#F5F5F5'},
+  scroll: {flex: 1, paddingTop: scale(16)},
   content: {
     paddingBottom: 100,
   },

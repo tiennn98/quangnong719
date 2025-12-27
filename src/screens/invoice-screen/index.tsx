@@ -15,13 +15,13 @@ import {scale, width} from 'react-native-utils-scale';
 import {Images} from '@/assets';
 import {CText} from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
+import {SCREEN_NAME} from '@/constants';
 import {useGetInvoiceList} from '@/hooks/useInvoice';
 import {useGetProfile} from '@/hooks/useProfile';
+import {navigate} from '@/navigators';
 import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
 import {Colors, Fonts} from '@/themes';
-import { SCREEN_NAME } from '@/constants';
-import { navigate } from '@/navigators';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type InvoiceSection = {
   title: string;
@@ -31,10 +31,11 @@ type InvoiceSection = {
 const InvoiceScreen: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const listRef = useRef<SectionList<InvoiceData, InvoiceSection>>(null);
+  const listRef = useRef<SectionList<InvoiceData, InvoiceSection> | any>(null);
   const lastEndReachedRef = useRef<number>(0);
 
   const {data: profile, refetch: refetchProfile} = useGetProfile();
+  const insets = useSafeAreaInsets();
 
   const {
     data: invoiceResponse,
@@ -142,7 +143,10 @@ const InvoiceScreen: React.FC = () => {
             color={Colors.greenPrimary}
             fontSize={12}>
             Tổng hóa đơn{'\n'}
-            <CText fontFamily={Fonts.BOLD} fontSize={18} style={{lineHeight: 24,textAlign: 'center'}}>
+            <CText
+              fontFamily={Fonts.BOLD}
+              fontSize={18}
+              style={{lineHeight: 24, textAlign: 'center'}}>
               {totalInvoices}
             </CText>
           </CText>
@@ -162,8 +166,8 @@ const InvoiceScreen: React.FC = () => {
           totalAmount={String(item.total)}
           status={item.status as any}
           onDetailPress={() =>
-         navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {invoice: item})
-        }
+            navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {invoice: item})
+          }
           totalPayment={item.totalPayment}
           invoiceDetails={item.invoiceDetails}
         />
@@ -223,38 +227,42 @@ const InvoiceScreen: React.FC = () => {
   }, [isLoading]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View
+      style={[
+        styles.safe,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <View style={styles.container}>
         {renderHeader}
 
         {
           <SectionList<InvoiceData, InvoiceSection>
-          ref={listRef}
-          sections={sections}
-          keyExtractor={item => String(item.id)}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
-          stickySectionHeadersEnabled={true}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.3}
-          onScrollToIndexFailed={onScrollToIndexFailed}
-          ListFooterComponent={renderFooter}
-          contentContainerStyle={styles.contentContainer}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              tintColor={Colors.greenPrimary}
-              colors={[Colors.greenPrimary]}
-            />
-          }
-          ListEmptyComponent={EmptyComponent}
-          removeClippedSubviews={Platform.OS === 'android' ? false : true}
-          initialNumToRender={10}
-        />
+            ref={listRef}
+            sections={sections}
+            keyExtractor={item => String(item.id)}
+            renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
+            stickySectionHeadersEnabled={true}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.3}
+            onScrollToIndexFailed={onScrollToIndexFailed}
+            ListFooterComponent={renderFooter}
+            contentContainerStyle={styles.contentContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={onRefresh}
+                tintColor={Colors.greenPrimary}
+                colors={[Colors.greenPrimary]}
+              />
+            }
+            ListEmptyComponent={EmptyComponent}
+            removeClippedSubviews={Platform.OS === 'android' ? false : true}
+            initialNumToRender={10}
+          />
         }
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -262,7 +270,7 @@ export default InvoiceScreen;
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: Colors.white},
-  container: {flex: 1, paddingHorizontal: scale(16),paddingTop: scale(16)},
+  container: {flex: 1, paddingHorizontal: scale(16), paddingTop: scale(16)},
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

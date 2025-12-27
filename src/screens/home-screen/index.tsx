@@ -282,7 +282,7 @@ const HomeScreen: React.FC = () => {
       </ScrollView>
 
       {/* ✅ MODAL chỉ render khi screen focus, đóng xong mới navigate */}
-      {isFocused ? (
+      {/* {isFocused ? (
         <Modal
           isVisible={showModal}
           useNativeDriver
@@ -340,7 +340,7 @@ const HomeScreen: React.FC = () => {
             </Pressable>
           </View>
         </Modal>
-      ) : null}
+      ) : null} */}
     </View>
   );
 };

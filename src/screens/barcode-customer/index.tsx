@@ -25,7 +25,7 @@ import {
   View,
 } from 'react-native';
 import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {fontScale, scale, width} from 'react-native-utils-scale';
 import {styles} from './style.module';
 
@@ -38,6 +38,7 @@ const ONLY_DIGITS = /[^0-9]/g;
 const BarCodeCustomerScreen: React.FC = () => {
   const route = useRoute<RouteProp<RouteParams, 'BarCodeCustomerScreen'>>();
   const data = route?.params;
+  const insets = useSafeAreaInsets();
 
   const [toast, setToast] = useState<string | null>(null);
   const [zoomVisible, setZoomVisible] = useState(false);
@@ -106,7 +107,11 @@ const BarCodeCustomerScreen: React.FC = () => {
   const closeZoom = useCallback(() => setZoomVisible(false), []);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <View
+      style={[
+        styles.container,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={handleGoBack}
@@ -317,7 +322,7 @@ const BarCodeCustomerScreen: React.FC = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

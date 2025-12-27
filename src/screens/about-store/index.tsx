@@ -1,17 +1,17 @@
-import CAccordion, { AccordionProps } from '@/components/accordion';
+import CAccordion, {AccordionProps} from '@/components/accordion';
 import CText from '@/components/text';
-import { Colors } from '@/themes/color';
-import React, { useCallback, useMemo } from 'react';
-import { Keyboard, View } from 'react-native';
-import { fontScale } from 'react-native-utils-scale';
-import { styles } from './style.module';
+import {Colors} from '@/themes/color';
+import React, {useCallback, useMemo} from 'react';
+import {Keyboard, View} from 'react-native';
+import {fontScale} from 'react-native-utils-scale';
+import {styles} from './style.module';
 
 import CButton from '@/components/button';
-import CDropdown, { DropdownItem } from '@/components/dropdown';
+import CDropdown, {DropdownItem} from '@/components/dropdown';
 import CInput from '@/components/input';
-import { FormProvider, useForm } from 'react-hook-form';
-import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {FormProvider, useForm} from 'react-hook-form';
+import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type ContactFormValues = {
   fullName: string;
@@ -21,11 +21,11 @@ type ContactFormValues = {
 };
 
 const TOPIC_OPTIONS: DropdownItem<string>[] = [
-  { label: 'Invoice & Payment', value: 'invoice_payment' },
-  { label: 'Product Information', value: 'product_information' },
-  { label: 'Technical Support', value: 'technical_support' },
-  { label: 'Events & Workshops', value: 'events_workshops' },
-  { label: 'Other', value: 'other' },
+  {label: 'Invoice & Payment', value: 'invoice_payment'},
+  {label: 'Product Information', value: 'product_information'},
+  {label: 'Technical Support', value: 'technical_support'},
+  {label: 'Events & Workshops', value: 'events_workshops'},
+  {label: 'Other', value: 'other'},
 ];
 
 const FAQ_LIST: AccordionProps[] = [
@@ -63,20 +63,24 @@ const FAQ_LIST: AccordionProps[] = [
 ];
 
 const AboutStoreScreen = () => {
+  const insets = useSafeAreaInsets();
   const methods = useForm<ContactFormValues>({
-    defaultValues: { fullName: '', phone: '', topic: '', message: '' },
+    defaultValues: {fullName: '', phone: '', topic: '', message: ''},
     mode: 'onChange',
   });
 
   const titleStyle = useMemo(
-    () => ({ fontWeight: '600' as const, marginBottom: 8 }),
-    []
+    () => ({fontWeight: '600' as const, marginBottom: 8}),
+    [],
   );
 
   const _renderInfoStore = useCallback(() => {
     return (
       <View style={styles.infoStoreContainer}>
-        <CText style={titleStyle} fontSize={fontScale(24)} color={Colors.greenPrimary}>
+        <CText
+          style={titleStyle}
+          fontSize={fontScale(24)}
+          color={Colors.greenPrimary}>
           Thông tin cửa hàng:
         </CText>
 
@@ -86,7 +90,9 @@ const AboutStoreScreen = () => {
 
         <CText color={Colors.h2} fontSize={fontScale(20)}>
           Đối tác đáng tin cậy của bà con trong nền nông nghiệp hiện đại.
-          {'\n'}Chúng tôi cung cấp các sản phẩm nông nghiệp chất lượng cao, tư vấn kỹ thuật chuyên sâu và giải pháp hỗ trợ toàn diện cho bà con nông dân.
+          {'\n'}Chúng tôi cung cấp các sản phẩm nông nghiệp chất lượng cao, tư
+          vấn kỹ thuật chuyên sâu và giải pháp hỗ trợ toàn diện cho bà con nông
+          dân.
         </CText>
 
         <CText color={Colors.h2} fontSize={fontScale(20)}>
@@ -131,11 +137,17 @@ const AboutStoreScreen = () => {
           Gửi tin nhắn cho chúng tôi
         </CText>
 
-        <CText fontSize={fontScale(14)} color={Colors.h2} style={{ marginBottom: 12 }}>
+        <CText
+          fontSize={fontScale(14)}
+          color={Colors.h2}
+          style={{marginBottom: 12}}>
           Vui lòng điền form, chúng tôi sẽ phản hồi trong vòng 24 giờ.
         </CText>
 
-        <CText fontSize={fontScale(14)} color={Colors.h2} style={{ marginBottom: 6 }}>
+        <CText
+          fontSize={fontScale(14)}
+          color={Colors.h2}
+          style={{marginBottom: 6}}>
           Họ và tên
         </CText>
         <CInput
@@ -147,7 +159,10 @@ const AboutStoreScreen = () => {
           onSubmitEditing={() => methods.setFocus('phone')}
         />
 
-        <CText fontSize={fontScale(14)} color={Colors.h2} style={{ marginTop: 12, marginBottom: 6 }}>
+        <CText
+          fontSize={fontScale(14)}
+          color={Colors.h2}
+          style={{marginTop: 12, marginBottom: 6}}>
           Số điện thoại
         </CText>
         <CInput
@@ -161,7 +176,10 @@ const AboutStoreScreen = () => {
           onSubmitEditing={() => methods.setFocus('message')}
         />
 
-        <CText fontSize={fontScale(14)} color={Colors.h2} style={{ marginTop: 12, marginBottom: 6 }}>
+        <CText
+          fontSize={fontScale(14)}
+          color={Colors.h2}
+          style={{marginTop: 12, marginBottom: 6}}>
           Chủ đề
         </CText>
         <CDropdown
@@ -171,32 +189,41 @@ const AboutStoreScreen = () => {
           selectStyle={styles.subTitleHeader}
         />
 
-        <CText fontSize={fontScale(14)} color={Colors.h2} style={{ marginTop: 12, marginBottom: 6 }}>
+        <CText
+          fontSize={fontScale(14)}
+          color={Colors.h2}
+          style={{marginTop: 12, marginBottom: 6}}>
           Nội dung
         </CText>
         <CInput
           name="message"
           placeholder="Nhập nội dung cần hỗ trợ"
-          style={[styles.subTitleHeader, { height: fontScale(120) }]}
+          style={[styles.subTitleHeader, {height: fontScale(120)}]}
           fontSize={fontScale(18)}
           multiline
           blurOnSubmit={false}
           returnKeyType="default"
         />
 
-        <View style={{ marginTop: 16 }}>
-          <CButton title="Gửi yêu cầu" onPress={methods.handleSubmit(onSubmit)} />
+        <View style={{marginTop: 16}}>
+          <CButton
+            title="Gửi yêu cầu"
+            onPress={methods.handleSubmit(onSubmit)}
+          />
         </View>
       </View>
     );
   }, [methods, onSubmit, titleStyle]);
 
   return (
-    <SafeAreaView style={[styles.container, { flex: 1 }]}>
+    <View
+      style={[
+        styles.container,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <FormProvider {...methods}>
         <KeyboardAvoidingScrollView
-            contentContainerStyle={styles.scrollContent}
-        >
+          contentContainerStyle={styles.scrollContent}>
           <View style={styles.contentContainer} />
           <CText style={styles.titleHeader}>Về cửa hàng của chúng tôi</CText>
           <CText style={styles.subTitleHeader}>
@@ -208,7 +235,7 @@ const AboutStoreScreen = () => {
           {_renderFrequentlyAskedQuestions()}
         </KeyboardAvoidingScrollView>
       </FormProvider>
-    </SafeAreaView>
+    </View>
   );
 };
 

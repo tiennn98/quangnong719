@@ -1,21 +1,22 @@
-import { CText, TabView } from '@/components';
-import { Colors, Fonts } from '@/themes';
-import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { scale } from 'react-native-utils-scale';
+import {CText, TabView} from '@/components';
+import {Colors, Fonts} from '@/themes';
+import React, {useCallback, useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {scale} from 'react-native-utils-scale';
 
+import {SCREEN_NAME} from '@/constants';
+import {useGetProfile} from '@/hooks/useProfile';
+import {useGetVoucherList} from '@/hooks/useVoucher';
+import {navigate} from '@/navigators';
+import type {VoucherItemDTO} from '@/services/voucher.api';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {groupVouchers} from './helper';
 import ActiveTabScreen from './tab/active-tab';
 import ExpiredTabScreen from './tab/expired-tab';
 import UsedTabScreen from './tab/used-tab';
-import { SCREEN_NAME } from '@/constants';
-import { useGetProfile } from '@/hooks/useProfile';
-import { useGetVoucherList } from '@/hooks/useVoucher';
-import { navigate } from '@/navigators';
-import type { VoucherItemDTO } from '@/services/voucher.api';
-import { groupVouchers } from './helper';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PromotionScreen = () => {
+  const insets = useSafeAreaInsets();
   const voucherQ = useGetVoucherList(1, 10);
   const items = (voucherQ.data?.data?.items || []) as VoucherItemDTO[];
 
@@ -56,12 +57,28 @@ const PromotionScreen = () => {
       }
 
       if (route.key === 'used') {
-        return <UsedTabScreen items={grouped.used as any} isLoading={voucherQ.isLoading} />;
+        return (
+          <UsedTabScreen
+            items={grouped.used as any}
+            isLoading={voucherQ.isLoading}
+          />
+        );
       }
 
-      return <ExpiredTabScreen items={grouped.expired as any} isLoading={voucherQ.isLoading} />;
+      return (
+        <ExpiredTabScreen
+          items={grouped.expired as any}
+          isLoading={voucherQ.isLoading}
+        />
+      );
     },
-    [grouped.active, grouped.used, grouped.expired, voucherQ.isLoading, onPressUse],
+    [
+      grouped.active,
+      grouped.used,
+      grouped.expired,
+      voucherQ.isLoading,
+      onPressUse,
+    ],
   );
 
   const Header = useMemo(() => {
@@ -69,10 +86,16 @@ const PromotionScreen = () => {
     return (
       <View style={styles.viewHeader}>
         <View style={styles.headerLeft}>
-          <CText fontFamily={Fonts.BOLD} color={Colors.greenPrimary} fontSize={24}>
+          <CText
+            fontFamily={Fonts.BOLD}
+            color={Colors.greenPrimary}
+            fontSize={24}>
             Voucher của tôi
           </CText>
-          <CText fontFamily={Fonts.REGULAR} color={Colors.greenPrimary} fontSize={14}>
+          <CText
+            fontFamily={Fonts.REGULAR}
+            color={Colors.greenPrimary}
+            fontSize={14}>
             Quản lý và sử dụng các mã ưu đãi của bạn
           </CText>
 
@@ -84,16 +107,31 @@ const PromotionScreen = () => {
         </View>
 
         <View style={styles.headerRight}>
-          <CText align="center" fontFamily={Fonts.REGULAR} color={Colors.greenPrimary} fontSize={12}>
-            {voucherQ.isLoading ? 'Đang tải…' : `${activeCount} mã đang hoạt động`}
+          <CText
+            align="center"
+            fontFamily={Fonts.REGULAR}
+            color={Colors.greenPrimary}
+            fontSize={12}>
+            {voucherQ.isLoading
+              ? 'Đang tải…'
+              : `${activeCount} mã đang hoạt động`}
           </CText>
         </View>
       </View>
     );
-  }, [grouped.active.length, voucherQ.isLoading, voucherQ.isError, voucherQ.error]);
+  }, [
+    grouped.active.length,
+    voucherQ.isLoading,
+    voucherQ.isError,
+    voucherQ.error,
+  ]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View
+      style={[
+        styles.safe,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <View style={styles.container}>
         {Header}
 
@@ -103,7 +141,7 @@ const PromotionScreen = () => {
           data={tabs}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -111,8 +149,12 @@ export default PromotionScreen;
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: Colors.primary},
-  container: {flex: 1, paddingHorizontal: scale(16),paddingTop: scale(16)},
-  viewHeader: {flexDirection: 'row', justifyContent: 'space-between', marginBottom: scale(16)},
+  container: {flex: 1, paddingHorizontal: scale(16), paddingTop: scale(16)},
+  viewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: scale(16),
+  },
   headerLeft: {paddingRight: scale(16), flex: 1},
   headerRight: {
     justifyContent: 'center',

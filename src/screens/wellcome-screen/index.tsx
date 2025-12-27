@@ -11,15 +11,15 @@ import {
   View,
 } from 'react-native';
 
-import { Images } from '@/assets';
+import {Images} from '@/assets';
 import CText from '@/components/text';
+import {SCREEN_NAME} from '@/constants';
+import {navigate} from '@/navigators';
 import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { fontScale } from 'react-native-utils-scale';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {fontScale} from 'react-native-utils-scale';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { styles } from './styles.module';
-import { navigate } from '@/navigators';
-import { SCREEN_NAME } from '@/constants';
+import {styles} from './styles.module';
 interface ListItemProps {
   text: string;
 }
@@ -32,6 +32,7 @@ const ListItem: React.FC<ListItemProps> = ({text}) => (
 );
 
 const WellComeScreen = () => {
+  const insets = useSafeAreaInsets();
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -49,7 +50,11 @@ const WellComeScreen = () => {
             ]}
             style={styles.container}>
             <StatusBar barStyle={'light-content'} />
-            <SafeAreaView style={styles.safeAreaContent}>
+            <View
+              style={[
+                styles.safeAreaContent,
+                {paddingTop: insets.top, paddingBottom: insets.bottom},
+              ]}>
               <View style={styles.headerContainer}>
                 <View style={styles.logoBox}>
                   <Image source={Images.logowhite} style={styles.logoIcon} />
@@ -90,7 +95,7 @@ const WellComeScreen = () => {
                   Điều khoản và Chính sách bảo mật
                 </CText>
               </CText>
-            </SafeAreaView>
+            </View>
           </LinearGradient>
         </ImageBackground>
       </TouchableWithoutFeedback>

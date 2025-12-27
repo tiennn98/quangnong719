@@ -5,7 +5,7 @@ import {Controller, FormProvider, useForm, useWatch} from 'react-hook-form';
 import {Keyboard, Pressable, ScrollView, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import ReactNativeModal from 'react-native-modal';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {fontScale, scale, width} from 'react-native-utils-scale';
 import * as yup from 'yup';
 
@@ -13,13 +13,14 @@ import CButton from '@/components/button';
 import CInput from '@/components/input';
 import CText from '@/components/text';
 
-import {useGetProfile, useUpdateCustomerProfile} from '@/hooks/useProfile';
 import {useProvinces, useWards} from '@/hooks/useLocation';
 import {useGetPlant} from '@/hooks/usePlant';
+import {useGetProfile, useUpdateCustomerProfile} from '@/hooks/useProfile';
 import {goBack, navigate} from '@/navigators';
 import {buildUpdateProfilePayload} from '@/services/profile.api';
 import {Colors} from '@/themes';
 
+import {SCREEN_NAME} from '@/constants';
 import CropMultiSelect, {CropOption} from './components/CropMultiSelect';
 import HeaderBar from './components/HeaderBar';
 import HeroCard from './components/HeroCard';
@@ -27,7 +28,6 @@ import LabelRow from './components/LabelRow';
 import PickerModal, {PickerItem} from './components/PickerModal';
 import SelectBox from './components/SelectBox';
 import {styles} from './style.module';
-import {SCREEN_NAME} from '@/constants';
 
 const removeDiacritics = (s: string) =>
   (s || '')
@@ -55,7 +55,9 @@ const stripLeadingAdminPrefix = (s?: string | null) =>
 
 const parseProvinceFromLocationName = (locationName?: string | null) => {
   const raw = (locationName || '').trim();
-  if (!raw) {return '';}
+  if (!raw) {
+    return '';
+  }
 
   const parts = raw.includes(',')
     ? raw
@@ -119,15 +121,21 @@ const formatYmd = (d: Date) => {
 };
 
 const parseYmd = (ymd?: string) => {
-  if (!ymd) {return null;}
+  if (!ymd) {
+    return null;
+  }
   const [y, m, d] = ymd.split('-').map(Number);
-  if (!y || !m || !d) {return null;}
+  if (!y || !m || !d) {
+    return null;
+  }
   return new Date(y, m - 1, d);
 };
 
 const displayBirthday = (ymd?: string) => {
   const dt = parseYmd(ymd);
-  if (!dt) {return '';}
+  if (!dt) {
+    return '';
+  }
   const dd = String(dt.getDate()).padStart(2, '0');
   const mm = String(dt.getMonth() + 1).padStart(2, '0');
   const yyyy = dt.getFullYear();
@@ -218,7 +226,9 @@ const ProfileCompletionScreen: React.FC = () => {
       const out: string[] = [];
       for (const x of raw) {
         const s = String(x);
-        if (plantIdSet.size && !plantIdSet.has(s)) {continue;}
+        if (plantIdSet.size && !plantIdSet.has(s)) {
+          continue;
+        }
         out.push(s);
       }
       return Array.from(new Set(out));
@@ -227,7 +237,9 @@ const ProfileCompletionScreen: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!profile) {return;}
+    if (!profile) {
+      return;
+    }
 
     const provinceRaw = parseProvinceFromLocationName(profile.location_name);
     const provinceName = stripLeadingAdminPrefix(provinceRaw);
@@ -254,18 +266,25 @@ const ProfileCompletionScreen: React.FC = () => {
   }, [profile, reset, normalizePlantIds]);
 
   useEffect(() => {
-    if (!plantIdSet.size) {return;}
+    if (!plantIdSet.size) {
+      return;
+    }
     const cur = getValues('crops') || [];
     const next = cur.filter(id => plantIdSet.has(String(id)));
-    if (next.length !== cur.length)
-      {setValue('crops', next, {shouldDirty: true});}
+    if (next.length !== cur.length) {
+      setValue('crops', next, {shouldDirty: true});
+    }
   }, [plantIdSet, getValues, setValue]);
 
   useEffect(() => {
-    if (!provincesQ.items?.length) {return;}
+    if (!provincesQ.items?.length) {
+      return;
+    }
 
     const cur = getValues('province');
-    if (!cur?.name || cur.code) {return;}
+    if (!cur?.name || cur.code) {
+      return;
+    }
 
     const target = normPlace(cur.name);
 
@@ -276,7 +295,9 @@ const ProfileCompletionScreen: React.FC = () => {
       );
     });
 
-    if (!found) {return;}
+    if (!found) {
+      return;
+    }
 
     setValue(
       'province',
@@ -286,10 +307,14 @@ const ProfileCompletionScreen: React.FC = () => {
   }, [provincesQ.items, getValues, setValue]);
 
   useEffect(() => {
-    if (!wardsQ.items?.length) {return;}
+    if (!wardsQ.items?.length) {
+      return;
+    }
 
     const cur = getValues('ward');
-    if (!cur?.name || cur.code) {return;}
+    if (!cur?.name || cur.code) {
+      return;
+    }
 
     const target = normPlace(cur.name);
 
@@ -300,7 +325,9 @@ const ProfileCompletionScreen: React.FC = () => {
       );
     });
 
-    if (!found) {return;}
+    if (!found) {
+      return;
+    }
 
     setValue(
       'ward',
@@ -311,10 +338,18 @@ const ProfileCompletionScreen: React.FC = () => {
 
   const progress = useMemo(() => {
     let done = 0;
-    if (fullName?.trim()) {done++;}
-    if (province) {done++;}
-    if (ward) {done++;}
-    if (crops?.length > 0) {done++;}
+    if (fullName?.trim()) {
+      done++;
+    }
+    if (province) {
+      done++;
+    }
+    if (ward) {
+      done++;
+    }
+    if (crops?.length > 0) {
+      done++;
+    }
     return done / 4;
   }, [fullName, province, ward, crops]);
 
@@ -428,7 +463,9 @@ const ProfileCompletionScreen: React.FC = () => {
       'crops',
     ];
     const firstKey = order.find(k => !!formErrors?.[k]);
-    if (!firstKey) {return;}
+    if (!firstKey) {
+      return;
+    }
 
     Keyboard.dismiss();
     setTimeout(() => {
@@ -441,7 +478,11 @@ const ProfileCompletionScreen: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <View
+      style={[
+        styles.safe,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <HeaderBar title="Chỉnh sửa hồ sơ" onBack={() => goBack()} />
 
       <FormProvider {...form}>
@@ -782,7 +823,7 @@ const ProfileCompletionScreen: React.FC = () => {
           </ReactNativeModal>
         </View>
       </FormProvider>
-    </SafeAreaView>
+    </View>
   );
 };
 
