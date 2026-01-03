@@ -7,16 +7,15 @@ import {
   Store,
   User,
 } from 'lucide-react-native';
-import React, { useMemo } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fontScale, scale, width } from 'react-native-utils-scale';
+import React, {useMemo} from 'react';
+import {FlatList, Pressable, StyleSheet, View} from 'react-native';
+import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {fontScale, scale, width} from 'react-native-utils-scale';
 
 import CText from '@/components/text';
-import { Colors, Fonts } from '@/themes';
-import { formatCurrency, formatISODate } from '@/utils/tools';
-
+import {Colors, Fonts} from '@/themes';
+import {formatCurrency, formatISODate} from '@/utils/tools';
 
 export type InvoiceDetail = {
   productId?: number;
@@ -65,7 +64,6 @@ export type InvoiceDTO = {
   invoiceDetails?: InvoiceDetail[];
 };
 
-
 const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
   const invoice = route.params.invoice as unknown as InvoiceDTO;
@@ -112,7 +110,9 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         key: 'date',
         icon: <Calendar size={22} color={Colors.greenPrimary} />,
         label: 'Ngày mua',
-        value: invoice?.purchaseDate ? formatISODate(invoice.purchaseDate) : '—',
+        value: invoice?.purchaseDate
+          ? formatISODate(invoice.purchaseDate)
+          : '—',
       },
       {
         key: 'branch',
@@ -131,7 +131,9 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         icon: <User size={22} color={Colors.greenPrimary} />,
         label: 'Khách hàng',
         value: invoice?.customerName
-          ? `${invoice.customerName}${invoice.customerCode ? ` (${invoice.customerCode})` : ''}`
+          ? `${invoice.customerName}${
+              invoice.customerCode ? ` (${invoice.customerCode})` : ''
+            }`
           : '—',
       },
     ],
@@ -196,10 +198,6 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
 
   const ListHeader = (
     <View>
-
-
-
-
       <View style={styles.receiptCard}>
         <CText style={styles.receiptTitle}>Mã hóa đơn</CText>
 
@@ -224,7 +222,6 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         </View>
       </View>
 
-
       <View style={styles.sectionHead}>
         <CText style={styles.sectionTitle}>Thông tin</CText>
         <CText style={styles.sectionNote}>Dễ xem – chữ to</CText>
@@ -244,7 +241,6 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         ))}
       </View>
 
-
       <View style={[styles.sectionHead, {marginTop: scale(14)}]}>
         <CText style={styles.sectionTitle}>Chi tiết</CText>
         <CText style={styles.sectionNote}>{`${details.length} dòng`}</CText>
@@ -256,7 +252,8 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
     <View style={[styles.dockWrap, {paddingBottom: insets.bottom + scale(12)}]}>
       <View style={styles.dockCard}>
         <View style={styles.sumRow}>
-          <CText style={styles.sumLabel}>{`Tổng tiền (${totalQuantity})`}</CText>
+          <CText
+            style={styles.sumLabel}>{`Tổng tiền (${totalQuantity})`}</CText>
           <CText style={styles.sumValue}>{formatCurrency(totalAmount)}</CText>
         </View>
         <View style={styles.sumRow}>
@@ -293,7 +290,11 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <View
+      style={[
+        styles.safe,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       <View style={styles.header}>
         <Pressable
           onPress={() => navigation.goBack()}
@@ -331,7 +332,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
       />
 
       {SummaryDock}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -339,7 +340,6 @@ export default InvoiceDetailScreen;
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#FFFFFF'},
-
 
   header: {
     paddingHorizontal: scale(16),
@@ -385,7 +385,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.BOLD,
     lineHeight: fontScale(20),
   },
-
 
   receiptCard: {
     marginHorizontal: scale(16),
@@ -444,7 +443,6 @@ const styles = StyleSheet.create({
     lineHeight: fontScale(21),
   },
 
-
   sectionHead: {
     marginTop: scale(14),
     paddingHorizontal: scale(16),
@@ -466,7 +464,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     lineHeight: fontScale(18),
   },
-
 
   metaCard: {
     flexDirection: 'row',
@@ -500,7 +497,6 @@ const styles = StyleSheet.create({
     color: Colors.h1,
     lineHeight: fontScale(23),
   },
-
 
   detailCard: {
     marginHorizontal: scale(16),
@@ -592,7 +588,6 @@ const styles = StyleSheet.create({
     color: Colors.greenPrimary,
     lineHeight: fontScale(18),
   },
-
 
   dockWrap: {
     position: 'absolute',

@@ -1,4 +1,3 @@
-
 import {useAppSelector} from '@/redux/store';
 import {initFCM, subscribeFcmTokenRefresh} from '@/services/fcm';
 import {setupFcmListeners} from '@/services/initNotifications';
@@ -8,12 +7,13 @@ import {getUniqueId} from 'react-native-device-info';
 import AppStackNavigator from './app-navigator';
 import AuthNavigator from './auth-navigator';
 import {navigationRef} from './navigation-service';
-import { isValidDevicePayload, useUpdateCustomerDevice } from '@/hooks/useUpdateDevice';
-
+import {
+  isValidDevicePayload,
+  useUpdateCustomerDevice,
+} from '@/hooks/useUpdateDevice';
 
 const Navigators = () => {
   const accessToken = useAppSelector(state => state.auth.accessToken);
-
 
   const updateDeviceMutation = useUpdateCustomerDevice({
     onSuccess: res => console.log('[DEVICE] update ok:', res?.msg ?? 'ok'),
@@ -23,11 +23,9 @@ const Navigators = () => {
   const didInitRef = useRef(false);
   const fcmTokenRef = useRef<string>('');
 
-
   const lastSentRef = useRef<string>('');
 
   const tryUpdateDevice = async () => {
-
     if (!accessToken) {
       console.log('[DEVICE] skip update (no accessToken)');
       return;
@@ -51,13 +49,13 @@ const Navigators = () => {
 
     lastSentRef.current = signature;
 
-
     await updateDeviceMutation.mutateAsync(payload);
   };
 
-
   useEffect(() => {
-    if (didInitRef.current) {return;}
+    if (didInitRef.current) {
+      return;
+    }
     didInitRef.current = true;
 
     let cleanupListeners: undefined | (() => void);
@@ -66,7 +64,6 @@ const Navigators = () => {
     (async () => {
       try {
         cleanupListeners = await setupFcmListeners();
-
 
         const deviceId = getUniqueId();
         console.log('[DEVICE] uniqueId:', deviceId);
@@ -84,13 +81,11 @@ const Navigators = () => {
           console.log('[FCM] apns:', apnsToken);
         }
 
-
         unsubTokenRefresh = subscribeFcmTokenRefresh(async newToken => {
           fcmTokenRef.current = newToken;
           console.log('[FCM] token refreshed:', newToken.slice(-12));
           await tryUpdateDevice();
         });
-
 
         await tryUpdateDevice();
       } catch (e: any) {
@@ -102,14 +97,13 @@ const Navigators = () => {
       unsubTokenRefresh?.();
       cleanupListeners?.();
     };
-
   }, []);
 
-
   useEffect(() => {
-    if (!accessToken) {return;}
+    if (!accessToken) {
+      return;
+    }
     tryUpdateDevice();
-
   }, [accessToken]);
 
   return (
