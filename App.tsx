@@ -1,3 +1,4 @@
+import ProfileUpdateReminderGate from '@/screens/ProfileUpdateReminderGate';
 
 if (__DEV__) {
   require('./src/services/reactotron-config');
@@ -39,7 +40,9 @@ const App = () => {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <GlobalLoading ref={globalLoadingRef} />
-            <Navigators />
+            <ProfileUpdateReminderGate>
+              <Navigators />
+            </ProfileUpdateReminderGate>
           </PersistGate>
         </Provider>
       </SafeAreaProvider>

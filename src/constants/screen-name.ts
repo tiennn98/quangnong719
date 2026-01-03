@@ -18,4 +18,5 @@ export const SCREEN_NAME = {
   PROFILE_COMPLETION_SCREEN: 'ProfileCompletionScreen',
   INVOICE_DETAIL_SCREEN: 'InvoiceDetailScreen',
   VOUCHER_USE_SCREEN: 'VoucherUseScreen',
+  DELETE_ACCOUNT_OTP_SCREEN: 'DeleteAccountOtpScreen',
 };

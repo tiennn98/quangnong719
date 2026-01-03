@@ -4,6 +4,7 @@ import {useAppDispatch} from '@/redux/store';
 import {setAccessToken} from '@/redux/slices/authSlice';
 import {authLogin, sendOTP} from '@/services/auth.api';
 import { navigate } from '@/navigators';
+import reactotron from 'reactotron-react-native';
 
 export type ApiResponse<T> = {
   msg: string;
@@ -19,8 +20,12 @@ export type LoginDataPayload = {
 export type LoginResponse = ApiResponse<LoginDataPayload>;
 
 export const useSendOTP = () => {
-  return useMutation({
-    mutationFn: (phone: string) => sendOTP(phone),
+  return useMutation<any,Error,{phone:string;action:'login'|'delete_account'}>({
+    
+    mutationFn: ({phone,action}) => {
+      reactotron.log('Sending OTP to phone:',phone, 'for action:', action);
+      return sendOTP(phone, action)
+    }
   });
 };
 

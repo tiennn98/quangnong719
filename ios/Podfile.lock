@@ -1879,6 +1879,27 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
+  - RNPermissions (5.4.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (3.37.0):
     - DoubleConversion
     - glog
@@ -2072,6 +2093,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
@@ -2265,6 +2287,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -2372,6 +2396,7 @@ SPEC CHECKSUMS:
   RNFBApp: 0c4cadae3900893d4631ea9a9effd14f853cd8e0
   RNFBMessaging: 873220424f6f6aa5c787baf5c7099e1e2ba087c9
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
+  RNPermissions: c54b43739c184ef81b221e6e3ece3e757d552cee
   RNScreens: d694115e022f03c2dd669acd9c5085905e6b4435
   RNSVG: 877cd57c2db63dc9f1fd1bbb5e95506ccd481df6
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d

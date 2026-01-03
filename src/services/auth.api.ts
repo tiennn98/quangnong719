@@ -6,12 +6,12 @@ import axios from 'axios';
 import { queryClient } from './react-query-client';
 
 export const sendOTP = async (
-  phone: string,
+  phone: string,action :'login'|'delete_account',
 ): Promise<{msg: string; statusCode: number}> => {
   try {
     const res = await axios.post(
       `${URL}/auth/send-otp`,
-      {phone_number: phone},
+      {phone_number: phone,action:action},
       {
         headers: {
           accept: 'application/json',

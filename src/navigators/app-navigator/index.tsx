@@ -8,6 +8,7 @@ import InvoiceDetailScreen from '@/screens/InvoiceDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import BottomTabNavigator from '../bottom-tab-navigator';
+import DeleteAccountOtpScreen from '@/screens/DeleteAccountOtpScreen';
 
 const Stack = createNativeStackNavigator<any>();
 
@@ -34,6 +35,8 @@ const AppStackNavigator = () => {
         component={InvoiceDetailScreen}
       />
       <Stack.Screen name={SCREEN_NAME.VOUCHER_USE_SCREEN} component={VoucherUseScreen}/>
+      <Stack.Screen name={SCREEN_NAME.DELETE_ACCOUNT_OTP_SCREEN} component={DeleteAccountOtpScreen}/>
+      
 
 
     </Stack.Navigator>
