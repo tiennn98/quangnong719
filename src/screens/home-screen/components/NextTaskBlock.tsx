@@ -1,8 +1,8 @@
+import CText from '@/components/text';
 import { Colors } from '@/themes';
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { styles } from '../style.module';
-import CText from '@/components/text';
 
 export const NextTaskBlock: React.FC = () => (
   <View style={styles.blockWrapper}>

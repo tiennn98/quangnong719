@@ -1,5 +1,6 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
   AppStateStatus,
@@ -13,17 +14,16 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 
-import {Images} from '@/assets';
-import {CText, InputOTP} from '@/components';
+import { Images } from '@/assets';
+import { CText, InputOTP } from '@/components';
 import CButton from '@/components/button';
-import {useLogin, useSendOTP} from '@/hooks/useAuth';
-import {Colors} from '@/themes';
-import {hidePhoneNumber} from '@/utils/tools';
-import {fontScale, scale} from 'react-native-utils-scale';
-import {styles} from './styles.module';
+import { useLogin, useSendOTP } from '@/hooks/useAuth';
+import { Colors } from '@/themes';
+import { hidePhoneNumber } from '@/utils/tools';
+import { fontScale, scale } from 'react-native-utils-scale';
+import { styles } from './styles.module';
 
 const RESEND_COUNTDOWN = 300; // seconds
 const OTP_SESSION_KEY = 'otp_session_v1';
@@ -43,7 +43,7 @@ function formatCountdown(seconds: number) {
 }
 
 function clampInt(n: number) {
-  if (!Number.isFinite(n)) return 0;
+  if (!Number.isFinite(n)) {return 0;}
   return Math.max(0, Math.floor(n));
 }
 
@@ -83,7 +83,7 @@ type UiErrorKind = 'ACCOUNT_NOT_FOUND' | 'OTP_INVALID' | 'RATE_LIMIT' | 'GENERIC
 function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
   // Vì auth.api.ts đang throw new Error(apiMsg) => err.message là cái quan trọng nhất.
   const msg = normalizeMsg(err?.message);
-  
+
   // Ưu tiên: tài khoản không tồn tại
   if (isAccountNotFoundMessage(msg)) {
     return {
@@ -91,7 +91,7 @@ function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
       message: `Tài khoản của bạn không tồn tại.\nVui lòng liên hệ ${SUPPORT_PHONE}.`,
     };
   }
-  
+
   // OTP sai/hết hạn/không tồn tại
   if (isOtpInvalidMessage(msg) || msg.toLowerCase().includes('otp')) {
     return {
@@ -99,7 +99,7 @@ function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
       message: 'Mã OTP không đúng hoặc không tồn tại.',
     };
   }
-  
+
   // Rate limit
   if (msg.includes('429') || msg.toLowerCase().includes('too many')) {
     return {
@@ -107,7 +107,7 @@ function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
       message: 'Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.',
     };
   }
-  
+
   // Fallback
   return {
     kind: 'GENERIC',
@@ -119,43 +119,43 @@ async function callPhone(phone: string) {
   const raw = phone.replace(/\s+/g, '');
   const url = Platform.OS === 'ios' ? `telprompt:${raw}` : `tel:${raw}`;
   const can = await Linking.canOpenURL(url);
-  if (can) return Linking.openURL(url);
+  if (can) {return Linking.openURL(url);}
   return Linking.openURL(`tel:${raw}`);
 }
 
 const ConfirmOtpScreen = () => {
   const route = useRoute();
   const {phone} = route.params as {phone: string};
-  
+
   const navigation = useNavigation<any>();
   const loginMutation = useLogin();
   const resendOTPMutation = useSendOTP();
-  
+
   useLayoutEffect(() => {
     navigation.setOptions({gestureEnabled: false});
   }, [navigation]);
-  
+
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState<string | null>(null);
-  
+
   // ✅ reset InputOTP (toggle)
   const [needResetOtp, setNeedResetOtp] = useState(false);
   const triggerResetOtp = useCallback(() => {
     setNeedResetOtp(prev => !prev);
   }, []);
-  
+
   // ✅ Countdown theo expiresAt, không reset khi background/foreground
   const [expiresAtMs, setExpiresAtMs] = useState<number>(
     Date.now() + RESEND_COUNTDOWN * 1000,
   );
   const [timeLeft, setTimeLeft] = useState<number>(RESEND_COUNTDOWN);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
+
   const stopTick = useCallback(() => {
-    if (tickRef.current) clearInterval(tickRef.current);
+    if (tickRef.current) {clearInterval(tickRef.current);}
     tickRef.current = null;
   }, []);
-  
+
   const startTick = useCallback(
     (expMs: number) => {
       stopTick();
@@ -166,28 +166,28 @@ const ConfirmOtpScreen = () => {
     },
     [stopTick],
   );
-  
+
   const persistSession = useCallback(async (session: OtpSession) => {
     try {
       await AsyncStorage.setItem(OTP_SESSION_KEY, JSON.stringify(session));
     } catch {}
   }, []);
-  
+
   const clearSession = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(OTP_SESSION_KEY);
     } catch {}
   }, []);
-  
+
   // ✅ load session: tránh reset 300s khi user qua Zalo rồi quay lại
   React.useEffect(() => {
     let mounted = true;
-    
+
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(OTP_SESSION_KEY);
-        if (!mounted) return;
-        
+        if (!mounted) {return;}
+
         if (raw) {
           const parsed = JSON.parse(raw) as Partial<OtpSession>;
           if (parsed?.phone === phone && typeof parsed.expiresAtMs === 'number') {
@@ -197,7 +197,7 @@ const ConfirmOtpScreen = () => {
             return;
           }
         }
-        
+
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
         setExpiresAtMs(exp);
         startTick(exp);
@@ -209,13 +209,13 @@ const ConfirmOtpScreen = () => {
         persistSession({phone, expiresAtMs: exp});
       }
     })();
-    
+
     return () => {
       mounted = false;
       stopTick();
     };
   }, [phone, persistSession, startTick, stopTick]);
-  
+
   // ✅ foreground => update timeLeft (không restart)
   React.useEffect(() => {
     const onAppStateChange = (next: AppStateStatus) => {
@@ -226,38 +226,38 @@ const ConfirmOtpScreen = () => {
     const sub = AppState.addEventListener('change', onAppStateChange);
     return () => sub.remove();
   }, [expiresAtMs]);
-  
+
   // ✅ Modal thông báo
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
   const [modalKind, setModalKind] = useState<UiErrorKind>('GENERIC');
-  
+
   const openModal = useCallback((kind: UiErrorKind, message: string) => {
     setModalKind(kind);
     setModalMsg(message);
     setModalOpen(true);
   }, []);
-  
+
   const resendLabel = useMemo(() => {
     return timeLeft > 0
       ? `Gửi lại OTP (${formatCountdown(timeLeft)})`
       : 'Gửi lại OTP';
   }, [timeLeft]);
-  
+
   const handleChangeOtp = useCallback(
     (code: string) => {
       setOtp(code);
-      if (otpError) setOtpError(null);
+      if (otpError) {setOtpError(null);}
     },
     [otpError],
   );
-  
+
   const handleVerifyOtp = useCallback(() => {
     if (otp.length !== 6) {
       setOtpError('Vui lòng nhập đủ 6 số OTP');
       return;
     }
-    
+
     loginMutation.mutate(
       {phone, otp},
       {
@@ -266,23 +266,23 @@ const ConfirmOtpScreen = () => {
         },
         onError: (err: any) => {
           const ui = mapErrorToUi(err);
-          
+
           // ✅ OTP sai/hết hạn => clear để nhập lại
           if (ui.kind === 'OTP_INVALID') {
             setOtp('');
             setOtpError(null);
             triggerResetOtp();
           }
-          
+
           openModal(ui.kind, ui.message);
         },
       },
     );
   }, [otp, phone, loginMutation, clearSession, triggerResetOtp, openModal]);
-  
+
   const handleResendOtp = useCallback(() => {
-    if (timeLeft > 0 || resendOTPMutation.isPending) return;
-    
+    if (timeLeft > 0 || resendOTPMutation.isPending) {return;}
+
     // ✅ hook useSendOTP của bạn nhận string phone
     resendOTPMutation.mutate(phone, {
       onSuccess: async () => {
@@ -304,12 +304,12 @@ const ConfirmOtpScreen = () => {
     persistSession,
     openModal,
   ]);
-  
+
   const isVerifyDisabled = loginMutation.isPending || otp.length !== 6;
   const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
-  
+
   const isAccountNotFound = modalKind === 'ACCOUNT_NOT_FOUND';
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -329,32 +329,32 @@ const ConfirmOtpScreen = () => {
                   style={styles.imageLogo}
                 />
               </View>
-              
+
               <View style={styles.center}>
                 <CText color={Colors.h2} fontSize={fontScale(16)}>
                   Nông dân cần - Có Quang Nông
                 </CText>
               </View>
-              
+
               <View style={styles.whiteBox}>
                 <CText style={styles.titleText}>Nhập mã OTP</CText>
-                
+
                 <CText style={styles.subtitleText}>
                   Chúng tôi đã gửi mã đến số{' '}
                   <CText style={styles.phoneText}>
                     {hidePhoneNumber(phone)}
                   </CText>
                 </CText>
-                
+
                 <CText style={styles.labelText}>Nhập mã OTP 6 số</CText>
-                
+
                 <InputOTP
                   onChangeValue={handleChangeOtp}
                   needReset={needResetOtp}
                 />
-                
+
                 {otpError ? <CText style={styles.errorText}>{otpError}</CText> : null}
-                
+
                 <CText
                   color={Colors.h2}
                   fontSize={fontScale(14)}
@@ -365,7 +365,7 @@ const ConfirmOtpScreen = () => {
                   }}>
                   Nhập mã gồm 6 chữ số được gửi đến điện thoại của bạn
                 </CText>
-                
+
                 <View style={styles.viewButton}>
                   <CButton
                     title={loginMutation.isPending ? 'Đang xác minh...' : 'Xác minh OTP'}
@@ -375,7 +375,7 @@ const ConfirmOtpScreen = () => {
                     style={styles.button}
                   />
                 </View>
-                
+
                 <View style={{marginTop: scale(10)}}>
                   <CButton
                     title={resendOTPMutation.isPending ? 'Đang gửi...' : resendLabel}
@@ -395,7 +395,7 @@ const ConfirmOtpScreen = () => {
           </ScrollView>
         </Pressable>
       </KeyboardAvoidingView>
-      
+
       {/* ✅ Modal lỗi */}
       <Modal
         isVisible={modalOpen}
@@ -409,11 +409,11 @@ const ConfirmOtpScreen = () => {
           <CText style={{fontSize: fontScale(18), fontWeight: '900', color: Colors.h1}}>
             {isAccountNotFound ? 'Tài khoản không tồn tại' : 'Thông báo'}
           </CText>
-          
+
           <CText style={{marginTop: scale(8), color: Colors.h2, fontSize: fontScale(14)}}>
             {modalMsg}
           </CText>
-          
+
           {isAccountNotFound ? (
             <>
               {/* bấm số để gọi */}
@@ -424,7 +424,7 @@ const ConfirmOtpScreen = () => {
                   {SUPPORT_PHONE} (bấm để gọi)
                 </CText>
               </Pressable>
-              
+
               <View style={{flexDirection: 'row', gap: scale(10), marginTop: scale(14)}}>
                 <View style={{flex: 1}}>
                   <CButton

@@ -1,8 +1,8 @@
-import React, {memo} from 'react';
-import {View} from 'react-native';
 import CText from '@/components/text';
-import {Colors} from '@/themes';
-import {styles} from '../style.module';
+import { Colors } from '@/themes';
+import React, { memo } from 'react';
+import { View } from 'react-native';
+import { styles } from '../style.module';
 
 type Props = {
   label: string;

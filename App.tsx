@@ -4,13 +4,13 @@ if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import GlobalLoading, {globalLoadingRef} from '@/components/global-loading';
+import GlobalLoading, { globalLoadingRef } from '@/components/global-loading';
 import Navigators from '@/navigators';
-import {persistor, store} from '@/redux/store';
-import {Colors} from '@/themes';
+import { persistor, store } from '@/redux/store';
+import { Colors } from '@/themes';
 import CodePush from '@revopush/react-native-code-push';
-import {QueryClientProvider} from '@tanstack/react-query';
-import React, {useEffect, useState} from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -25,9 +25,9 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {queryClient} from './src/services/react-query-client';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { queryClient } from './src/services/react-query-client';
 
 if (Text.defaultProps == null) {
   Text.defaultProps = {};
@@ -127,6 +127,8 @@ const App = () => {
     </QueryClientProvider>
   );
 };
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {

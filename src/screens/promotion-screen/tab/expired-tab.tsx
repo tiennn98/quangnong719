@@ -20,7 +20,7 @@ const ExpiredTabScreen: React.FC<Props> = ({items, refreshing, onRefresh, onLoad
       return (exp && exp < now) || v.status === 3;
     });
   }, [items]);
-  
+
   if (!data.length) {
     return (
       <View style={styles.center}>
@@ -33,7 +33,7 @@ const ExpiredTabScreen: React.FC<Props> = ({items, refreshing, onRefresh, onLoad
       </View>
     );
   }
-  
+
   return (
     <FlatList
       data={data}

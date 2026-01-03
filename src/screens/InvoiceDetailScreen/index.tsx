@@ -7,15 +7,15 @@ import {
   Store,
   User,
 } from 'lucide-react-native';
-import React, {useMemo} from 'react';
-import {FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {fontScale, scale, width} from 'react-native-utils-scale';
+import React, { useMemo } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fontScale, scale, width } from 'react-native-utils-scale';
 
 import CText from '@/components/text';
-import {Colors, Fonts} from '@/themes';
-import {formatCurrency, formatISODate} from '@/utils/tools';
+import { Colors, Fonts } from '@/themes';
+import { formatCurrency, formatISODate } from '@/utils/tools';
 
 export type InvoiceDetail = {
   productId?: number;

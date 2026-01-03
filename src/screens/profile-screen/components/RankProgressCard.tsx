@@ -1,9 +1,9 @@
 import CText from '@/components/text';
-import {Colors} from '@/themes';
-import React, {memo, useEffect, useMemo, useRef} from 'react';
-import {Animated, Easing, StyleSheet, View} from 'react-native';
-import {Award, Sparkles} from 'lucide-react-native';
-import {fontScale, scale} from 'react-native-utils-scale';
+import { Colors } from '@/themes';
+import { Award, Sparkles } from 'lucide-react-native';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { fontScale, scale } from 'react-native-utils-scale';
 
 interface RankProgressCardProps {
   currentRank: string;

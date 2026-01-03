@@ -1,11 +1,11 @@
-import {CText} from '@/components';
+import { CText } from '@/components';
 import HeaderBack from '@/components/HeaderBack';
-import {Colors, Fonts} from '@/themes';
-import React, {useMemo} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {fontScale, scale, width} from 'react-native-utils-scale';
+import { Colors, Fonts } from '@/themes';
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fontScale, scale, width } from 'react-native-utils-scale';
 
 const fmtDate = (iso?: string) => {
   if (!iso) {

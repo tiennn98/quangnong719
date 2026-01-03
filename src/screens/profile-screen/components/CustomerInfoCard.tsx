@@ -1,8 +1,8 @@
-import {Images} from '@/assets';
+import { Images } from '@/assets';
 import CText from '@/components/text';
-import {useGetPlant} from '@/hooks/usePlant';
-import {useGetProfile} from '@/hooks/useProfile';
-import {Colors} from '@/themes';
+import { useGetPlant } from '@/hooks/usePlant';
+import { useGetProfile } from '@/hooks/useProfile';
+import { Colors } from '@/themes';
 import {
   BadgeCheck,
   Leaf,
@@ -11,9 +11,9 @@ import {
   ShieldCheck,
   User,
 } from 'lucide-react-native';
-import React, {memo, useCallback, useMemo, useState} from 'react';
-import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {fontScale, scale} from 'react-native-utils-scale';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { fontScale, scale } from 'react-native-utils-scale';
 import reactotron from 'reactotron-react-native';
 
 interface CustomerInfoCardProps {

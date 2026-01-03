@@ -1,17 +1,16 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {AppState, Pressable, StyleSheet, Switch, View} from 'react-native';
-import Modal from 'react-native-modal';
-import {Bell} from 'lucide-react-native';
 import CText from '@/components/text';
-import {Colors} from '@/themes';
-import {fontScale, scale} from 'react-native-utils-scale';
+import { Colors } from '@/themes';
+import { Bell } from 'lucide-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { AppState, Pressable, StyleSheet, Switch, View } from 'react-native';
+import Modal from 'react-native-modal';
+import { fontScale, scale } from 'react-native-utils-scale';
 
 import {
   checkNotifications,
-  requestNotifications,
-  openSettings,
-  NotificationSettings,
   NotificationStatus,
+  openSettings,
+  requestNotifications,
 } from 'react-native-permissions';
 
 type ConfirmKind = 'enable' | 'disable';
@@ -20,10 +19,10 @@ const NotificationToggleRow: React.FC = () => {
   const [enabled, setEnabled] = useState(false);
   const [status, setStatus] = useState<NotificationStatus>('denied');
   const [checking, setChecking] = useState(true);
-  
+
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [confirmKind, setConfirmKind] = useState<ConfirmKind>('enable');
-  
+
   const refresh = useCallback(async () => {
     try {
       setChecking(true);
@@ -37,22 +36,22 @@ const NotificationToggleRow: React.FC = () => {
       setChecking(false);
     }
   }, []);
-  
+
   // Load lần đầu + khi quay lại app (user từ Settings quay về)
   useEffect(() => {
     refresh();
     const sub = AppState.addEventListener('change', s => {
-      if (s === 'active') refresh();
+      if (s === 'active') {refresh();}
     });
     return () => sub.remove();
   }, [refresh]);
-  
+
   const subtitle = useMemo(() => {
-    if (checking) return 'Đang kiểm tra trạng thái…';
-    if (enabled) return 'Đang bật • Bạn sẽ nhận thông báo ưu đãi/sự kiện';
+    if (checking) {return 'Đang kiểm tra trạng thái…';}
+    if (enabled) {return 'Đang bật • Bạn sẽ nhận thông báo ưu đãi/sự kiện';}
     return 'Đang tắt • Bạn sẽ không nhận thông báo ưu đãi/sự kiện';
   }, [checking, enabled]);
-  
+
   const onTogglePress = useCallback(
     (next: boolean) => {
       // next = user muốn bật hay muốn tắt
@@ -61,7 +60,7 @@ const NotificationToggleRow: React.FC = () => {
     },
     [],
   );
-  
+
   const doEnable = useCallback(async () => {
     // iOS/Android: request permission
     // Nếu bị "blocked" thì phải vào Settings
@@ -70,7 +69,7 @@ const NotificationToggleRow: React.FC = () => {
         await openSettings();
         return;
       }
-      
+
       const res = await requestNotifications(['alert', 'sound', 'badge']);
       // res.status: granted/denied/blocked/limited
       if (res.status === 'blocked') {
@@ -81,14 +80,14 @@ const NotificationToggleRow: React.FC = () => {
       setTimeout(refresh, 300);
     }
   }, [refresh, status]);
-  
+
   const doDisable = useCallback(async () => {
     // Không thể “tắt” notification trực tiếp bằng code.
     // Phải mở Settings để user tắt.
     await openSettings();
     setTimeout(refresh, 300);
   }, [refresh]);
-  
+
   const onConfirm = useCallback(async () => {
     setConfirmVisible(false);
     if (confirmKind === 'enable') {
@@ -97,7 +96,7 @@ const NotificationToggleRow: React.FC = () => {
       await doDisable();
     }
   }, [confirmKind, doDisable, doEnable]);
-  
+
   return (
     <>
       <Pressable
@@ -110,12 +109,12 @@ const NotificationToggleRow: React.FC = () => {
         <View style={styles.iconWrap}>
           <Bell size={20} color={Colors.greenPrimary} />
         </View>
-        
+
         <View style={styles.textWrap}>
           <CText style={styles.title}>Thông báo</CText>
           <CText style={styles.subtitle}>{subtitle}</CText>
         </View>
-        
+
         <Switch
           value={enabled}
           onValueChange={onTogglePress}
@@ -124,7 +123,7 @@ const NotificationToggleRow: React.FC = () => {
           thumbColor={enabled ? Colors.greenPrimary : '#f4f4f4'}
         />
       </Pressable>
-      
+
       <Modal
         isVisible={confirmVisible}
         onBackdropPress={() => setConfirmVisible(false)}
@@ -138,13 +137,13 @@ const NotificationToggleRow: React.FC = () => {
           <CText style={styles.modalTitle}>
             {confirmKind === 'disable' ? 'Tắt thông báo?' : 'Bật thông báo?'}
           </CText>
-          
+
           <CText style={styles.modalDesc}>
             {confirmKind === 'disable'
               ? 'Nếu tắt, bạn sẽ không nhận được thông báo ưu đãi và sự kiện từ Quang Nông 719.'
               : 'Bật thông báo để nhận ưu đãi, sự kiện và nhắc lịch quan trọng từ Quang Nông 719.'}
           </CText>
-          
+
           <View style={styles.modalActions}>
             <Pressable
               onPress={() => setConfirmVisible(false)}
@@ -156,7 +155,7 @@ const NotificationToggleRow: React.FC = () => {
             >
               <CText style={styles.btnGhostText}>Hủy</CText>
             </Pressable>
-            
+
             <Pressable
               onPress={onConfirm}
               style={({pressed}) => [
@@ -170,7 +169,7 @@ const NotificationToggleRow: React.FC = () => {
               </CText>
             </Pressable>
           </View>
-          
+
           <CText style={styles.modalHint}>
             *Ứng dụng sẽ mở phần Cài đặt để bạn bật/tắt thông báo trên điện thoại.
           </CText>
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     fontSize: fontScale(12),
     color: 'rgba(0,0,0,0.55)',
   },
-  
+
   modalCard: {
     backgroundColor: '#fff',
     borderRadius: scale(14),
@@ -230,6 +229,6 @@ const styles = StyleSheet.create({
   btnGhostText: {fontWeight: '900', color: Colors.h1},
   btnPrimary: {backgroundColor: Colors.greenPrimary},
   btnPrimaryText: {fontWeight: '900', color: Colors.white},
-  
+
   modalHint: {marginTop: scale(10), fontSize: fontScale(12), color: 'rgba(0,0,0,0.5)'},
 });

@@ -1,5 +1,5 @@
-import React, {memo, useEffect, useRef} from 'react';
-import {Animated, StyleProp, ViewStyle} from 'react-native';
+import React, { memo, useEffect, useRef } from 'react';
+import { Animated, StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
   show: boolean;

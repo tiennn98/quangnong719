@@ -1,14 +1,14 @@
-import {Images} from '@/assets/images';
-import {CText} from '@/components';
+import { Images } from '@/assets/images';
+import { CText } from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
-import {SCREEN_NAME} from '@/constants';
-import {useGetInvoiceList} from '@/hooks/useInvoice';
-import {useGetProfile} from '@/hooks/useProfile';
-import {navigate} from '@/navigators';
-import {InvoiceResponse} from '@/services/invoice.api';
-import {Colors} from '@/themes';
-import {formatCurrency} from '@/utils/tools';
-import React, {useMemo} from 'react';
+import { SCREEN_NAME } from '@/constants';
+import { useGetInvoiceList } from '@/hooks/useInvoice';
+import { useGetProfile } from '@/hooks/useProfile';
+import { navigate } from '@/navigators';
+import { InvoiceResponse } from '@/services/invoice.api';
+import { Colors } from '@/themes';
+import { formatCurrency } from '@/utils/tools';
+import React, { useMemo } from 'react';
 import {
   Image,
   ScrollView,
@@ -18,8 +18,8 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {QuickAccessBox} from './components/QuickAccessBox';
-import {styles} from './style.module';
+import { QuickAccessBox } from './components/QuickAccessBox';
+import { styles } from './style.module';
 
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
@@ -48,7 +48,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
-  
+
   const {data: profile} = useGetProfile();
   const {data: invoiceResponse} = useGetInvoiceList(profile?.phone_number) as {
     data?: InvoiceResponse;
@@ -56,21 +56,21 @@ const HomeScreen: React.FC = () => {
     isFetching: boolean;
     refetch: () => Promise<any>;
   };
-  
+
   const getGreetingByTime = (date = new Date()) => {
     const h = date.getHours();
-    if (h >= 5 && h < 11) return 'Chào buổi sáng!';
-    if (h >= 11 && h < 14) return 'Chào buổi trưa!';
-    if (h >= 14 && h < 18) return 'Chào buổi chiều!';
+    if (h >= 5 && h < 11) {return 'Chào buổi sáng!';}
+    if (h >= 11 && h < 14) {return 'Chào buổi trưa!';}
+    if (h >= 14 && h < 18) {return 'Chào buổi chiều!';}
     return 'Chào buổi tối!';
   };
-  
+
   const greetingTitle = useMemo(() => getGreetingByTime(), []);
-  
+
   return (
     <View style={{flex: 1}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.greenPrimary} />
-      
+
       <View style={styles.headerBackground}>
         <View style={styles.headerBar}>
           <Image
@@ -88,7 +88,7 @@ const HomeScreen: React.FC = () => {
             style={styles.headerGradient}
           />
         </View>
-        
+
         <View style={styles.headerHelloContainer}>
           <CText style={styles.greetingTitle}>{greetingTitle}</CText>
           <CText
@@ -101,7 +101,7 @@ const HomeScreen: React.FC = () => {
           </CText>
         </View>
       </View>
-      
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
@@ -116,7 +116,7 @@ const HomeScreen: React.FC = () => {
                 {profile?.full_name || 'Nguyễn Đức Nhâm!'}
               </CText>
             </View>
-            
+
             <View style={styles.pointsContainer}>
               <CText style={styles.diamondIcon}>💎</CText>
               <CText style={styles.pointsText}>Thành viên</CText>
@@ -125,7 +125,7 @@ const HomeScreen: React.FC = () => {
               </CText>
             </View>
           </View>
-          
+
           <View style={styles.quickActionsContainer}>
             <TouchableOpacity
               style={styles.quickActionButton}
@@ -134,14 +134,14 @@ const HomeScreen: React.FC = () => {
               <Image source={Images.qrcodeIcon} style={styles.quickActionIcon} />
               <CText style={styles.quickActionText}>Mã của tôi</CText>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.quickActionButton} activeOpacity={0.7}>
               <Image source={Images.walletIcon} style={styles.quickActionIcon} />
               <CText style={styles.quickActionText}>Công nợ của tôi</CText>
             </TouchableOpacity>
           </View>
         </View>
-        
+
         <View style={styles.mainContent}>
           <View style={styles.bannerContainer}>
             <Image
@@ -154,7 +154,7 @@ const HomeScreen: React.FC = () => {
               <Text style={styles.bannerTextSub}>PHÂN HÓA MẦM HOA</Text>
             </View>
           </View>
-          
+
           <View style={styles.infoGrid}>
             <InfoBox icon={Images.voucherIcon} value="0" label="Phiếu ưu đãi" color={Colors.gray300} />
             <InfoBox
@@ -170,7 +170,7 @@ const HomeScreen: React.FC = () => {
               color={Colors.black}
             />
           </View>
-          
+
           <View style={{paddingVertical: scale(10)}}>
             <View style={styles.invoiceCurrentHeader}>
               <Image source={Images.listInvoice} style={styles.iconStyle} />
@@ -178,7 +178,7 @@ const HomeScreen: React.FC = () => {
                 Hóa đơn gần đây
               </CText>
             </View>
-            
+
             {invoiceResponse?.data?.length ? (
               <InvoiceBlock
                 invoiceId={invoiceResponse?.data[0]?.code}
@@ -200,7 +200,7 @@ const HomeScreen: React.FC = () => {
               </View>
             )}
           </View>
-          
+
           <View style={styles.quickAccessGrid}>
             <QuickAccessBox icon={Images.skillCorner} label="Mẹo canh tác" />
             <QuickAccessBox icon={Images.helpSupport} label="Hỗ trợ" />

@@ -1,12 +1,12 @@
-import {Images} from '@/assets';
+import { Images } from '@/assets';
 import CButton from '@/components/button';
 import CText from '@/components/text';
-import {goBack} from '@/navigators';
-import {UserProfileData} from '@/services/profile.api';
-import {Colors} from '@/themes/color';
+import { goBack } from '@/navigators';
+import { UserProfileData } from '@/services/profile.api';
+import { Colors } from '@/themes/color';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {RouteProp, useRoute} from '@react-navigation/native';
-import {ChevronLeft, Copy, ScanLine, Share2, X} from 'lucide-react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { ChevronLeft, Copy, ScanLine, Share2, X } from 'lucide-react-native';
 import React, {
   memo,
   useCallback,
@@ -24,10 +24,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {BarcodeCreatorView, BarcodeFormat} from 'react-native-barcode-creator';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {fontScale, scale, width} from 'react-native-utils-scale';
-import {styles} from './style.module';
+import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fontScale, scale, width } from 'react-native-utils-scale';
+import { styles } from './style.module';
 
 type RouteParams = {
   BarCodeCustomerScreen: UserProfileData | undefined;

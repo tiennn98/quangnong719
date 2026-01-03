@@ -1,8 +1,8 @@
-import React, {memo, useMemo} from 'react';
-import {Pressable, View} from 'react-native';
-import {ChevronDown} from 'lucide-react-native';
 import CText from '@/components/text';
-import {styles} from '../style.module';
+import { ChevronDown } from 'lucide-react-native';
+import React, { memo, useMemo } from 'react';
+import { Pressable, View } from 'react-native';
+import { styles } from '../style.module';
 
 type Props = {
   value: string;

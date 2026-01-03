@@ -1,9 +1,9 @@
-import React, {memo, useCallback, useMemo} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
-import {Check} from 'lucide-react-native';
-import {fontScale, scale} from 'react-native-utils-scale';
 import CText from '@/components/text';
-import {Colors} from '@/themes';
+import { Colors } from '@/themes';
+import { Check } from 'lucide-react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { fontScale, scale } from 'react-native-utils-scale';
 
 export type CropOption = {id: string; label: string};
 

@@ -1,8 +1,9 @@
-import {CText} from '@/components';
+import { CText } from '@/components';
 import CButton from '@/components/button';
-import {Colors, Fonts} from '@/themes';
-import {Gift, QrCode} from 'lucide-react-native';
-import React, {useMemo} from 'react';
+import { VoucherItemDTO } from '@/services/voucher.api';
+import { Colors, Fonts } from '@/themes';
+import { Gift, QrCode } from 'lucide-react-native';
+import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,8 +11,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {scale} from 'react-native-utils-scale';
-import {VoucherItemDTO} from '@/services/voucher.api';
+import { scale } from 'react-native-utils-scale';
 
 type Props = {
   items?: VoucherItemDTO[];
@@ -24,9 +24,9 @@ type Props = {
 };
 
 const fmtDate = (iso?: string) => {
-  if (!iso) return '--';
+  if (!iso) {return '--';}
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return String(iso).slice(0, 10);
+  if (Number.isNaN(d.getTime())) {return String(iso).slice(0, 10);}
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yyyy = d.getFullYear();
@@ -52,10 +52,10 @@ const ActiveTabScreen: React.FC<Props> = ({
       return okStatus && !v.is_used && !isExpired;
     });
   }, [items]);
-  
+
   const renderFooter = () => {
-    if (!hasNextPage) return <View style={{height: scale(12)}} />;
-    if (!isFetchingNextPage) return <View style={{height: scale(12)}} />;
+    if (!hasNextPage) {return <View style={{height: scale(12)}} />;}
+    if (!isFetchingNextPage) {return <View style={{height: scale(12)}} />;}
     return (
       <View style={styles.footer}>
         <ActivityIndicator />
@@ -65,7 +65,7 @@ const ActiveTabScreen: React.FC<Props> = ({
       </View>
     );
   };
-  
+
   if (!data.length) {
     return (
       <View style={styles.center}>
@@ -82,7 +82,7 @@ const ActiveTabScreen: React.FC<Props> = ({
       </View>
     );
   }
-  
+
   return (
     <FlatList
       data={data}
@@ -115,7 +115,7 @@ const ActiveTabScreen: React.FC<Props> = ({
               </CText>
             </View>
           </View>
-          
+
           <View style={styles.rowBetween}>
             <CText fontFamily={Fonts.REGULAR} fontSize={12} color={Colors.h2}>
               Hạn dùng:
@@ -124,7 +124,7 @@ const ActiveTabScreen: React.FC<Props> = ({
               {fmtDate(item.expired_date)}
             </CText>
           </View>
-          
+
           <View style={styles.barcodeBox}>
             <CText fontFamily={Fonts.REGULAR} fontSize={11} color={Colors.h2}>
               BARCODE / CODE
@@ -137,7 +137,7 @@ const ActiveTabScreen: React.FC<Props> = ({
               {item.code}
             </CText>
           </View>
-          
+
           <View style={styles.viewButton}>
             <CButton
               title="Sử dụng voucher"

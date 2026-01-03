@@ -1,8 +1,8 @@
-import {useGetProfile} from '@/hooks/useProfile';
+import { useGetProfile } from '@/hooks/useProfile';
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {scale} from 'react-native-utils-scale';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { scale } from 'react-native-utils-scale';
 import ActionButtons from './components/ActionButtons';
 import CustomerInfoCard from './components/CustomerInfoCard';
 

@@ -1,16 +1,16 @@
-import {useAppSelector} from '@/redux/store';
-import {initFCM, subscribeFcmTokenRefresh} from '@/services/fcm';
-import {setupFcmListeners} from '@/services/initNotifications';
-import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect, useRef} from 'react';
-import {getUniqueId} from 'react-native-device-info';
-import AppStackNavigator from './app-navigator';
-import AuthNavigator from './auth-navigator';
-import {navigationRef} from './navigation-service';
 import {
   isValidDevicePayload,
   useUpdateCustomerDevice,
 } from '@/hooks/useUpdateDevice';
+import { useAppSelector } from '@/redux/store';
+import { initFCM, subscribeFcmTokenRefresh } from '@/services/fcm';
+import { setupFcmListeners } from '@/services/initNotifications';
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useRef } from 'react';
+import { getUniqueId } from 'react-native-device-info';
+import AppStackNavigator from './app-navigator';
+import AuthNavigator from './auth-navigator';
+import { navigationRef } from './navigation-service';
 
 const Navigators = () => {
   const accessToken = useAppSelector(state => state.auth.accessToken);
@@ -114,4 +114,4 @@ const Navigators = () => {
 };
 
 export default Navigators;
-export {goBack, navigate, navigationRef, replace} from './navigation-service';
+export { goBack, navigate, navigationRef, replace } from './navigation-service';

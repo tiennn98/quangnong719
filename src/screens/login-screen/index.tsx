@@ -1,6 +1,6 @@
-import {yupResolver} from '@hookform/resolvers/yup';
-import React, {useCallback} from 'react';
-import {Controller, FormProvider, useForm} from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useCallback } from 'react';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import {
   Alert,
   Image,
@@ -16,15 +16,15 @@ import {
 } from 'react-native';
 import * as yup from 'yup';
 
-import {Images} from '@/assets';
-import {CInput, CText} from '@/components';
+import { Images } from '@/assets';
+import { CInput, CText } from '@/components';
 import CButton from '@/components/button';
-import {SCREEN_NAME} from '@/constants';
-import {useSendOTP} from '@/hooks/useAuth';
-import {navigate} from '@/navigators';
-import {Colors} from '@/themes';
-import {styles} from './styles.module';
-import {fontScale} from 'react-native-utils-scale';
+import { SCREEN_NAME } from '@/constants';
+import { useSendOTP } from '@/hooks/useAuth';
+import { navigate } from '@/navigators';
+import { Colors } from '@/themes';
+import { fontScale } from 'react-native-utils-scale';
+import { styles } from './styles.module';
 
 const TERMS_URL = 'https://quangnong719.vn/terms';
 const PRIVACY_URL = 'https://quangnong719.vn/privacy';
@@ -39,8 +39,8 @@ const validationSchema = yup.object({
       'vn-phone',
       'Số điện thoại không hợp lệ (đầu số phải là 03, 05, 07, 08, 09)',
       value => {
-        if (!value) return false;
-        if (value.length < 10) return false;
+        if (!value) {return false;}
+        if (value.length < 10) {return false;}
         return /^(03|05|07|08|09)[0-9]{8}$/.test(value);
       },
     ),
@@ -61,15 +61,15 @@ const LoginScreen = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   });
-  
+
   const {
     handleSubmit,
     control,
     formState: {errors},
   } = form;
-  
+
   const sendOTPMutation = useSendOTP();
-  
+
   const openUrl = useCallback(async (url: string) => {
     try {
       const ok = await Linking.canOpenURL(url);
@@ -82,7 +82,7 @@ const LoginScreen = () => {
       Alert.alert('Thông báo', 'Không thể mở liên kết. Vui lòng thử lại.');
     }
   }, []);
-  
+
   const onSubmit = useCallback(
     (values: LoginFormValues) => {
       sendOTPMutation.mutate(
@@ -99,13 +99,13 @@ const LoginScreen = () => {
     },
     [sendOTPMutation],
   );
-  
+
   const isButtonDisabled = sendOTPMutation.isPending;
-  
+
   // ✅ đồng bộ baseline/line-height
   const termsFontSize = fontScale(16);
   const termsLineHeight = fontScale(22);
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -120,24 +120,24 @@ const LoginScreen = () => {
                 <View style={styles.viewImage}>
                   <Image source={Images.logo} resizeMode="contain" style={styles.imageLogo} />
                 </View>
-                
+
                 <View style={styles.center}>
                   <CText color={Colors.h2} fontSize={fontScale(16)}>
                     Nông dân cần - Có Quang Nông
                   </CText>
                 </View>
-                
+
                 <View style={styles.whiteBox}>
                   <CText style={styles.titleText}>Đăng nhập bằng tài khoản của bạn</CText>
-                  
+
                   <CText style={styles.subtitleText}>
                     Nhập số điện thoại của bạn để nhận mã OTP
                   </CText>
-                  
+
                   <CText style={styles.labelText} fontSize={fontScale(14)}>
                     Nhập số điện thoại
                   </CText>
-                  
+
                   <CInput
                     name="phone"
                     placeholder="Nhập 10 số điện thoại của bạn"
@@ -148,7 +148,7 @@ const LoginScreen = () => {
                     fontSize={fontScale(18)}
                     onSubmitEditing={Keyboard.dismiss}
                   />
-                  
+
                   <View style={styles.viewButton}>
                     <CButton
                       title={sendOTPMutation.isPending ? 'Đang gửi OTP...' : 'Nhận mã OTP'}
@@ -158,12 +158,12 @@ const LoginScreen = () => {
                       style={styles.button}
                     />
                   </View>
-                  
+
                   <CText color={Colors.h2} fontSize={fontScale(16)}>
                     Chưa có tài khoản? Bạn sẽ được tạo sau khi xác minh OTP
                   </CText>
                 </View>
-                
+
                 <Controller
                   control={control}
                   name="acceptTerms"
@@ -178,7 +178,7 @@ const LoginScreen = () => {
                             <Image source={Images.iconCheckedbox} style={styles.checkboxDot} />
                           )}
                         </View>
-                        
+
                         <CText
                           color={Colors.h2}
                           style={[
@@ -219,7 +219,7 @@ const LoginScreen = () => {
                           {' '}của chúng tôi
                         </CText>
                       </TouchableOpacity>
-                      
+
                       {errors.acceptTerms && (
                         <CText style={styles.errorText} fontSize={fontScale(14)}>
                           {errors.acceptTerms.message as string}

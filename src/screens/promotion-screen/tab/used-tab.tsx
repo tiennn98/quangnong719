@@ -1,9 +1,9 @@
-import React, {useMemo} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import {scale} from 'react-native-utils-scale';
-import {CText} from '@/components';
-import {Colors, Fonts} from '@/themes';
-import {VoucherItemDTO} from '@/services/voucher.api';
+import { CText } from '@/components';
+import { VoucherItemDTO } from '@/services/voucher.api';
+import { Colors, Fonts } from '@/themes';
+import React, { useMemo } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { scale } from 'react-native-utils-scale';
 
 type Props = {
   items?: VoucherItemDTO[];
@@ -16,7 +16,7 @@ type Props = {
 
 const UsedTabScreen: React.FC<Props> = ({items, refreshing, onRefresh, onLoadMore}) => {
   const data = useMemo(() => (items || []).filter(v => v.is_used || v.status === 2), [items]);
-  
+
   if (!data.length) {
     return (
       <View style={styles.center}>
@@ -29,7 +29,7 @@ const UsedTabScreen: React.FC<Props> = ({items, refreshing, onRefresh, onLoadMor
       </View>
     );
   }
-  
+
   return (
     <FlatList
       data={data}

@@ -72,49 +72,49 @@ const DeleteAccountOtpScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const {phone} = route.params as RouteParams;
-  
+
   const sendOtpM = useSendOTP();
   const deleteM = useDeleteAccount();
-  
+
   // UI
   const [otp, setOtp] = useState('');
   const [needResetOtp, setNeedResetOtp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(RESEND_COUNTDOWN_SEC);
-  
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
-  
+
   // refs
   const expiresAtRef = useRef<number>(Date.now() + RESEND_COUNTDOWN_SEC * 1000);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
-  
+
   const openModal = useCallback((msg: string) => {
     setModalMsg(msg);
     setModalOpen(true);
   }, []);
-  
+
   const resetOtpInput = useCallback(() => {
     setOtp('');
     setNeedResetOtp(prev => !prev);
   }, []);
-  
+
   const stopTick = useCallback(() => {
     if (tickRef.current) {
       clearInterval(tickRef.current);
       tickRef.current = null;
     }
   }, []);
-  
+
   const startTick = useCallback(
     (expiresAtMs: number) => {
       stopTick();
       expiresAtRef.current = expiresAtMs;
-      
+
       // set ngay theo real-time
       const left = calcLeftSec(expiresAtMs);
       setTimeLeft(left);
-      
+
       // giảm 1s/nhịp (perf)
       tickRef.current = setInterval(() => {
         setTimeLeft(prev => {
@@ -129,7 +129,7 @@ const DeleteAccountOtpScreen = () => {
     },
     [stopTick],
   );
-  
+
   /**
    * ✅ Gửi OTP + khóa 5 phút
    * (chỉ gọi khi: vào màn hình lần đầu mà chưa có session/đã hết hạn,
@@ -137,18 +137,18 @@ const DeleteAccountOtpScreen = () => {
    */
   const sendOtpAndLock5Min = useCallback(async () => {
     const exp = Date.now() + RESEND_COUNTDOWN_SEC * 1000;
-    
+
     // Lưu session + chạy countdown trước để UX mượt
     await saveSession({phone, expiresAtMs: exp});
     startTick(exp);
-    
+
     try {
       await sendOtpM.mutateAsync({phone:phone,action:'delete_account'});
     } catch (err: any) {
       openModal(err?.message || 'Không thể gửi OTP lúc này. Vui lòng thử lại.');
     }
   }, [phone, sendOtpM, startTick, openModal]);
-  
+
   /**
    * ✅ VÀO MÀN HÌNH: CHỈ GỬI 1 LẦN
    * - Nếu session còn hạn (trong 5p) => KHÔNG gửi lại
@@ -157,32 +157,32 @@ const DeleteAccountOtpScreen = () => {
   useFocusEffect(
     useCallback(() => {
       let alive = true;
-      
+
       (async () => {
         const session = await loadSession();
-        if (!alive) return;
-        
+        if (!alive) {return;}
+
         const samePhone = session?.phone === phone;
         const exp = session?.expiresAtMs ?? 0;
         const stillLocked = samePhone && exp > Date.now();
-        
+
         if (stillLocked) {
           // ✅ không gửi lại, chỉ chạy countdown
           startTick(exp);
           return;
         }
-        
+
         // ✅ chưa có / hết hạn => gửi 1 lần
         await sendOtpAndLock5Min();
       })();
-      
+
       return () => {
         alive = false;
         stopTick();
       };
     }, [phone, startTick, stopTick, sendOtpAndLock5Min]),
   );
-  
+
   /**
    * ✅ Qua Zalo rồi quay lại: sync lại timeLeft theo expiresAt (không gửi lại)
    */
@@ -190,44 +190,44 @@ const DeleteAccountOtpScreen = () => {
     const sub = AppState.addEventListener('change', async (next: AppStateStatus) => {
       const prev = appStateRef.current;
       appStateRef.current = next;
-      
+
       if (prev !== 'active' && next === 'active') {
         const session = await loadSession();
         const exp = session?.expiresAtMs ?? expiresAtRef.current;
         expiresAtRef.current = exp;
-        
+
         const left = calcLeftSec(exp);
         setTimeLeft(left);
-        
+
         if (left > 0 && !tickRef.current) {
           startTick(exp);
         }
       }
     });
-    
+
     return () => sub.remove();
   }, [startTick]);
-  
+
   const resendLabel = useMemo(() => {
     return timeLeft > 0
       ? `Gửi lại OTP (${formatCountdown(timeLeft)})`
       : 'Gửi lại OTP';
   }, [timeLeft]);
-  
+
   const isResendDisabled = sendOtpM.isPending || timeLeft > 0;
   const isConfirmDisabled = deleteM.isPending || otp.length !== 6;
-  
+
   const onResend = useCallback(async () => {
-    if (isResendDisabled) return;
+    if (isResendDisabled) {return;}
     await sendOtpAndLock5Min(); // ✅ bấm lại 1 lần/5p
   }, [isResendDisabled, sendOtpAndLock5Min]);
-  
+
   const onConfirmDelete = useCallback(() => {
     if (otp.length !== 6) {
       openModal('Vui lòng nhập đủ 6 số OTP.');
       return;
     }
-    
+
     deleteM.mutate(
       {otp},
       {
@@ -246,7 +246,7 @@ const DeleteAccountOtpScreen = () => {
       },
     );
   }, [otp, deleteM, openModal, resetOtpInput, navigation]);
-  
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary}}>
       {/* Header */}
@@ -270,14 +270,14 @@ const DeleteAccountOtpScreen = () => {
           }}>
           <ChevronLeft color={Colors.h1} size={22} />
         </Pressable>
-        
+
         <CText style={{fontSize: fontScale(16), fontWeight: '900', color: Colors.h1}}>
           Xoá tài khoản
         </CText>
-        
+
         <View style={{width: scale(40), height: scale(40)}} />
       </View>
-      
+
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -290,12 +290,12 @@ const DeleteAccountOtpScreen = () => {
               <CText style={{fontSize: fontScale(18), fontWeight: '900', color: Colors.red}}>
                 Xác minh OTP để xoá
               </CText>
-              
+
               <CText style={{marginTop: scale(8), fontSize: fontScale(14), color: Colors.h2}}>
                 Mã OTP đã được gửi đến số{' '}
                 <CText style={{fontWeight: '900', color: Colors.h1}}>{phone}</CText>.
               </CText>
-              
+
               <View style={{marginTop: scale(14)}}>
                 <CText style={{fontSize: fontScale(14), fontWeight: '800', color: Colors.h1}}>
                   Nhập mã OTP 6 số
@@ -304,7 +304,7 @@ const DeleteAccountOtpScreen = () => {
                   <InputOTP onChangeValue={setOtp} needReset={needResetOtp} />
                 </View>
               </View>
-              
+
               <View style={{marginTop: scale(16)}}>
                 <CButton
                   title={deleteM.isPending ? 'Đang xoá...' : 'Xác nhận xoá tài khoản'}
@@ -314,7 +314,7 @@ const DeleteAccountOtpScreen = () => {
                   style={{height: scale(48), backgroundColor: Colors.red}}
                 />
               </View>
-              
+
               <View style={{marginTop: scale(10)}}>
                 <CButton
                   title={sendOtpM.isPending ? 'Đang gửi...' : resendLabel}
@@ -327,7 +327,7 @@ const DeleteAccountOtpScreen = () => {
                   }}
                 />
               </View>
-              
+
               <View
                 style={{
                   marginTop: scale(12),
@@ -343,7 +343,7 @@ const DeleteAccountOtpScreen = () => {
           </ScrollView>
         </Pressable>
       </KeyboardAvoidingView>
-      
+
       {/* Modal */}
       <Modal
         isVisible={modalOpen}
@@ -357,11 +357,11 @@ const DeleteAccountOtpScreen = () => {
           <CText style={{fontSize: fontScale(18), fontWeight: '900', color: Colors.h1}}>
             Thông báo
           </CText>
-          
+
           <CText style={{marginTop: scale(8), color: Colors.h2, fontSize: fontScale(14)}}>
             {modalMsg}
           </CText>
-          
+
           <View style={{marginTop: scale(14)}}>
             <CButton
               title="Đã hiểu"
