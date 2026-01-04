@@ -1,16 +1,15 @@
-// src/components/ProfileUpdateReminderGate.tsx
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {AppState, Image, Pressable, View} from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, Image, Pressable, View } from 'react-native';
 import Modal from 'react-native-modal';
 
-import {Images} from '@/assets/images';
-import {CText} from '@/components';
-import {SCREEN_NAME} from '@/constants';
-import {useGetProfile} from '@/hooks/useProfile';
-import {isProfileCompleted} from '@/screens/home-screen/helper';
-import {navigate} from '@/navigators/navigation-service';
-import {Colors} from '@/themes';
-import {useGetPlant} from '@/hooks/usePlant';
+import { Images } from '@/assets/images';
+import { CText } from '@/components';
+import { SCREEN_NAME } from '@/constants';
+import { useGetPlant } from '@/hooks/usePlant';
+import { useGetProfile } from '@/hooks/useProfile';
+import { navigate } from '@/navigators/navigation-service';
+import { isProfileCompleted } from '@/screens/home-screen/helper';
+import { Colors } from '@/themes';
 
 type Props = {children: React.ReactNode};
 

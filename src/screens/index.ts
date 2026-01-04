@@ -9,3 +9,6 @@ export {default as AboutStoreScreen} from './about-store';
 export {default as BarCodeCustomerScreen} from './barcode-customer';
 export {default as ProfileCompletionScreen} from './edit-profile';
 export {default as VoucherUseScreen} from './voucher-use-screen';
+export {default as ProfileUpdateReminderGate} from './ProfileUpdateReminderGate';
+
+

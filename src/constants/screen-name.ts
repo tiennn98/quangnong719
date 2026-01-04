@@ -1,4 +1,4 @@
-export const URL = 'https://api-agri.nguyenphuquoc.info/api/v1';
+export const URL = 'https://api-app.quangnong719.vn/api/v1';
 export const SCREEN_NAME = {
   AUTH_STACK: 'AuthStack',
   APP_STACK: 'AppStack',

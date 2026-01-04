@@ -24,6 +24,7 @@ import { Colors } from '@/themes';
 import { hidePhoneNumber } from '@/utils/tools';
 import { fontScale, scale } from 'react-native-utils-scale';
 import { styles } from './styles.module';
+import reactotron from 'reactotron-react-native';
 
 const RESEND_COUNTDOWN = 300; // seconds
 const OTP_SESSION_KEY = 'otp_session_v1';
@@ -309,7 +310,7 @@ const ConfirmOtpScreen = () => {
   const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
 
   const isAccountNotFound = modalKind === 'ACCOUNT_NOT_FOUND';
-
+  reactotron.log('Render ConfirmOtpScreen',loginMutation.data?.msg);
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
