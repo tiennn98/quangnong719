@@ -1,15 +1,15 @@
+import { Images } from '@/assets';
+import { Colors } from '@/themes';
 import React from 'react';
 import {
-  View,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Image,
-  StyleSheet,
-  ImageSourcePropType,
+  View,
 } from 'react-native';
-import {scale, fontScale} from 'react-native-utils-scale';
-import {Colors} from '@/themes';
-import {Images} from '@/assets';
+import { fontScale, scale } from 'react-native-utils-scale';
 
 interface InfoBoxProps {
   icon: ImageSourcePropType;

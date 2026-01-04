@@ -1,4 +1,4 @@
-export const URL = 'https://api-agri.nguyenphuquoc.info/api/v1';
+export const URL = 'https://api-app.quangnong719.vn/api/v1';
 export const SCREEN_NAME = {
   AUTH_STACK: 'AuthStack',
   APP_STACK: 'AppStack',
@@ -18,4 +18,5 @@ export const SCREEN_NAME = {
   PROFILE_COMPLETION_SCREEN: 'ProfileCompletionScreen',
   INVOICE_DETAIL_SCREEN: 'InvoiceDetailScreen',
   VOUCHER_USE_SCREEN: 'VoucherUseScreen',
+  DELETE_ACCOUNT_OTP_SCREEN: 'DeleteAccountOtpScreen',
 };

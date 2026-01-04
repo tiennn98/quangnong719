@@ -1,16 +1,16 @@
-import {CText, TabView} from '@/components';
-import {Colors, Fonts} from '@/themes';
-import React, {useCallback, useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {scale} from 'react-native-utils-scale';
+import { CText, TabView } from '@/components';
+import { Colors, Fonts } from '@/themes';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { scale } from 'react-native-utils-scale';
 
-import {SCREEN_NAME} from '@/constants';
-import {useGetProfile} from '@/hooks/useProfile';
-import {useGetVoucherList} from '@/hooks/useVoucher';
-import {navigate} from '@/navigators';
-import type {VoucherItemDTO} from '@/services/voucher.api';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {groupVouchers} from './helper';
+import { SCREEN_NAME } from '@/constants';
+import { useGetProfile } from '@/hooks/useProfile';
+import { useGetVoucherList } from '@/hooks/useVoucher';
+import { navigate } from '@/navigators';
+import type { VoucherItemDTO } from '@/services/voucher.api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { groupVouchers } from './helper';
 import ActiveTabScreen from './tab/active-tab';
 import ExpiredTabScreen from './tab/expired-tab';
 import UsedTabScreen from './tab/used-tab';

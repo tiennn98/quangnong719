@@ -18,3 +18,18 @@ export function useGetVoucherList(page = 1, limit = 10) {
     staleTime: 10 * 1000,
   });
 }
+import {useInfiniteQuery} from '@tanstack/react-query';
+
+export const useGetVoucherListInfinite = (limit = 10) => {
+  return useInfiniteQuery({
+    queryKey: ['voucherList', limit],
+    initialPageParam: 1,
+    queryFn: ({pageParam}) =>
+      getVoucherList({page: pageParam as number, limit}),
+    getNextPageParam: (lastPage) => {
+      const pg = lastPage?.data?.pagination;
+      if (pg?.load_more && pg?.next_page && pg.next_page > 0) return pg.next_page;
+      return undefined;
+    },
+  });
+};

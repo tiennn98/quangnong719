@@ -128,4 +128,9 @@ export const styles = StyleSheet.create({
     color: Colors.yellow,
     textDecorationLine: 'underline',
   },
+   rowAgree: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(8),
+  },
 });

@@ -1,9 +1,7 @@
 // src/services/axiosClient.ts
-import axios, {AxiosError} from 'axios';
-import {URL} from '@/constants';
-import {store, persistor} from '@/redux/store';
-import {logout} from '@/redux/slices/authSlice';
-import {queryClient} from '@/services/react-query-client';
+import { URL } from '@/constants';
+import { store } from '@/redux/store';
+import axios, { AxiosError } from 'axios';
 import { Alert } from 'react-native';
 
 export const axiosClient = axios.create({

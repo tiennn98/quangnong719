@@ -1,57 +1,51 @@
-import { URL } from '@/constants/screen-name';
-import type { LoginResponse } from '@/hooks/useAuth';
-import { logout } from '@/redux/slices/authSlice';
-import { persistor, store } from '@/redux/store';
+// services/auth.api.ts
 import axios from 'axios';
-import { queryClient } from './react-query-client';
+import { URL } from '@/constants/screen-name';
 
-export const sendOTP = async (
-  phone: string,
-): Promise<{msg: string; statusCode: number}> => {
+type ApiErrData = {
+  msg?: string;
+  message?: string;
+  statusCode?: number;
+};
+
+function toApiError(error: any, fallback: string) {
+  const data: ApiErrData | undefined = error?.response?.data;
+  const status = error?.response?.status ?? data?.statusCode;
+
+  const msg =
+    data?.msg ||                 // ✅ ưu tiên msg
+    data?.message ||             // fallback message
+    error?.message ||
+    fallback;
+
+  const e = new Error(msg);
+  (e as any).statusCode = status;
+  (e as any).data = data;
+  return e;
+}
+
+export const sendOTP = async (payload: { phone: string; action?: string }) => {
   try {
     const res = await axios.post(
       `${URL}/auth/send-otp`,
-      {phone_number: phone},
-      {
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      },
+      { phone_number: payload.phone, action: payload.action ?? 'login' },
+      { headers: { accept: 'application/json', 'Content-Type': 'application/json' } },
     );
     return res.data;
   } catch (error: any) {
-    throw new Error(
-      error?.response?.data?.message || error?.message || 'Gửi OTP thất bại',
-    );
+    throw toApiError(error, 'Gửi OTP thất bại');
   }
 };
 
-export const authLogin = async (
-  phone: string,
-  otp: string,
-): Promise<LoginResponse> => {
+export const authLogin = async (phone: string, otp: string) => {
   try {
     const res = await axios.post(
       `${URL}/auth/login`,
-      {phone_number: phone, otp},
-      {
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      },
+      { phone_number: phone, otp },
+      { headers: { accept: 'application/json', 'Content-Type': 'application/json' } },
     );
     return res.data;
   } catch (error: any) {
-    throw new Error(
-      error?.response?.data?.message || error?.message || 'Đăng nhập thất bại',
-    );
+    throw toApiError(error, 'Đăng nhập thất bại');
   }
 };
-export async function hardLogout() {
-  store.dispatch(logout());
-  queryClient.clear();
-  await persistor.purge();
-  return;
-}

@@ -243,3 +243,49 @@ export async function getCustomerHome(): Promise<CustomerHomeResponse> {
   const res = await axiosClient.get<CustomerHomeResponse>('/customer/home');
   return res.data;
 }
+
+
+export type DeleteAccountPayload = {otp: string};
+
+export type DeleteAccountResponse = {
+  msg: string;
+  statusCode: number;
+  data?: any;
+};
+
+
+export const deleteCustomerAccount = async (
+  payload: DeleteAccountPayload,
+): Promise<DeleteAccountResponse> => {
+  try {
+    const token = getAccessTokenOrThrow();
+
+    // ✅ axios.delete có body => truyền qua config.data
+    const res = await axios.delete<DeleteAccountResponse>(`${URL}/customer`, {
+      data: payload,
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data;
+  } catch (error: any) {
+    const status = error?.response?.status;
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data?.msg ||
+      error?.message ||
+      'Xoá tài khoản thất bại';
+
+    if (status === 400 || status === 401) {
+      throw new Error('Mã OTP không đúng. Vui lòng kiểm tra và thử lại.');
+    }
+    if (status === 429) {
+      throw new Error('Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.');
+    }
+
+    throw new Error(msg);
+  }
+};

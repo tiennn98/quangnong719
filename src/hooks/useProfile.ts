@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {useMutation, UseMutationOptions, useQuery} from '@tanstack/react-query';
 import {
   getProfile,
   updateCustomerProfile,
@@ -8,6 +8,11 @@ import {
   UpdateDevicePayload,
   UpdateDeviceResponse,
   getCustomerHome,
+  ApiResponse,
+  DeleteCustomerPayload,
+  deleteCustomerAccount,
+  DeleteAccountResponse,
+  DeleteAccountPayload,
 } from '@/services/profile.api';
 import { queryClient } from '@/services/react-query-client';
 import {store} from '@/redux/store';
@@ -52,3 +57,9 @@ export function useCustomerHome() {
     staleTime: 60 * 1000,
   });
 }
+
+export const useDeleteAccount = () => {
+  return useMutation<DeleteAccountResponse, Error, DeleteAccountPayload>({
+    mutationFn: payload => deleteCustomerAccount(payload),
+  });
+};

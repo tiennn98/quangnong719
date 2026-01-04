@@ -1,14 +1,9 @@
+
 if (__DEV__) {
   require('./src/services/reactotron-config');
 }
 
-import GlobalLoading, {globalLoadingRef} from '@/components/global-loading';
-import Navigators from '@/navigators';
-import {persistor, store} from '@/redux/store';
-import {Colors} from '@/themes';
-import CodePush from '@revopush/react-native-code-push';
-import {QueryClientProvider} from '@tanstack/react-query';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -23,9 +18,16 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {queryClient} from './src/services/react-query-client';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { queryClient } from './src/services/react-query-client';
+import ProfileUpdateReminderGate from '@/screens/ProfileUpdateReminderGate';
+import GlobalLoading, { globalLoadingRef } from '@/components/global-loading';
+import CodePush from '@revopush/react-native-code-push';
+import { persistor, store } from '@/redux/store';
+import { Colors } from '@/themes';
+import { QueryClientProvider } from '@tanstack/react-query';
+import Navigators from '@/navigators';
 
 if (Text.defaultProps == null) {
   Text.defaultProps = {};
@@ -116,13 +118,17 @@ const App = () => {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <GlobalLoading ref={globalLoadingRef} />
-            <Navigators />
+            <ProfileUpdateReminderGate>
+              <Navigators />
+            </ProfileUpdateReminderGate>
           </PersistGate>
         </Provider>
       </SafeAreaProvider>
     </QueryClientProvider>
   );
 };
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
@@ -166,4 +172,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CodePush()(App);

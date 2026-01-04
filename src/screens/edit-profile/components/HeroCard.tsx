@@ -1,7 +1,7 @@
-import React, {memo} from 'react';
-import {View} from 'react-native';
 import CText from '@/components/text';
-import {styles} from '../style.module';
+import React, { memo } from 'react';
+import { View } from 'react-native';
+import { styles } from '../style.module';
 
 type Props = {
   progress: number; // 0..1

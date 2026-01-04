@@ -1,21 +1,16 @@
-import {Images} from '@/assets/images';
-import {CText} from '@/components';
+import { Images } from '@/assets/images';
+import { CText } from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
-import {SCREEN_NAME} from '@/constants';
-import {useGetInvoiceList} from '@/hooks/useInvoice';
-import {useGetPlant} from '@/hooks/usePlant';
-import {useGetProfile} from '@/hooks/useProfile';
-import {navigate} from '@/navigators';
-import {isProfileCompleted} from '@/screens/home-screen/helper';
-import {InvoiceResponse} from '@/services/invoice.api';
-import {Colors} from '@/themes';
-import {formatCurrency} from '@/utils/tools';
-import {useIsFocused} from '@react-navigation/native';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import { SCREEN_NAME } from '@/constants';
+import { useGetInvoiceList } from '@/hooks/useInvoice';
+import { useGetProfile } from '@/hooks/useProfile';
+import { navigate } from '@/navigators';
+import { InvoiceResponse } from '@/services/invoice.api';
+import { Colors } from '@/themes';
+import { formatCurrency } from '@/utils/tools';
+import React, { useMemo } from 'react';
 import {
-  BackHandler,
   Image,
-  Pressable,
   ScrollView,
   StatusBar,
   Text,
@@ -23,9 +18,8 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Modal from 'react-native-modal';
-import {QuickAccessBox} from './components/QuickAccessBox';
-import {styles} from './style.module';
+import { QuickAccessBox } from './components/QuickAccessBox';
+import { styles } from './style.module';
 
 const scale = (size: number) => size;
 const fontScale = (size: number) => size;
@@ -38,11 +32,11 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
-  icon,
-  value,
-  label,
-  color = Colors.h2,
-}) => (
+                                           icon,
+                                           value,
+                                           label,
+                                           color = Colors.h2,
+                                         }) => (
   <View style={styles.infoBoxContainer}>
     <TouchableOpacity style={styles.infoBox} activeOpacity={0.8}>
       <Image source={icon} style={{width: 24, height: 24}} />
@@ -54,7 +48,6 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
-  const isFocused = useIsFocused();
 
   const {data: profile} = useGetProfile();
   const {data: invoiceResponse} = useGetInvoiceList(profile?.phone_number) as {
@@ -64,55 +57,11 @@ const HomeScreen: React.FC = () => {
     refetch: () => Promise<any>;
   };
 
-  const mustComplete = !!(isFocused && profile && !isProfileCompleted(profile));
-  const {data: plants} = useGetPlant();
-
-  const [showModal, setShowModal] = useState(false);
-  const [pendingGoProfile, setPendingGoProfile] = useState(false);
-
-  useEffect(() => {
-    if (mustComplete) {
-      setShowModal(true);
-    } else {
-      setShowModal(false);
-      setPendingGoProfile(false);
-    }
-  }, [mustComplete]);
-
-  useEffect(() => {
-    if (!mustComplete) {
-      return;
-    }
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => sub.remove();
-  }, [mustComplete]);
-
-  const requestGoCompleteProfile = useCallback(() => {
-    if (!profile) {
-      return;
-    }
-    setPendingGoProfile(true);
-    setShowModal(false);
-  }, [profile]);
-
-  const handleModalHide = useCallback(() => {
-    if (pendingGoProfile && profile) {
-      setPendingGoProfile(false);
-      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {profile});
-    }
-  }, [pendingGoProfile, profile]);
-
   const getGreetingByTime = (date = new Date()) => {
     const h = date.getHours();
-    if (h >= 5 && h < 11) {
-      return 'Chào buổi sáng!';
-    }
-    if (h >= 11 && h < 14) {
-      return 'Chào buổi trưa!';
-    }
-    if (h >= 14 && h < 18) {
-      return 'Chào buổi chiều!';
-    }
+    if (h >= 5 && h < 11) {return 'Chào buổi sáng!';}
+    if (h >= 11 && h < 14) {return 'Chào buổi trưa!';}
+    if (h >= 14 && h < 18) {return 'Chào buổi chiều!';}
     return 'Chào buổi tối!';
   };
 
@@ -120,10 +69,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={{flex: 1}}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={Colors.greenPrimary}
-      />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.greenPrimary} />
 
       <View style={styles.headerBackground}>
         <View style={styles.headerBar}>
@@ -184,23 +130,13 @@ const HomeScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.quickActionButton}
               activeOpacity={0.7}
-              onPress={() =>
-                navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)
-              }>
-              <Image
-                source={Images.qrcodeIcon}
-                style={styles.quickActionIcon}
-              />
+              onPress={() => navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)}>
+              <Image source={Images.qrcodeIcon} style={styles.quickActionIcon} />
               <CText style={styles.quickActionText}>Mã của tôi</CText>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.quickActionButton}
-              activeOpacity={0.7}>
-              <Image
-                source={Images.walletIcon}
-                style={styles.quickActionIcon}
-              />
+            <TouchableOpacity style={styles.quickActionButton} activeOpacity={0.7}>
+              <Image source={Images.walletIcon} style={styles.quickActionIcon} />
               <CText style={styles.quickActionText}>Công nợ của tôi</CText>
             </TouchableOpacity>
           </View>
@@ -220,22 +156,13 @@ const HomeScreen: React.FC = () => {
           </View>
 
           <View style={styles.infoGrid}>
-            <InfoBox
-              icon={Images.voucherIcon}
-              value="0"
-              label="Phiếu ưu đãi"
-              color={Colors.gray300}
-            />
+            <InfoBox icon={Images.voucherIcon} value="0" label="Phiếu ưu đãi" color={Colors.gray300} />
             <InfoBox
               icon={Images.listInvoice}
               value={formatCurrency(profile?.total_invoiced?.toString() || '0')}
               label="Tổng số hoá đơn"
             />
-            <InfoBox
-              icon={Images.eventIcon}
-              value="0"
-              label="Số sự kiện đã tham gia"
-            />
+            <InfoBox icon={Images.eventIcon} value="0" label="Số sự kiện đã tham gia" />
             <InfoBox
               icon={Images.debt}
               value={formatCurrency(profile?.debt) || '0 VND'}
@@ -280,67 +207,6 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
-
-      {/* ✅ MODAL chỉ render khi screen focus, đóng xong mới navigate */}
-      {/* {isFocused ? (
-        <Modal
-          isVisible={showModal}
-          useNativeDriver
-          hideModalContentWhileAnimating
-          backdropOpacity={0.65}
-          onBackdropPress={() => {}}
-          onBackButtonPress={() => {}}
-          onModalHide={handleModalHide}
-          style={{margin: 0, justifyContent: 'center', paddingHorizontal: 18}}>
-          <View
-            style={{backgroundColor: '#fff', borderRadius: 14, padding: 16}}>
-            <View style={{flexDirection: 'row', alignItems: 'center', gap: 12}}>
-              <Image
-                source={Images.logo}
-                resizeMode="contain"
-                style={{width: 42, height: 42}}
-              />
-              <View style={{flex: 1}}>
-                <CText
-                  style={{fontSize: 18, fontWeight: '900', color: Colors.h1}}>
-                  Cần hoàn thiện hồ sơ
-                </CText>
-                <CText style={{marginTop: 2, color: Colors.h2}}>
-                  Bạn phải cập nhật thông tin để tiếp tục sử dụng ứng dụng.
-                </CText>
-              </View>
-            </View>
-
-            <View
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 12,
-                backgroundColor: 'rgba(0,0,0,0.04)',
-              }}>
-              <CText style={{color: Colors.h2}}>
-                Vui lòng bổ sung: Đổi tên của bạn, Tỉnh/Thành, Xã/Phường, Địa
-                chỉ và Cây trồng.
-              </CText>
-            </View>
-
-            <Pressable
-              onPress={requestGoCompleteProfile}
-              style={{
-                marginTop: 14,
-                height: 48,
-                borderRadius: 12,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: Colors.greenPrimary,
-              }}>
-              <CText style={{fontWeight: '900', color: Colors.white}}>
-                Cập nhật ngay
-              </CText>
-            </Pressable>
-          </View>
-        </Modal>
-      ) : null} */}
     </View>
   );
 };

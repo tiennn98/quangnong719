@@ -1,4 +1,6 @@
-import React, {memo, useEffect, useMemo, useState} from 'react';
+import CText from '@/components/text';
+import { Search } from 'lucide-react-native';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -6,10 +8,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {Search} from 'lucide-react-native';
-import CText from '@/components/text';
-import {scale} from 'react-native-utils-scale';
-import {styles} from '../style.module';
+import { scale } from 'react-native-utils-scale';
+import { styles } from '../style.module';
 
 export type PickerItem = {id: string; name: string; code: number};
 

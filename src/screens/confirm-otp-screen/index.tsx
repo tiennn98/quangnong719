@@ -1,35 +1,40 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
   AppStateStatus,
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 
-import {Images} from '@/assets';
-import {CText, InputOTP} from '@/components';
+import { Images } from '@/assets';
+import { CText, InputOTP } from '@/components';
 import CButton from '@/components/button';
-import {useLogin, useSendOTP} from '@/hooks/useAuth';
-import {Colors} from '@/themes';
-import {hidePhoneNumber} from '@/utils/tools';
-import {fontScale, scale} from 'react-native-utils-scale';
-import {styles} from './styles.module';
+import { useLogin, useSendOTP } from '@/hooks/useAuth';
+import { Colors } from '@/themes';
+import { hidePhoneNumber } from '@/utils/tools';
+import { fontScale, scale } from 'react-native-utils-scale';
+import { styles } from './styles.module';
+import reactotron from 'reactotron-react-native';
 
 const RESEND_COUNTDOWN = 300; // seconds
 const OTP_SESSION_KEY = 'otp_session_v1';
 
+// ✅ theo yêu cầu của bạn
+const SUPPORT_PHONE = '092298296';
+
 type OtpSession = {
   phone: string;
-  expiresAtMs: number; // timestamp ms
+  expiresAtMs: number;
 };
 
 function formatCountdown(seconds: number) {
@@ -48,28 +53,82 @@ function calcTimeLeft(expiresAtMs: number) {
   return clampInt(Math.ceil(diff / 1000));
 }
 
-function getOtpFriendlyMessage(err: any) {
-  const status = err?.response?.status;
-  const msg = err?.response?.data?.message || err?.response?.data?.msg || err?.message || '';
+// ===== Error parsing (tự bắt lỗi) =====
+function normalizeMsg(s?: any) {
+  return typeof s === 'string' ? s.trim() : '';
+}
 
-  if (status === 400 || status === 401) {
-    return 'Mã OTP không đúng. Vui lòng kiểm tra và thử lại.';
+function isAccountNotFoundMessage(msg: string) {
+  const m = msg.toLowerCase();
+  return (
+    m.includes('không tìm thấy tài khoản') ||
+    m.includes('tài khoản không tồn tại') ||
+    m.includes('account not found')
+  );
+}
+
+function isOtpInvalidMessage(msg: string) {
+  const m = msg.toLowerCase();
+  const hasOtp = m.includes('otp');
+  const invalid =
+    m.includes('không đúng') ||
+    m.includes('không tồn tại') ||
+    m.includes('hết hạn') ||
+    m.includes('expired') ||
+    m.includes('invalid');
+  return hasOtp ? invalid : false;
+}
+
+type UiErrorKind = 'ACCOUNT_NOT_FOUND' | 'OTP_INVALID' | 'RATE_LIMIT' | 'GENERIC';
+
+function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
+  // Vì auth.api.ts đang throw new Error(apiMsg) => err.message là cái quan trọng nhất.
+  const msg = normalizeMsg(err?.message);
+
+  // Ưu tiên: tài khoản không tồn tại
+  if (isAccountNotFoundMessage(msg)) {
+    return {
+      kind: 'ACCOUNT_NOT_FOUND',
+      message: `Tài khoản của bạn không tồn tại.\nVui lòng liên hệ ${SUPPORT_PHONE}.`,
+    };
   }
-  if (status === 429) {
-    return 'Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.';
+
+  // OTP sai/hết hạn/không tồn tại
+  if (isOtpInvalidMessage(msg) || msg.toLowerCase().includes('otp')) {
+    return {
+      kind: 'OTP_INVALID',
+      message: 'Mã OTP không đúng hoặc không tồn tại.',
+    };
   }
-  if (msg && typeof msg === 'string') {
-    // fallback nhẹ nhàng
-    return 'Không thể xác minh OTP lúc này. Vui lòng thử lại.';
+
+  // Rate limit
+  if (msg.includes('429') || msg.toLowerCase().includes('too many')) {
+    return {
+      kind: 'RATE_LIMIT',
+      message: 'Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.',
+    };
   }
-  return 'Có lỗi xảy ra khi xác minh OTP. Vui lòng thử lại.';
+
+  // Fallback
+  return {
+    kind: 'GENERIC',
+    message: msg || 'Có lỗi xảy ra. Vui lòng thử lại.',
+  };
+}
+
+async function callPhone(phone: string) {
+  const raw = phone.replace(/\s+/g, '');
+  const url = Platform.OS === 'ios' ? `telprompt:${raw}` : `tel:${raw}`;
+  const can = await Linking.canOpenURL(url);
+  if (can) {return Linking.openURL(url);}
+  return Linking.openURL(`tel:${raw}`);
 }
 
 const ConfirmOtpScreen = () => {
   const route = useRoute();
   const {phone} = route.params as {phone: string};
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const loginMutation = useLogin();
   const resendOTPMutation = useSendOTP();
 
@@ -87,7 +146,9 @@ const ConfirmOtpScreen = () => {
   }, []);
 
   // ✅ Countdown theo expiresAt, không reset khi background/foreground
-  const [expiresAtMs, setExpiresAtMs] = useState<number>(Date.now() + RESEND_COUNTDOWN * 1000);
+  const [expiresAtMs, setExpiresAtMs] = useState<number>(
+    Date.now() + RESEND_COUNTDOWN * 1000,
+  );
   const [timeLeft, setTimeLeft] = useState<number>(RESEND_COUNTDOWN);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -96,14 +157,16 @@ const ConfirmOtpScreen = () => {
     tickRef.current = null;
   }, []);
 
-  const startTick = useCallback((expMs: number) => {
-    stopTick();
-    // set ngay cho chuẩn
-    setTimeLeft(calcTimeLeft(expMs));
-    tickRef.current = setInterval(() => {
+  const startTick = useCallback(
+    (expMs: number) => {
+      stopTick();
       setTimeLeft(calcTimeLeft(expMs));
-    }, 1000);
-  }, [stopTick]);
+      tickRef.current = setInterval(() => {
+        setTimeLeft(calcTimeLeft(expMs));
+      }, 1000);
+    },
+    [stopTick],
+  );
 
   const persistSession = useCallback(async (session: OtpSession) => {
     try {
@@ -136,7 +199,6 @@ const ConfirmOtpScreen = () => {
           }
         }
 
-        // không có session hoặc khác phone -> tạo mới
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
         setExpiresAtMs(exp);
         startTick(exp);
@@ -155,36 +217,41 @@ const ConfirmOtpScreen = () => {
     };
   }, [phone, persistSession, startTick, stopTick]);
 
-  // ✅ Khi app quay lại foreground: tính lại timeLeft theo expiresAtMs (không restart)
+  // ✅ foreground => update timeLeft (không restart)
   React.useEffect(() => {
     const onAppStateChange = (next: AppStateStatus) => {
       if (next === 'active') {
-        // cập nhật ngay khi quay lại
         setTimeLeft(calcTimeLeft(expiresAtMs));
       }
     };
-
     const sub = AppState.addEventListener('change', onAppStateChange);
     return () => sub.remove();
   }, [expiresAtMs]);
 
-  // ✅ Modal báo OTP sai
-  const [otpModalOpen, setOtpModalOpen] = useState(false);
-  const [otpModalMsg, setOtpModalMsg] = useState<string>('');
+  // ✅ Modal thông báo
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
+  const [modalKind, setModalKind] = useState<UiErrorKind>('GENERIC');
 
-  const openOtpErrorModal = useCallback((message: string) => {
-    setOtpModalMsg(message);
-    setOtpModalOpen(true);
+  const openModal = useCallback((kind: UiErrorKind, message: string) => {
+    setModalKind(kind);
+    setModalMsg(message);
+    setModalOpen(true);
   }, []);
 
   const resendLabel = useMemo(() => {
-    return timeLeft > 0 ? `Gửi lại OTP (${formatCountdown(timeLeft)})` : 'Gửi lại OTP';
+    return timeLeft > 0
+      ? `Gửi lại OTP (${formatCountdown(timeLeft)})`
+      : 'Gửi lại OTP';
   }, [timeLeft]);
 
-  const handleChangeOtp = useCallback((code: string) => {
-    setOtp(code);
-    if (otpError) {setOtpError(null);}
-  }, [otpError]);
+  const handleChangeOtp = useCallback(
+    (code: string) => {
+      setOtp(code);
+      if (otpError) {setOtpError(null);}
+    },
+    [otpError],
+  );
 
   const handleVerifyOtp = useCallback(() => {
     if (otp.length !== 6) {
@@ -196,23 +263,28 @@ const ConfirmOtpScreen = () => {
       {phone, otp},
       {
         onSuccess: async () => {
-          // ✅ xác minh ok -> clear session countdown
           await clearSession();
         },
         onError: (err: any) => {
-          // ✅ sai OTP -> modal + clear OTP để nhập lại
-          setOtp('');
-          setOtpError(null);
-          triggerResetOtp();
-          openOtpErrorModal(getOtpFriendlyMessage(err));
+          const ui = mapErrorToUi(err);
+
+          // ✅ OTP sai/hết hạn => clear để nhập lại
+          if (ui.kind === 'OTP_INVALID') {
+            setOtp('');
+            setOtpError(null);
+            triggerResetOtp();
+          }
+
+          openModal(ui.kind, ui.message);
         },
       },
     );
-  }, [otp, phone, loginMutation, clearSession, triggerResetOtp, openOtpErrorModal]);
+  }, [otp, phone, loginMutation, clearSession, triggerResetOtp, openModal]);
 
   const handleResendOtp = useCallback(() => {
     if (timeLeft > 0 || resendOTPMutation.isPending) {return;}
 
+    // ✅ hook useSendOTP của bạn nhận string phone
     resendOTPMutation.mutate(phone, {
       onSuccess: async () => {
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
@@ -220,15 +292,25 @@ const ConfirmOtpScreen = () => {
         startTick(exp);
         await persistSession({phone, expiresAtMs: exp});
       },
-      onError: () => {
-        openOtpErrorModal('Không thể gửi lại OTP lúc này. Vui lòng thử lại.');
+      onError: (err: any) => {
+        const ui = mapErrorToUi(err);
+        openModal(ui.kind, ui.message || 'Không thể gửi lại OTP lúc này. Vui lòng thử lại.');
       },
     });
-  }, [timeLeft, resendOTPMutation, phone, startTick, persistSession, openOtpErrorModal]);
+  }, [
+    timeLeft,
+    resendOTPMutation,
+    phone,
+    startTick,
+    persistSession,
+    openModal,
+  ]);
 
   const isVerifyDisabled = loginMutation.isPending || otp.length !== 6;
   const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
 
+  const isAccountNotFound = modalKind === 'ACCOUNT_NOT_FOUND';
+  reactotron.log('Render ConfirmOtpScreen',loginMutation.data?.msg);
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -242,7 +324,11 @@ const ConfirmOtpScreen = () => {
             keyboardDismissMode="on-drag">
             <Pressable onPress={() => {}} style={styles.contentContainer}>
               <View style={styles.viewImage}>
-                <Image source={Images.logo} resizeMode="contain" style={styles.imageLogo} />
+                <Image
+                  source={Images.logo}
+                  resizeMode="contain"
+                  style={styles.imageLogo}
+                />
               </View>
 
               <View style={styles.center}>
@@ -256,12 +342,17 @@ const ConfirmOtpScreen = () => {
 
                 <CText style={styles.subtitleText}>
                   Chúng tôi đã gửi mã đến số{' '}
-                  <CText style={styles.phoneText}>{hidePhoneNumber(phone)}</CText>
+                  <CText style={styles.phoneText}>
+                    {hidePhoneNumber(phone)}
+                  </CText>
                 </CText>
 
                 <CText style={styles.labelText}>Nhập mã OTP 6 số</CText>
 
-                <InputOTP onChangeValue={handleChangeOtp} needReset={needResetOtp} />
+                <InputOTP
+                  onChangeValue={handleChangeOtp}
+                  needReset={needResetOtp}
+                />
 
                 {otpError ? <CText style={styles.errorText}>{otpError}</CText> : null}
 
@@ -306,35 +397,61 @@ const ConfirmOtpScreen = () => {
         </Pressable>
       </KeyboardAvoidingView>
 
-      {/* ✅ Modal thông báo OTP sai */}
+      {/* ✅ Modal lỗi */}
       <Modal
-        isVisible={otpModalOpen}
-        onBackdropPress={() => setOtpModalOpen(false)}
-        onBackButtonPress={() => setOtpModalOpen(false)}
+        isVisible={modalOpen}
+        onBackdropPress={() => setModalOpen(false)}
+        onBackButtonPress={() => setModalOpen(false)}
         useNativeDriver
         hideModalContentWhileAnimating
         backdropOpacity={0.6}
         style={{margin: 0, justifyContent: 'center', paddingHorizontal: scale(18)}}>
         <View style={{backgroundColor: '#fff', borderRadius: scale(12), padding: scale(16)}}>
           <CText style={{fontSize: fontScale(18), fontWeight: '900', color: Colors.h1}}>
-            Mã OTP chưa đúng
+            {isAccountNotFound ? 'Tài khoản không tồn tại' : 'Thông báo'}
           </CText>
 
           <CText style={{marginTop: scale(8), color: Colors.h2, fontSize: fontScale(14)}}>
-            {otpModalMsg || 'Vui lòng kiểm tra lại và nhập lại mã OTP.'}
+            {modalMsg}
           </CText>
 
-          <View style={{flexDirection: 'row', gap: scale(10), marginTop: scale(14)}}>
-            <View style={{flex: 1}}>
+          {isAccountNotFound ? (
+            <>
+              {/* bấm số để gọi */}
+              <Pressable
+                onPress={() => callPhone(SUPPORT_PHONE)}
+                style={{marginTop: scale(10)}}>
+                <CText style={{fontWeight: '900', color: Colors.buttonbg, fontSize: fontScale(15)}}>
+                  {SUPPORT_PHONE} (bấm để gọi)
+                </CText>
+              </Pressable>
+
+              <View style={{flexDirection: 'row', gap: scale(10), marginTop: scale(14)}}>
+                <View style={{flex: 1}}>
+                  <CButton
+                    title="Đóng"
+                    onPress={() => setModalOpen(false)}
+                    style={{height: scale(48), backgroundColor: Colors.gray500}}
+                  />
+                </View>
+                <View style={{flex: 1}}>
+                  <CButton
+                    title="Gọi ngay"
+                    onPress={() => callPhone(SUPPORT_PHONE)}
+                    style={{height: scale(48), backgroundColor: Colors.buttonbg}}
+                  />
+                </View>
+              </View>
+            </>
+          ) : (
+            <View style={{marginTop: scale(14)}}>
               <CButton
                 title="Thử lại"
-                onPress={() => {
-                  setOtpModalOpen(false);
-                }}
+                onPress={() => setModalOpen(false)}
                 style={{height: scale(48), backgroundColor: Colors.buttonbg}}
               />
             </View>
-          </View>
+          )}
         </View>
       </Modal>
     </SafeAreaView>

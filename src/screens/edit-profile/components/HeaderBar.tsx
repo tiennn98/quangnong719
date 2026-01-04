@@ -1,10 +1,10 @@
-import React, {memo} from 'react';
-import {Pressable, View} from 'react-native';
-import {ArrowLeft} from 'lucide-react-native';
 import CText from '@/components/text';
-import {Colors} from '@/themes';
-import {scale} from 'react-native-utils-scale';
-import {styles} from '../style.module';
+import { Colors } from '@/themes';
+import { ArrowLeft } from 'lucide-react-native';
+import React, { memo } from 'react';
+import { Pressable, View } from 'react-native';
+import { scale } from 'react-native-utils-scale';
+import { styles } from '../style.module';
 
 type Props = {
   title: string;

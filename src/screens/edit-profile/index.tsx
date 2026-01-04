@@ -1,33 +1,33 @@
-import {yupResolver} from '@hookform/resolvers/yup';
-import {Calendar, MapPin, User2} from 'lucide-react-native';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Controller, FormProvider, useForm, useWatch} from 'react-hook-form';
-import {Keyboard, Pressable, ScrollView, View} from 'react-native';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Calendar, MapPin, User2 } from 'lucide-react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { Keyboard, Pressable, ScrollView, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import ReactNativeModal from 'react-native-modal';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {fontScale, scale, width} from 'react-native-utils-scale';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fontScale, scale, width } from 'react-native-utils-scale';
 import * as yup from 'yup';
 
 import CButton from '@/components/button';
 import CInput from '@/components/input';
 import CText from '@/components/text';
 
-import {useProvinces, useWards} from '@/hooks/useLocation';
-import {useGetPlant} from '@/hooks/usePlant';
-import {useGetProfile, useUpdateCustomerProfile} from '@/hooks/useProfile';
-import {goBack, navigate} from '@/navigators';
-import {buildUpdateProfilePayload} from '@/services/profile.api';
-import {Colors} from '@/themes';
+import { useProvinces, useWards } from '@/hooks/useLocation';
+import { useGetPlant } from '@/hooks/usePlant';
+import { useGetProfile, useUpdateCustomerProfile } from '@/hooks/useProfile';
+import { goBack, navigate } from '@/navigators';
+import { buildUpdateProfilePayload } from '@/services/profile.api';
+import { Colors } from '@/themes';
 
-import {SCREEN_NAME} from '@/constants';
-import CropMultiSelect, {CropOption} from './components/CropMultiSelect';
+import { SCREEN_NAME } from '@/constants';
+import CropMultiSelect, { CropOption } from './components/CropMultiSelect';
 import HeaderBar from './components/HeaderBar';
 import HeroCard from './components/HeroCard';
 import LabelRow from './components/LabelRow';
-import PickerModal, {PickerItem} from './components/PickerModal';
+import PickerModal, { PickerItem } from './components/PickerModal';
 import SelectBox from './components/SelectBox';
-import {styles} from './style.module';
+import { styles } from './style.module';
 
 const removeDiacritics = (s: string) =>
   (s || '')
