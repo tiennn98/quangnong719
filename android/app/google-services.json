@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "628771638442",
+    "project_id": "quangnong719cskh",
+    "storage_bucket": "quangnong719cskh.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628771638442:android:504e1c6337e3b106ead4d3",
+        "android_client_info": {
+          "package_name": "com.quangnong"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP8q7b9L06FB8JAQpnTfs21PO8i7SnjHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,101 +1,144 @@
-import {SCREEN_NAME} from '@/constants';
-import {MapPinned} from 'lucide-react-native';
-import React from 'react';
-import {Animated, Linking, StyleSheet, TouchableOpacity} from 'react-native';
-import {CurvedBottomBar} from 'react-native-curved-bottom-bar';
-import {scale} from 'react-native-utils-scale';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {HomeScreen} from '@/screens';
-import {COLORS} from '@/themes';
+import { Images } from '@/assets';
+import { CText } from '@/components';
+import { SCREEN_NAME } from '@/constants';
+import { AboutStoreScreen, HomeScreen, ProfileScreen, PromotionScreen } from '@/screens';
+import InvoiceScreen from '@/screens/invoice-screen';
+import { Colors, Fonts } from '@/themes';
+import { House, NotepadText, TicketPercent, UserRound } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
+import { width } from 'react-native-utils-scale';
+import { navigate as MoveTo } from '../navigation-service';
 
 const BottomTabNavigator = () => {
-  const _renderIcon = (routeName: string, selectedTab: string) => {
-    let icon = '';
+  const renderIcon = useCallback((routeName: string) => {
     switch (routeName) {
       case SCREEN_NAME.HOME:
-        icon = 'home-outline';
-        break;
-      // case SCREEN_NAME.LIST_NEWS:
-      //   icon = 'newspaper-outline';
-      //   break;
-      // case SCREEN_NAME.TAB_RANKINGS:
-      //   icon = 'stats-chart';
-      //   break;
-      // case SCREEN_NAME.PROFILE:
-      //   icon = 'person-outline';
-      //   break;
+        return <House color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.PROMOTION:
+        return <TicketPercent color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.INVOICESCREEN:
+        return <NotepadText color={Colors.greenPrimary} size={22} />;
+      case SCREEN_NAME.PROFILESCREEN:
+        return <UserRound color={Colors.greenPrimary} size={22} />;
+      default:
+        return null;
     }
-    return (
-      <Ionicons
-        name={icon}
-        size={scale(24)}
-        color={routeName === selectedTab ? COLORS.PRIMARY : COLORS.GRAY_1}
-      />
-    );
-  };
+  }, []);
 
-  const renderTabBar = ({routeName, selectedTab, navigate}: any) => {
+  const renderName = useCallback((routeName: string, selectedTab: string) => {
+    let name = '';
+    switch (routeName) {
+      case SCREEN_NAME.HOME:
+        name = 'Trang chủ';
+        break;
+      case SCREEN_NAME.PROMOTION:
+        name = 'Khuyến mãi';
+        break;
+      case SCREEN_NAME.INVOICESCREEN:
+        name = 'Hoá đơn';
+        break;
+      case SCREEN_NAME.PROFILESCREEN:
+        name = 'Cá nhân';
+        break;
+    }
+
     return (
-      <TouchableOpacity
-        onPress={() => navigate(routeName)}
-        style={styles.tabbarItem}>
-        {_renderIcon(routeName, selectedTab)}
-      </TouchableOpacity>
+      <CText
+        color={Colors.greenPrimary}
+        fontSize={11}
+        fontFamily={routeName === selectedTab ? Fonts.BOLD : Fonts.MEDIUM}
+      >
+        {name}
+      </CText>
     );
-  };
-  const openMap = () => {
-    const url =
-      'https://www.google.com/maps/place/Th%C3%A0nh+L%E1%BB%A3i+Building+%C4%90%C3%A0+N%E1%BA%B5ng/@16.0593587,108.2088566,17z/data=!3m1!4b1!4m6!3m5!1s0x3142192d672dd473:0x6abd983cc7674ed8!8m2!3d16.0593587!4d108.2114315!16s%2Fg%2F11fhw_p1lx?entry=ttu&g_ep=EgoyMDI1MTExNy4wIKXMDSoASAFQAw%3D%3D';
-    Linking.canOpenURL(url)
-      .then(supported => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          Linking.openURL('https://www.google.com/maps');
-        }
-      })
-      .catch(err => console.error('Error opening map:', err));
-  };
+  }, []);
+
+  const renderTabBar = useCallback(
+    ({ routeName, selectedTab, navigate }: any) => {
+      return (
+        <TouchableOpacity
+          onPress={() => navigate(routeName)}
+          style={styles.tabbarItem}
+          activeOpacity={0.85}
+        >
+          {renderIcon(routeName)}
+          {renderName(routeName, selectedTab)}
+        </TouchableOpacity>
+      );
+    },
+    [renderIcon, renderName],
+  );
+
+  const renderCircle = useCallback(() => {
+    return (
+      <Animated.View style={styles.btnCircleUp}>
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.85}
+          onPress={() => MoveTo(SCREEN_NAME.ABOUT_STORE_SCREEN)}
+        >
+          <View
+            style={{
+              marginBottom: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+              height: 40,
+              borderRadius: 999,
+              backgroundColor: '#43AA64',
+            }}
+          >
+            <Image
+              source={Images.logowhite}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
+          </View>
+          <CText color={Colors.greenPrimary} fontSize={14}>
+            {'Cửa Hàng'}
+          </CText>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }, []);
 
   return (
     <CurvedBottomBar.Navigator
-      type="UP"
-      style={styles.bottomBar}
-      shadowStyle={styles.shawdow}
-      height={55}
-      circleWidth={50}
+      height={70}
       bgColor="white"
       initialRouteName={SCREEN_NAME.HOME}
-      borderTopLeftRight
-      screenOptions={{headerShown: false}}
-      renderCircle={() => (
-        <Animated.View style={styles.btnCircleUp}>
-          <TouchableOpacity style={styles.button} onPress={openMap}>
-            <MapPinned />
-          </TouchableOpacity>
-        </Animated.View>
-      )}
-      tabBar={renderTabBar}>
+      screenOptions={{ headerShown: false }}
+      renderCircle={renderCircle}
+      tabBar={renderTabBar}
+    >
+      {/* ✅ QUAN TRỌNG: truyền thẳng component, KHÔNG dùng () => <Screen/> */}
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.HOME}
         position="LEFT"
-        component={() => <HomeScreen />}
+        component={HomeScreen}
       />
-      {/* <CurvedBottomBar.Screen
-        name={SCREEN_NAME.LIST_NEWS}
+      <CurvedBottomBar.Screen
+        name={SCREEN_NAME.PROMOTION}
         position="LEFT"
-        component={() => <ListNewScreen />}
+        component={PromotionScreen}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.TAB_RANKINGS}
-        component={() => <TabRankingsScreen />}
-        position="RIGHT"
+        name={SCREEN_NAME.ABOUT_STORE_SCREEN}
+        position="CENTER"
+        component={AboutStoreScreen}
       />
       <CurvedBottomBar.Screen
-        name={SCREEN_NAME.PROFILE}
-        component={() => <ProfileScreen />}
+        name={SCREEN_NAME.INVOICESCREEN}
         position="RIGHT"
-      /> */}
+        component={InvoiceScreen}
+      />
+      <CurvedBottomBar.Screen
+        name={SCREEN_NAME.PROFILESCREEN}
+        position="RIGHT"
+        component={ProfileScreen}
+      />
     </CurvedBottomBar.Navigator>
   );
 };
@@ -103,45 +146,20 @@ const BottomTabNavigator = () => {
 export default BottomTabNavigator;
 
 const styles = StyleSheet.create({
-  shawdow: {
-    shadowColor: '#DDDDDD',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-  },
   button: {
-    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  bottomBar: {},
   btnCircleUp: {
-    width: scale(60),
-    height: scale(60),
-    borderRadius: scale(30),
+    width: width / 5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    bottom: scale(18),
-  },
-  imgCircle: {
-    width: scale(30),
-    height: scale(30),
-    tintColor: 'gray',
   },
   tabbarItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  img: {
-    width: scale(30),
-    height: scale(30),
-  },
-  image: {
-    width: scale(55),
-    height: scale(55),
+    textAlign: 'center',
   },
 });

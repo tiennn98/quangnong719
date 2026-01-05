@@ -3,7 +3,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import {setupListeners} from '@reduxjs/toolkit/query';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {sliceRootStoreReducer} from './slices';
+import authReducer from './slices/authSlice';
 import {
   FLUSH,
   PAUSE,
@@ -14,22 +14,22 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist';
+
 const persistConfig = {
-  key: 'rootStore',
+  key: 'root',
   storage: AsyncStorage,
+  whitelist: ['auth'],
 };
 
-const persistedUserReducer = persistReducer(
-  persistConfig,
-  sliceRootStoreReducer,
-);
-
 const rootReducer = combineReducers({
-  user: persistedUserReducer,
+  auth: authReducer,
+
 });
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -37,12 +37,14 @@ export const store = configureStore({
       },
       immutableCheck: false,
     }),
-  // .concat(authAPI.middleware)
 });
 
 setupListeners(store.dispatch);
+
 export const persistor = persistStore(store);
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();

@@ -1,3 +1,20 @@
-export const getImages = () => ({
-  //
-});
+export const Images = {
+  logo: require('./logo.png'),
+  iconCheckedbox: require('./checkedbox.png'),
+  gift: require('./home-gift-box.png'),
+  wallet: require('./home-wallet.png'),
+  debt: require('./debt.png'),
+  listInvoice: require('./list-invoice.png'),
+  referral: require('./referral.png'),
+  thung: require('./thung.png'),
+  wellcome: require('./wellcome.jpeg'),
+  logowhite: require('./logowhite.png'),
+  bannner : require('./bannner.png'),
+  walletIcon: require('./wallet.png'),
+  qrcodeIcon: require('./qrcode.png'),
+  eventIcon: require('./event.png'),
+  voucherIcon: require('./voucher.png'),
+  invoiceIcon: require('./invoice.png'),
+  skillCorner: require('./skillcorn.png'),
+  helpSupport: require('./help-support.png'),
+};

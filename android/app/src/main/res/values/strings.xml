@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">quangnong719</string>
+    <string moduleConfig="true" name="CodePushServerUrl">https://api.revopush.org</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">erbOacI5eWKHdxcGElIqltJi2mGUVy4BUYOXXg</string>
+    <string name="app_name">Quang Nông 719 Tích điểm - đổi quà</string>
 </resources>

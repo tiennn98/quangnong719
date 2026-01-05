@@ -1,0 +1,117 @@
+import { Colors, Fonts } from '@/themes';
+import React, { useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import {
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { fontScale, scale } from 'react-native-utils-scale';
+import CText from '../text';
+import { Phone } from 'lucide-react-native';
+
+interface Props extends TextInputProps {
+  name: string;
+  height?: number;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  isIconPhone?: boolean;
+  fontSize: number;
+}
+
+const CInput = ({
+  name,
+  height = 50,
+  disabled = false,
+  style,
+  isIconPhone,
+  fontSize,
+  ...props
+}: Props) => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+
+  const [isFocus, setIsFocus] = useState(false);
+  const errMsg = (errors as any)?.[name]?.message;
+
+  return (
+    <View>
+      <View
+        style={[
+          styles.viewInput,
+          { height: scale(height) },
+          isFocus ? styles.focusBorder : null,
+          errMsg ? styles.errorBorder : null,
+          disabled ? styles.disabledBg : null,
+          style,
+        ]}
+      >
+        {isIconPhone ? <Phone color={Colors.primary} size={22} /> : null}
+
+        <Controller
+          name={name}
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={[styles.input, { fontSize }]}
+              onBlur={() => {
+                setIsFocus(false);
+                onBlur();
+              }}
+              onFocus={() => setIsFocus(true)}
+              editable={!disabled}
+              selectTextOnFocus={!disabled}
+              onChangeText={text => onChange(text)}
+              value={(value ?? '') as any}
+              placeholderTextColor={Colors.gray500}
+              {...props}
+            />
+          )}
+        />
+      </View>
+
+      {!!errMsg && (
+        <CText style={{ marginTop: scale(4) }} color={Colors.red}>
+          {errMsg as any}
+        </CText>
+      )}
+    </View>
+  );
+};
+
+export default CInput;
+
+const styles = StyleSheet.create({
+  viewInput: {
+    paddingHorizontal: scale(12),
+    borderRadius: scale(8),
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    gap: scale(8),
+
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.14)',
+  },
+  input: {
+    color: Colors.text,
+    fontFamily: Fonts.REGULAR,
+    fontSize: fontScale(14),
+    flex: 1,
+    height: scale(40),
+  },
+  disabledBg: {
+    backgroundColor: Colors.gray300,
+  },
+  focusBorder: {
+    borderColor: Colors.primary,
+  },
+  errorBorder: {
+    borderColor: Colors.red,
+  },
+});
