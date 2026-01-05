@@ -71,7 +71,7 @@ const WellComeScreen = () => {
             <View
               style={[
                 styles.safeAreaContent,
-                {paddingTop: insets.top, paddingBottom: insets.bottom},
+                {paddingTop: insets.top},
               ]}>
               <View style={styles.headerContainer}>
                 <View style={styles.logoBox}>

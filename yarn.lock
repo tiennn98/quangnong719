@@ -9802,6 +9802,7 @@ __metadata:
     react-native-modal: ^14.0.0-rc.1
     react-native-notifications: ^5.2.2
     react-native-pager-view: ^6.4.1
+    react-native-permissions: ^5.4.4
     react-native-qrcode-svg: ^6.3.21
     react-native-rename: ^3.2.17
     react-native-safe-area-context: 5.4.0
@@ -10061,6 +10062,20 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 64f4f1b05173217ee5bb288c6c1e396ceaf686fd1ef9458a6ab9c9da44e5ee76c2a091e95b756c78bbcddd30caf37965ef37e0eabe54331f385fdcb87b5d5ab6
+  languageName: node
+  linkType: hard
+
+"react-native-permissions@npm:^5.4.4":
+  version: 5.4.4
+  resolution: "react-native-permissions@npm:5.4.4"
+  peerDependencies:
+    react: ">=18.1.0"
+    react-native: ">=0.70.0"
+    react-native-windows: ">=0.70.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 43deb38d03321c6b23c7f9f6e1561a629e3aff1e4be20e643ff85010f040b82d707a7db43179108a203663cd138da2f3b6d954f1b278f44ed85797ec49bbacb1
   languageName: node
   linkType: hard
 

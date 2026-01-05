@@ -30,7 +30,7 @@ const RESEND_COUNTDOWN = 300; // seconds
 const OTP_SESSION_KEY = 'otp_session_v1';
 
 // ✅ theo yêu cầu của bạn
-const SUPPORT_PHONE = '092298296';
+const SUPPORT_PHONE = '0922982986';
 
 type OtpSession = {
   phone: string;
