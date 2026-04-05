@@ -1,4 +1,4 @@
-export const URL = 'https://api-app.quangnong719.vn/api/v1';
+export const URL = 'https://api.quangnong719.vn/api/v1';
 export const SCREEN_NAME = {
   AUTH_STACK: 'AuthStack',
   APP_STACK: 'AppStack',
@@ -11,7 +11,7 @@ export const SCREEN_NAME = {
   PROMOTION: 'Promotion',
   INVOICE: 'Invoice',
   PROFILESCREEN: 'ProfileScreen',
-  INVOICESCREEN:'InvoiceScreen',
+  INVOICESCREEN: 'InvoiceScreen',
   ABOUT_STORE_SCREEN: 'AboutStoreScreen',
   BARCODE_CUSTOMER_SCREEN: 'BarCodeCustomerScreen',
   BOTTOM_TAB_NAVIGATOR: 'BottomTabNavigator',
