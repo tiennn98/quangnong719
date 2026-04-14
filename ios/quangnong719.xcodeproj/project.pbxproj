@@ -122,12 +122,12 @@
 		13B07FAE1A68108700A75B9A /* quangnong719 */ = {
 			isa = PBXGroup;
 			children = (
-				716A444A2EF1C4C90029ED70 /* GoogleService-Info.plist */,
 				716A44482EF1B27F0029ED70 /* quangnong719.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				716A444A2EF1C4C90029ED70 /* GoogleService-Info.plist */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				7C4E069BF0A5DB6C3BB2E3AF /* PrivacyInfo.xcprivacy */,
 				718CB5D02EE9FE2200C38B87 /* quangnong719-Bridging-Header.h */,
@@ -425,8 +425,8 @@
 				CODE_SIGN_ENTITLEMENTS = quangnong719/quangnong719.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
-				DEVELOPMENT_TEAM = 2S6Z5U4D63;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DY98LM6VN7;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = quangnong719/Info.plist;
@@ -436,7 +436,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -461,8 +461,8 @@
 				CODE_SIGN_ENTITLEMENTS = quangnong719/quangnong719.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
-				DEVELOPMENT_TEAM = 2S6Z5U4D63;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DY98LM6VN7;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = quangnong719/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Quang Nông 719 CSKH";
@@ -471,7 +471,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
