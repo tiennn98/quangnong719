@@ -1,6 +1,6 @@
-import {Platform, PermissionsAndroid} from 'react-native';
+import { Platform, PermissionsAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getApp} from '@react-native-firebase/app';
+import { getApp } from '@react-native-firebase/app';
 import {
   getMessaging,
   getToken,
@@ -54,7 +54,7 @@ export async function initFCM(): Promise<FcmInitResult> {
       (Platform.OS === 'ios' && !iosAllowed) ||
       (Platform.OS === 'android' && !androidAllowed)
     ) {
-      return {fcmToken: null, apnsToken: null, changed: false};
+      return { fcmToken: null, apnsToken: null, changed: false };
     }
 
     const fcmToken = await getToken(messaging);
@@ -70,9 +70,9 @@ export async function initFCM(): Promise<FcmInitResult> {
       apnsToken = await getAPNSToken(messaging);
     }
 
-    return {fcmToken, apnsToken, changed};
+    return { fcmToken, apnsToken, changed };
   } catch (e) {
-    return {fcmToken: null, apnsToken: null, changed: false};
+    return { fcmToken: null, apnsToken: null, changed: false };
   }
 }
 

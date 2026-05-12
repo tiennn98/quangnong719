@@ -1,12 +1,28 @@
 import { Images } from '@/assets';
 import { CText } from '@/components';
 import { SCREEN_NAME } from '@/constants';
-import { AboutStoreScreen, HomeScreen, ProfileScreen, PromotionScreen } from '@/screens';
+import {
+  AboutStoreScreen,
+  HomeScreen,
+  ProfileScreen,
+  PromotionScreen,
+} from '@/screens';
 import InvoiceScreen from '@/screens/invoice-screen';
 import { Colors, Fonts } from '@/themes';
-import { House, NotepadText, TicketPercent, UserRound } from 'lucide-react-native';
+import {
+  House,
+  NotepadText,
+  TicketPercent,
+  UserRound,
+} from 'lucide-react-native';
 import React, { useCallback } from 'react';
-import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { width } from 'react-native-utils-scale';
 import { navigate as MoveTo } from '../navigation-service';
@@ -79,20 +95,10 @@ const BottomTabNavigator = () => {
           activeOpacity={0.85}
           onPress={() => MoveTo(SCREEN_NAME.ABOUT_STORE_SCREEN)}
         >
-          <View
-            style={{
-              marginBottom: 6,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-              height: 40,
-              borderRadius: 999,
-              backgroundColor: '#43AA64',
-            }}
-          >
+          <View style={styles.logoContainer}>
             <Image
               source={Images.logowhite}
-              style={{ width: 30, height: 30 }}
+              style={styles.logoImage}
               resizeMode="contain"
             />
           </View>
@@ -113,7 +119,6 @@ const BottomTabNavigator = () => {
       renderCircle={renderCircle}
       tabBar={renderTabBar}
     >
-      {/* ✅ QUAN TRỌNG: truyền thẳng component, KHÔNG dùng () => <Screen/> */}
       <CurvedBottomBar.Screen
         name={SCREEN_NAME.HOME}
         position="LEFT"
@@ -161,5 +166,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
+  },
+  logoContainer: {
+    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: '#43AA64',
+  },
+  logoImage: {
+    width: 30,
+    height: 30,
   },
 });

@@ -68,17 +68,17 @@ const Navigators = () => {
         const deviceId = getUniqueId();
         console.log('[DEVICE] uniqueId:', deviceId);
 
-        const {fcmToken, apnsToken} = await initFCM();
+        const { fcmToken, apnsToken } = await initFCM();
 
         if (fcmToken) {
           fcmTokenRef.current = fcmToken;
-          console.log('[FCM] token suffix:', fcmToken.slice(-12));
+          console.log('[FCM] FULL TOKEN ===>\n', fcmToken);
         } else {
           console.log('[FCM] no permission or no token');
         }
 
         if (apnsToken) {
-          console.log('[FCM] apns:', apnsToken);
+          console.log('[APNS] token:', apnsToken);
         }
 
         unsubTokenRefresh = subscribeFcmTokenRefresh(async newToken => {

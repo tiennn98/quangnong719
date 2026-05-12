@@ -1,6 +1,6 @@
-import {StyleSheet, Platform} from 'react-native';
-import {Colors} from '@/themes';
-import {fontScale, height, scale, width} from 'react-native-utils-scale';
+import { StyleSheet, Platform } from 'react-native';
+import { Colors } from '@/themes';
+import { fontScale, height, scale, width } from 'react-native-utils-scale';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: Colors.primary,
-    paddingBottom: scale(60),
+    paddingBottom: scale(100),
   },
 
   headerBackground: {
@@ -42,7 +42,6 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
-
   },
   greetingTitle: {
     fontSize: fontScale(14),
@@ -165,7 +164,7 @@ export const styles = StyleSheet.create({
     height: scale(120),
     justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 2,
@@ -192,7 +191,7 @@ export const styles = StyleSheet.create({
     padding: scale(15),
     marginBottom: scale(15),
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
@@ -323,31 +322,14 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  quickAccessGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: scale(10),
-    marginBottom: scale(20),
-  },
-  quickAccessBox: {
-    width: '48%',
-    backgroundColor: Colors.white,
-    borderRadius: scale(15),
-    padding: scale(20),
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: scale(120),
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  quickAccessLabel: {
-    fontSize: fontScale(14),
-    fontWeight: '600',
-    color: Colors.h2,
-    marginTop: scale(10),
+  /** Cột FAB góc phải dưới (absolute trong HomeScreen) */
+  quickAccessFabColumn: {
+    position: 'absolute',
+    right: scale(12),
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    zIndex: 30,
+    gap: scale(8),
   },
 
   tabBarContainer: {
@@ -387,12 +369,12 @@ export const styles = StyleSheet.create({
     color: Colors.h2,
     marginTop: scale(2),
   },
-  iconStyle:{
+  iconStyle: {
     width: scale(24),
     height: scale(24),
     marginRight: scale(8),
   },
-  invoiceCurrentHeader:{
+  invoiceCurrentHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: scale(10),

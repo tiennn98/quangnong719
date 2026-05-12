@@ -6,7 +6,7 @@ type Unsubscribe = () => void;
 
 let cachedChannelId: string | null = null;
 
-async function getAndroidChannelId(): Promise<string> {
+export async function ensureDefaultChannel(): Promise<string> {
   if (Platform.OS !== 'android') {return 'default';}
 
   if (cachedChannelId) {return cachedChannelId;}
@@ -18,6 +18,10 @@ async function getAndroidChannelId(): Promise<string> {
   });
 
   return cachedChannelId;
+}
+
+async function getAndroidChannelId(): Promise<string> {
+  return ensureDefaultChannel();
 }
 
 async function requestAndroidPostNotificationsPermission() {

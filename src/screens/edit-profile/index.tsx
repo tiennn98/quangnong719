@@ -1,9 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Calendar, MapPin, User2 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, ScrollView, View } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import DatePicker from '@react-native-community/datetimepicker';
 import ReactNativeModal from 'react-native-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontScale, scale, width } from 'react-native-utils-scale';
@@ -79,7 +85,7 @@ const parseProvinceFromLocationName = (locationName?: string | null) => {
   return parts[0] || '';
 };
 
-type OptionObj = {id: string; name: string; code: number};
+type OptionObj = { id: string; name: string; code: number };
 
 type FormValues = {
   avatarUri?: string | null;
@@ -96,7 +102,7 @@ type PickerKind = 'province' | 'ward';
 type SettingsResponse = {
   msg: string;
   statusCode: number;
-  data: {plants: Array<{id: number; code: string; name: string}>};
+  data: { plants: Array<{ id: number; code: string; name: string }> };
   length: number;
 };
 
@@ -199,20 +205,20 @@ const ProfileCompletionScreen: React.FC = () => {
     setValue,
     getValues,
     handleSubmit,
-    formState: {errors, isValid, touchedFields, submitCount},
+    formState: { errors, isValid, touchedFields, submitCount },
   } = form;
 
-  const fullName = useWatch({control, name: 'fullName'});
-  const province = useWatch({control, name: 'province'});
-  const ward = useWatch({control, name: 'ward'});
-  const birthday = useWatch({control, name: 'birthday'});
-  const crops = useWatch({control, name: 'crops'});
+  const fullName = useWatch({ control, name: 'fullName' });
+  const province = useWatch({ control, name: 'province' });
+  const ward = useWatch({ control, name: 'ward' });
+  const birthday = useWatch({ control, name: 'birthday' });
+  const crops = useWatch({ control, name: 'crops' });
 
   const wardsQ = useWards(province?.code) as any;
 
   const plants = plantsData?.data?.plants ?? [];
   const cropsOptions = useMemo<CropOption[]>(
-    () => plants.map(p => ({id: String(p.id), label: p.name})),
+    () => plants.map(p => ({ id: String(p.id), label: p.name })),
     [plants],
   );
   const plantIdSet = useMemo(
@@ -251,9 +257,9 @@ const ProfileCompletionScreen: React.FC = () => {
         fullName: (profile.full_name || '').trim(),
 
         province: provinceName
-          ? ({id: '', name: provinceName, code: 0} as any)
+          ? ({ id: '', name: provinceName, code: 0 } as any)
           : null,
-        ward: wardName ? ({id: '', name: wardName, code: 0} as any) : null,
+        ward: wardName ? ({ id: '', name: wardName, code: 0 } as any) : null,
 
         addressLine: (profile.address || '').trim(),
         birthday: profile.birth_date
@@ -261,7 +267,7 @@ const ProfileCompletionScreen: React.FC = () => {
           : '',
         crops: normalizePlantIds(profile.type_of_plants_ids as any),
       },
-      {keepDirtyValues: true} as any,
+      { keepDirtyValues: true } as any,
     );
   }, [profile, reset, normalizePlantIds]);
 
@@ -272,7 +278,7 @@ const ProfileCompletionScreen: React.FC = () => {
     const cur = getValues('crops') || [];
     const next = cur.filter(id => plantIdSet.has(String(id)));
     if (next.length !== cur.length) {
-      setValue('crops', next, {shouldDirty: true});
+      setValue('crops', next, { shouldDirty: true });
     }
   }, [plantIdSet, getValues, setValue]);
 
@@ -301,8 +307,8 @@ const ProfileCompletionScreen: React.FC = () => {
 
     setValue(
       'province',
-      {id: found.id, name: found.name, code: found.code},
-      {shouldDirty: false},
+      { id: found.id, name: found.name, code: found.code },
+      { shouldDirty: false },
     );
   }, [provincesQ.items, getValues, setValue]);
 
@@ -331,8 +337,8 @@ const ProfileCompletionScreen: React.FC = () => {
 
     setValue(
       'ward',
-      {id: found.id, name: found.name, code: found.code},
-      {shouldDirty: false},
+      { id: found.id, name: found.name, code: found.code },
+      { shouldDirty: false },
     );
   }, [wardsQ.items, getValues, setValue]);
 
@@ -391,15 +397,15 @@ const ProfileCompletionScreen: React.FC = () => {
       if (pickerKind === 'province') {
         setValue(
           'province',
-          {id: it.id, name: it.name, code: it.code},
-          {shouldDirty: true},
+          { id: it.id, name: it.name, code: it.code },
+          { shouldDirty: true },
         );
-        setValue('ward', null, {shouldDirty: true});
+        setValue('ward', null, { shouldDirty: true });
       } else {
         setValue(
           'ward',
-          {id: it.id, name: it.name, code: it.code},
-          {shouldDirty: true},
+          { id: it.id, name: it.name, code: it.code },
+          { shouldDirty: true },
         );
       }
       setPickerVisible(false);
@@ -481,29 +487,32 @@ const ProfileCompletionScreen: React.FC = () => {
     <View
       style={[
         styles.safe,
-        {paddingTop: insets.top, paddingBottom: insets.bottom},
-      ]}>
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <HeaderBar title="Chỉnh sửa hồ sơ" onBack={() => goBack()} />
 
       <FormProvider {...form}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <ScrollView
             ref={scrollRef}
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             contentContainerStyle={[
               styles.scrollContent,
-              {paddingBottom: scale(110) + insets.bottom},
+              { paddingBottom: scale(110) + insets.bottom },
             ]}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            automaticallyAdjustKeyboardInsets={false}>
+            automaticallyAdjustKeyboardInsets={false}
+          >
             <HeroCard progress={progress} />
 
             <View style={styles.formCard}>
               <View
                 onLayout={e =>
                   (yMapRef.current.fullName = e.nativeEvent.layout.y)
-                }>
+                }
+              >
                 <LabelRow
                   label="Họ và tên"
                   required
@@ -524,10 +533,11 @@ const ProfileCompletionScreen: React.FC = () => {
               </View>
 
               <View
-                style={{marginTop: scale(12)}}
+                style={{ marginTop: scale(12) }}
                 onLayout={e =>
                   (yMapRef.current.province = e.nativeEvent.layout.y)
-                }>
+                }
+              >
                 <LabelRow
                   label="Tỉnh/Thành phố"
                   required
@@ -553,8 +563,9 @@ const ProfileCompletionScreen: React.FC = () => {
               </View>
 
               <View
-                style={{marginTop: scale(12)}}
-                onLayout={e => (yMapRef.current.ward = e.nativeEvent.layout.y)}>
+                style={{ marginTop: scale(12) }}
+                onLayout={e => (yMapRef.current.ward = e.nativeEvent.layout.y)}
+              >
                 <LabelRow label="Phường/Xã" required missing={missing.ward} />
                 <SelectBox
                   value={ward?.name || 'Bấm để chọn Phường/Xã'}
@@ -586,10 +597,11 @@ const ProfileCompletionScreen: React.FC = () => {
               </View>
 
               <View
-                style={{marginTop: scale(12)}}
+                style={{ marginTop: scale(12) }}
                 onLayout={e =>
                   (yMapRef.current.addressLine = e.nativeEvent.layout.y)
-                }>
+                }
+              >
                 <LabelRow
                   label="Địa chỉ (thôn/ấp/số nhà)"
                   required
@@ -610,7 +622,7 @@ const ProfileCompletionScreen: React.FC = () => {
                 </CText>
               </View>
 
-              <View style={{marginTop: scale(12)}}>
+              <View style={{ marginTop: scale(12) }}>
                 <LabelRow
                   label="Sinh nhật (Không bắt buộc)"
                   icon={<Calendar size={16} color={Colors.greenPrimary} />}
@@ -624,12 +636,14 @@ const ProfileCompletionScreen: React.FC = () => {
                 {birthday ? (
                   <Pressable
                     onPress={() =>
-                      setValue('birthday', '', {shouldDirty: true})
+                      setValue('birthday', '', { shouldDirty: true })
                     }
                     hitSlop={10}
-                    style={{marginTop: scale(8), alignSelf: 'flex-start'}}>
+                    style={{ marginTop: scale(8), alignSelf: 'flex-start' }}
+                  >
                     <CText
-                      style={{color: Colors.greenPrimary, fontWeight: '900'}}>
+                      style={{ color: Colors.greenPrimary, fontWeight: '900' }}
+                    >
                       Xóa ngày
                     </CText>
                   </Pressable>
@@ -642,10 +656,9 @@ const ProfileCompletionScreen: React.FC = () => {
               </View>
 
               <View
-                style={{marginTop: scale(14)}}
-                onLayout={e =>
-                  (yMapRef.current.crops = e.nativeEvent.layout.y)
-                }>
+                style={{ marginTop: scale(14) }}
+                onLayout={e => (yMapRef.current.crops = e.nativeEvent.layout.y)}
+              >
                 <LabelRow
                   label="Bạn đang trồng những loại cây nào?"
                   required
@@ -667,7 +680,7 @@ const ProfileCompletionScreen: React.FC = () => {
                 <Controller
                   control={control}
                   name="crops"
-                  render={({field: {value, onChange}}) => (
+                  render={({ field: { value, onChange } }) => (
                     <CropMultiSelect
                       options={cropsOptions}
                       value={value || []}
@@ -686,7 +699,7 @@ const ProfileCompletionScreen: React.FC = () => {
               </View>
             </View>
 
-            <View style={{height: scale(24)}} />
+            <View style={{ height: scale(24) }} />
             <View
               style={[
                 styles.bottomBar,
@@ -697,7 +710,8 @@ const ProfileCompletionScreen: React.FC = () => {
                   bottom: 0,
                   paddingBottom: insets.bottom + scale(12),
                 },
-              ]}>
+              ]}
+            >
               {Object.keys(errors).length ? (
                 <CText style={styles.bottomHint}>
                   Vui lòng kiểm tra lại các mục bắt buộc (*)
@@ -749,14 +763,16 @@ const ProfileCompletionScreen: React.FC = () => {
             onBackButtonPress={() => setBirthdayModalOpen(false)}
             useNativeDriver
             hideModalContentWhileAnimating
-            style={{margin: 0}}>
+            style={{ margin: 0 }}
+          >
             <View style={styles.modalBackdrop}>
               <View style={styles.modalCard}>
                 <View style={styles.modalHeader}>
                   <CText style={styles.modalTitle}>Chọn ngày sinh</CText>
                   <Pressable
                     onPress={() => setBirthdayModalOpen(false)}
-                    hitSlop={10}>
+                    hitSlop={10}
+                  >
                     <CText style={styles.modalClose}>Đóng</CText>
                   </Pressable>
                 </View>
@@ -781,10 +797,11 @@ const ProfileCompletionScreen: React.FC = () => {
                     flexDirection: 'row',
                     gap: scale(10),
                     marginTop: scale(12),
-                  }}>
+                  }}
+                >
                   <Pressable
                     onPress={() => {
-                      setValue('birthday', '', {shouldDirty: true});
+                      setValue('birthday', '', { shouldDirty: true });
                       setBirthdayModalOpen(false);
                     }}
                     style={{
@@ -794,8 +811,9 @@ const ProfileCompletionScreen: React.FC = () => {
                       backgroundColor: 'rgba(0,0,0,0.06)',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
-                    <CText style={{fontWeight: '900'}}>Xóa ngày</CText>
+                    }}
+                  >
+                    <CText style={{ fontWeight: '900' }}>Xóa ngày</CText>
                   </Pressable>
 
                   <Pressable
@@ -812,8 +830,9 @@ const ProfileCompletionScreen: React.FC = () => {
                       backgroundColor: Colors.greenPrimary,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
-                    <CText style={{fontWeight: '900', color: Colors.white}}>
+                    }}
+                  >
+                    <CText style={{ fontWeight: '900', color: Colors.white }}>
                       Xong
                     </CText>
                   </Pressable>

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -10,18 +10,18 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {scale, width} from 'react-native-utils-scale';
+import { scale, width } from 'react-native-utils-scale';
 
-import {Images} from '@/assets';
-import {CText} from '@/components';
+import { Images } from '@/assets';
+import { CText } from '@/components';
 import InvoiceBlock from '@/components/invoice-block';
-import {SCREEN_NAME} from '@/constants';
-import {useGetInvoiceList} from '@/hooks/useInvoice';
-import {useGetProfile} from '@/hooks/useProfile';
-import {navigate} from '@/navigators';
-import {InvoiceData, InvoiceResponse} from '@/services/invoice.api';
-import {Colors, Fonts} from '@/themes';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { SCREEN_NAME } from '@/constants';
+import { useGetInvoiceList } from '@/hooks/useInvoice';
+import { useGetProfile } from '@/hooks/useProfile';
+import { navigate } from '@/navigators';
+import { InvoiceData, InvoiceResponse } from '@/services/invoice.api';
+import { Colors, Fonts } from '@/themes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type InvoiceSection = {
   title: string;
@@ -34,7 +34,7 @@ const InvoiceScreen: React.FC = () => {
   const listRef = useRef<SectionList<InvoiceData, InvoiceSection> | any>(null);
   const lastEndReachedRef = useRef<number>(0);
 
-  const {data: profile, refetch: refetchProfile} = useGetProfile();
+  const { data: profile, refetch: refetchProfile } = useGetProfile();
   const insets = useSafeAreaInsets();
 
   const {
@@ -89,7 +89,7 @@ const InvoiceScreen: React.FC = () => {
     }) => {
       const offset = info.averageItemLength * info.index;
       requestAnimationFrame(() => {
-        listRef.current?.scrollToOffset({offset, animated: false});
+        listRef.current?.scrollToOffset({ offset, animated: false });
       });
     },
     [],
@@ -110,7 +110,7 @@ const InvoiceScreen: React.FC = () => {
     );
 
     return Object.keys(grouped)
-      .map(date => ({title: date, data: grouped[date]}))
+      .map(date => ({ title: date, data: grouped[date] }))
       .sort(
         (a, b) =>
           moment(b.title, 'DD/MM/YYYY').valueOf() -
@@ -125,13 +125,15 @@ const InvoiceScreen: React.FC = () => {
           <CText
             fontFamily={Fonts.BOLD}
             color={Colors.greenPrimary}
-            fontSize={24}>
+            fontSize={24}
+          >
             Lịch sử mua hàng
           </CText>
           <CText
             fontFamily={Fonts.REGULAR}
             color={Colors.greenPrimary}
-            fontSize={14}>
+            fontSize={14}
+          >
             Xem tất cả hóa đơn của bạn
           </CText>
         </View>
@@ -141,12 +143,14 @@ const InvoiceScreen: React.FC = () => {
             align="center"
             fontFamily={Fonts.REGULAR}
             color={Colors.greenPrimary}
-            fontSize={12}>
+            fontSize={12}
+          >
             Tổng hóa đơn{'\n'}
             <CText
               fontFamily={Fonts.BOLD}
               fontSize={18}
-              style={{lineHeight: 24, textAlign: 'center'}}>
+              style={{ lineHeight: 24, textAlign: 'center' }}
+            >
               {totalInvoices}
             </CText>
           </CText>
@@ -157,7 +161,7 @@ const InvoiceScreen: React.FC = () => {
   );
 
   const renderItem = useCallback(
-    ({item}: ListRenderItemInfo<InvoiceData>) => (
+    ({ item }: ListRenderItemInfo<InvoiceData>) => (
       <View style={styles.invoiceItem}>
         <InvoiceBlock
           invoiceId={item.code}
@@ -165,9 +169,13 @@ const InvoiceScreen: React.FC = () => {
           purchaseDate={item.purchaseDate}
           totalAmount={String(item.total)}
           status={item.status as any}
-          onDetailPress={() =>
-            navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, {invoice: item})
-          }
+          onDetailPress={() => {
+            console.log('====================================');
+            console.log('item', item);
+            console.log('====================================');
+            return;
+            navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, { invoice: item });
+          }}
           totalPayment={item.totalPayment}
           invoiceDetails={item.invoiceDetails}
         />
@@ -177,7 +185,7 @@ const InvoiceScreen: React.FC = () => {
   );
 
   const renderSectionHeader = useCallback(
-    ({section}: {section: InvoiceSection}) => (
+    ({ section }: { section: InvoiceSection }) => (
       <View style={styles.sectionHeader}>
         <CText fontFamily={Fonts.BOLD} color={Colors.blue400} fontSize={14}>
           Ngày: {section.title}
@@ -189,7 +197,7 @@ const InvoiceScreen: React.FC = () => {
 
   const renderFooter = useCallback(() => {
     if (!isFetching || isRefreshing) {
-      return <View style={{height: 20}} />;
+      return <View style={{ height: 20 }} />;
     }
     return (
       <View style={styles.footerLoader}>
@@ -213,13 +221,15 @@ const InvoiceScreen: React.FC = () => {
           color={Colors.h2}
           fontFamily={Fonts.BOLD}
           fontSize={16}
-          style={{marginTop: scale(10)}}>
+          style={{ marginTop: scale(10) }}
+        >
           Không có dữ liệu hóa đơn
         </CText>
         <CText
           color={Colors.h2}
           fontSize={13}
-          style={{marginTop: scale(6), textAlign: 'center'}}>
+          style={{ marginTop: scale(6), textAlign: 'center' }}
+        >
           Khi bạn phát sinh mua hàng, hóa đơn sẽ hiển thị tại đây.
         </CText>
       </View>
@@ -230,8 +240,9 @@ const InvoiceScreen: React.FC = () => {
     <View
       style={[
         styles.safe,
-        {paddingTop: insets.top, paddingBottom: insets.bottom},
-      ]}>
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <View style={styles.container}>
         {renderHeader}
 
@@ -259,6 +270,7 @@ const InvoiceScreen: React.FC = () => {
             ListEmptyComponent={EmptyComponent}
             removeClippedSubviews={Platform.OS === 'android' ? false : true}
             initialNumToRender={10}
+            showsVerticalScrollIndicator={false}
           />
         }
       </View>
@@ -269,13 +281,13 @@ const InvoiceScreen: React.FC = () => {
 export default InvoiceScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: Colors.white},
-  container: {flex: 1, paddingHorizontal: scale(16), paddingTop: scale(16)},
+  safe: { flex: 1, backgroundColor: Colors.white },
+  container: { flex: 1, paddingHorizontal: scale(16), paddingTop: scale(16) },
   viewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  headerLeft: {flex: 1},
+  headerLeft: { flex: 1 },
   headerRight: {
     backgroundColor: Colors.yellow,
     borderRadius: scale(12),
@@ -285,13 +297,13 @@ const styles = StyleSheet.create({
     minWidth: scale(90),
     width: width / 3,
   },
-  invoiceItem: {marginBottom: scale(8)},
+  invoiceItem: { marginBottom: scale(8) },
   sectionHeader: {
     backgroundColor: Colors.white,
     paddingVertical: scale(10),
   },
-  contentContainer: {paddingBottom: scale(20)},
-  footerLoader: {paddingVertical: scale(20)},
+  contentContainer: { paddingBottom: scale(20) },
+  footerLoader: { paddingVertical: scale(20) },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',

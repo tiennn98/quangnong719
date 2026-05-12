@@ -11,3 +11,4 @@
 
 #endif /* quangnong719_Bridging_Header_h */
 #import <RNNotifications.h>
+#import <RNCPushNotificationIOS.h>

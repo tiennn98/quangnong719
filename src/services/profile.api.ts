@@ -1,8 +1,8 @@
-import {URL} from '@/constants/screen-name';
-import {store} from '@/redux/store';
+import { URL } from '@/constants/screen-name';
+import { store } from '@/redux/store';
 import axios from 'axios';
-import reactotron from 'reactotron-react-native';
-import {axiosClient} from './axiosClient';
+import { axiosClient } from './axiosClient';
+import { Alert } from 'react-native';
 
 export interface UserProfileData {
   phone_number: string;
@@ -44,7 +44,6 @@ export interface ProfileResponse {
 
 const getAccessTokenOrThrow = () => {
   const token = store.getState().auth.accessToken;
-  reactotron.log('TOKEN IN PROFILE SERVICE:', token);
   if (!token) {
     throw new Error('Unauthorized: Không tìm thấy accessToken trong store.');
   }
@@ -129,8 +128,8 @@ export const buildUpdateProfilePayload = (form: {
 
   addressLine: string;
 
-  province?: {name: string} | null;
-  ward?: {name: string} | null;
+  province?: { name: string } | null;
+  ward?: { name: string } | null;
 
   birthday?: string;
   crops: Array<number | string>;
@@ -146,7 +145,7 @@ export const buildUpdateProfilePayload = (form: {
     full_name: (form.fullName || '').trim(),
     avatar: (form.avatarUri || '').trim(),
     address: (form.addressLine || '').trim(),
-    location_name: `Tỉnh ${locationName}`,
+    location_name: `${locationName}`,
     ward_name: wardName,
     birth_date: form.birthday ? ymdToIsoZ(form.birthday) : '',
     type_of_plants: plantIds,
@@ -162,10 +161,10 @@ export const updateCustomerProfile = async (
     });
     return res.data;
   } catch (error: any) {
-    console.log('UPDATE_PROFILE_STATUS:', error?.response?.status);
-    console.log('UPDATE_PROFILE_DATA:', error?.response?.data);
-    console.log('UPDATE_PROFILE_PAYLOAD:', payload);
-
+    Alert.alert(
+      'Cập nhật hồ sơ thất bại',
+      'Lỗi cập nhật hồ sơ từ hệ thống, vui lòng thử lại sau!',
+    );
     throw new Error(
       error?.response?.data?.message ||
         error?.response?.data?.msg ||
@@ -175,12 +174,12 @@ export const updateCustomerProfile = async (
   }
 };
 
-export type PlantType = {id: number; code: string; name: string};
+export type PlantType = { id: number; code: string; name: string };
 
 export type PlantsResponse = {
   msg: string;
   statusCode: number;
-  data: {plants: PlantType[]};
+  data: { plants: PlantType[] };
   length: number;
 };
 
@@ -188,7 +187,6 @@ export async function getPlants() {
   const res = await axiosClient.get<PlantsResponse>('/settings');
   return res.data;
 }
-
 
 export type HomeCustomerDTO = {
   id: number;
@@ -244,15 +242,13 @@ export async function getCustomerHome(): Promise<CustomerHomeResponse> {
   return res.data;
 }
 
-
-export type DeleteAccountPayload = {otp: string};
+export type DeleteAccountPayload = { otp: string };
 
 export type DeleteAccountResponse = {
   msg: string;
   statusCode: number;
   data?: any;
 };
-
 
 export const deleteCustomerAccount = async (
   payload: DeleteAccountPayload,
@@ -283,7 +279,9 @@ export const deleteCustomerAccount = async (
       throw new Error('Mã OTP không đúng. Vui lòng kiểm tra và thử lại.');
     }
     if (status === 429) {
-      throw new Error('Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.');
+      throw new Error(
+        'Bạn đã thử quá nhiều lần. Vui lòng đợi một chút rồi thử lại.',
+      );
     }
 
     throw new Error(msg);

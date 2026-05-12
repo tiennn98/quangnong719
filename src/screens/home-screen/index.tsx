@@ -5,12 +5,13 @@ import { SCREEN_NAME } from '@/constants';
 import { useGetInvoiceList } from '@/hooks/useInvoice';
 import { useGetProfile } from '@/hooks/useProfile';
 import { navigate } from '@/navigators';
-import { InvoiceResponse } from '@/services/invoice.api';
 import { Colors } from '@/themes';
 import { formatCurrency } from '@/utils/tools';
-import React, { useMemo } from 'react';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -18,6 +19,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QuickAccessBox } from './components/QuickAccessBox';
 import { styles } from './style.module';
 
@@ -32,15 +34,15 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
-                                           icon,
-                                           value,
-                                           label,
-                                           color = Colors.h2,
-                                         }) => (
+  icon,
+  value,
+  label,
+  color = Colors.h2,
+}) => (
   <View style={styles.infoBoxContainer}>
     <TouchableOpacity style={styles.infoBox} activeOpacity={0.8}>
-      <Image source={icon} style={{width: 24, height: 24}} />
-      <Text style={[styles.infoBoxValue, {color}]}>{value}</Text>
+      <Image source={icon} style={{ width: 24, height: 24 }} />
+      <Text style={[styles.infoBoxValue, { color }]}>{value}</Text>
       <Text style={styles.infoBoxLabel}>{label}</Text>
     </TouchableOpacity>
   </View>
@@ -49,27 +51,55 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 const HomeScreen: React.FC = () => {
   const customerPhone = '0922982986';
 
-  const {data: profile} = useGetProfile();
-  const {data: invoiceResponse} = useGetInvoiceList(profile?.phone_number) as {
-    data?: InvoiceResponse;
-    isLoading: boolean;
-    isFetching: boolean;
-    refetch: () => Promise<any>;
-  };
+  const { data: profile, refetch: refetchProfile } = useGetProfile();
+  const { data: invoiceResponse, refetch: refetchInvoiceList } =
+    useGetInvoiceList(profile?.phone_number);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refetchProfile(), refetchInvoiceList()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchProfile, refetchInvoiceList]);
 
   const getGreetingByTime = (date = new Date()) => {
     const h = date.getHours();
-    if (h >= 5 && h < 11) {return 'Chào buổi sáng!';}
-    if (h >= 11 && h < 14) {return 'Chào buổi trưa!';}
-    if (h >= 14 && h < 18) {return 'Chào buổi chiều!';}
+    if (h >= 5 && h < 11) {
+      return 'Chào buổi sáng!';
+    }
+    if (h >= 11 && h < 14) {
+      return 'Chào buổi trưa!';
+    }
+    if (h >= 14 && h < 18) {
+      return 'Chào buổi chiều!';
+    }
     return 'Chào buổi tối!';
   };
 
   const greetingTitle = useMemo(() => getGreetingByTime(), []);
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    PushNotificationIOS.requestPermissions({
+      alert: true,
+      badge: true,
+      sound: true,
+    });
+  }, []);
+
+  /** Tab CurvedBottomBar height = 70 — đặt FAB phía trên tab */
+  const quickAccessBottom = insets.bottom + scale(60);
 
   return (
-    <View style={{flex: 1}}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.greenPrimary} />
+    <View style={{ flex: 1 }}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.greenPrimary}
+      />
 
       <View style={styles.headerBackground}>
         <View style={styles.headerBar}>
@@ -93,7 +123,8 @@ const HomeScreen: React.FC = () => {
           <CText style={styles.greetingTitle}>{greetingTitle}</CText>
           <CText
             fontSize={fontScale(20)}
-            style={{fontWeight: 'bold', paddingHorizontal: scale(10)}}>
+            style={{ fontWeight: 'bold', paddingHorizontal: scale(10) }}
+          >
             {profile?.full_name}
           </CText>
           <CText style={styles.greetingSubtitle}>
@@ -104,7 +135,11 @@ const HomeScreen: React.FC = () => {
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.customerInfoBox}>
           <View style={styles.row}>
             <View>
@@ -130,13 +165,25 @@ const HomeScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.quickActionButton}
               activeOpacity={0.7}
-              onPress={() => navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)}>
-              <Image source={Images.qrcodeIcon} style={styles.quickActionIcon} />
+              onPress={() =>
+                navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile)
+              }
+            >
+              <Image
+                source={Images.qrcodeIcon}
+                style={styles.quickActionIcon}
+              />
               <CText style={styles.quickActionText}>Mã của tôi</CText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.quickActionButton} activeOpacity={0.7}>
-              <Image source={Images.walletIcon} style={styles.quickActionIcon} />
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              activeOpacity={0.7}
+            >
+              <Image
+                source={Images.walletIcon}
+                style={styles.quickActionIcon}
+              />
               <CText style={styles.quickActionText}>Công nợ của tôi</CText>
             </TouchableOpacity>
           </View>
@@ -156,13 +203,22 @@ const HomeScreen: React.FC = () => {
           </View>
 
           <View style={styles.infoGrid}>
-            <InfoBox icon={Images.voucherIcon} value="0" label="Phiếu ưu đãi" color={Colors.gray300} />
+            <InfoBox
+              icon={Images.voucherIcon}
+              value="0"
+              label="Phiếu ưu đãi"
+              color={Colors.gray300}
+            />
             <InfoBox
               icon={Images.listInvoice}
               value={formatCurrency(profile?.total_invoiced?.toString() || '0')}
-              label="Tổng số hoá đơn"
+              label="Tổng tiền mua hàng"
             />
-            <InfoBox icon={Images.eventIcon} value="0" label="Số sự kiện đã tham gia" />
+            <InfoBox
+              icon={Images.eventIcon}
+              value="0"
+              label="Số sự kiện đã tham gia"
+            />
             <InfoBox
               icon={Images.debt}
               value={formatCurrency(profile?.debt) || '0 VND'}
@@ -171,10 +227,10 @@ const HomeScreen: React.FC = () => {
             />
           </View>
 
-          <View style={{paddingVertical: scale(10)}}>
+          <View style={{ paddingVertical: scale(10) }}>
             <View style={styles.invoiceCurrentHeader}>
               <Image source={Images.listInvoice} style={styles.iconStyle} />
-              <CText fontSize={fontScale(18)} style={{fontWeight: 'bold'}}>
+              <CText fontSize={fontScale(18)} style={{ fontWeight: 'bold' }}>
                 Hóa đơn gần đây
               </CText>
             </View>
@@ -200,13 +256,20 @@ const HomeScreen: React.FC = () => {
               </View>
             )}
           </View>
-
-          <View style={styles.quickAccessGrid}>
-            <QuickAccessBox icon={Images.skillCorner} label="Mẹo canh tác" />
-            <QuickAccessBox icon={Images.helpSupport} label="Hỗ trợ" />
-          </View>
         </View>
       </ScrollView>
+
+      <View
+        pointerEvents="box-none"
+        style={[styles.quickAccessFabColumn, { bottom: quickAccessBottom }]}
+      >
+        <QuickAccessBox
+          compact
+          icon={Images.skillCorner}
+          label="Mẹo canh tác"
+        />
+        <QuickAccessBox compact icon={Images.helpSupport} label="Hỗ trợ" />
+      </View>
     </View>
   );
 };

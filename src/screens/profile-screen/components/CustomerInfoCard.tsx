@@ -14,7 +14,6 @@ import {
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
-import reactotron from 'reactotron-react-native';
 
 interface CustomerInfoCardProps {
   rank: string;
@@ -30,8 +29,8 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   avatarUri,
   maxCropsToShow = 8,
 }) => {
-  const {data: profile} = useGetProfile();
-  const {data: plantsData} = useGetPlant();
+  const { data: profile } = useGetProfile();
+  const { data: plantsData } = useGetPlant();
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
@@ -80,7 +79,7 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           <View style={styles.avatarRing}>
             {canShowNetworkAvatar ? (
               <Image
-                source={{uri: avatarUri}}
+                source={{ uri: avatarUri }}
                 style={styles.avatarImg}
                 resizeMode="cover"
                 onError={handleAvatarError}
@@ -97,7 +96,11 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           <Pressable
             onPress={onEditPress}
             hitSlop={10}
-            style={({pressed}) => [styles.editPill, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.editPill,
+              pressed && styles.pressed,
+            ]}
+          >
             <Pencil size={14} color={Colors.h2} />
           </Pressable>
         </View>
@@ -163,7 +166,6 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
             {profile?.type_of_plants_ids?.length ? (
               <>
                 {profile?.type_of_plants_ids?.map((crop, _) => {
-                  reactotron.log('Crop:', crop);
                   plantsData?.data?.plants.filter(item => item.id === crop);
                   const cropLabel =
                     plantsData?.data?.plants.find(item => item.id === crop)
@@ -319,7 +321,7 @@ const styles = StyleSheet.create({
 
   pressed: {
     opacity: 0.8,
-    transform: [{scale: 0.98}],
+    transform: [{ scale: 0.98 }],
   },
 
   headerText: {

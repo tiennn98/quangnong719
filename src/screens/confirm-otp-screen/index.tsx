@@ -1,6 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   AppState,
   AppStateStatus,
@@ -24,7 +30,6 @@ import { Colors } from '@/themes';
 import { hidePhoneNumber } from '@/utils/tools';
 import { fontScale, scale } from 'react-native-utils-scale';
 import { styles } from './styles.module';
-import reactotron from 'reactotron-react-native';
 
 const RESEND_COUNTDOWN = 300; // seconds
 const OTP_SESSION_KEY = 'otp_session_v1';
@@ -44,7 +49,9 @@ function formatCountdown(seconds: number) {
 }
 
 function clampInt(n: number) {
-  if (!Number.isFinite(n)) {return 0;}
+  if (!Number.isFinite(n)) {
+    return 0;
+  }
   return Math.max(0, Math.floor(n));
 }
 
@@ -79,9 +86,13 @@ function isOtpInvalidMessage(msg: string) {
   return hasOtp ? invalid : false;
 }
 
-type UiErrorKind = 'ACCOUNT_NOT_FOUND' | 'OTP_INVALID' | 'RATE_LIMIT' | 'GENERIC';
+type UiErrorKind =
+  | 'ACCOUNT_NOT_FOUND'
+  | 'OTP_INVALID'
+  | 'RATE_LIMIT'
+  | 'GENERIC';
 
-function mapErrorToUi(err: any): {kind: UiErrorKind; message: string} {
+function mapErrorToUi(err: any): { kind: UiErrorKind; message: string } {
   // Vì auth.api.ts đang throw new Error(apiMsg) => err.message là cái quan trọng nhất.
   const msg = normalizeMsg(err?.message);
 
@@ -120,20 +131,22 @@ async function callPhone(phone: string) {
   const raw = phone.replace(/\s+/g, '');
   const url = Platform.OS === 'ios' ? `telprompt:${raw}` : `tel:${raw}`;
   const can = await Linking.canOpenURL(url);
-  if (can) {return Linking.openURL(url);}
+  if (can) {
+    return Linking.openURL(url);
+  }
   return Linking.openURL(`tel:${raw}`);
 }
 
 const ConfirmOtpScreen = () => {
   const route = useRoute();
-  const {phone} = route.params as {phone: string};
+  const { phone } = route.params as { phone: string };
 
   const navigation = useNavigation<any>();
   const loginMutation = useLogin();
   const resendOTPMutation = useSendOTP();
 
   useLayoutEffect(() => {
-    navigation.setOptions({gestureEnabled: false});
+    navigation.setOptions({ gestureEnabled: false });
   }, [navigation]);
 
   const [otp, setOtp] = useState('');
@@ -153,7 +166,9 @@ const ConfirmOtpScreen = () => {
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const stopTick = useCallback(() => {
-    if (tickRef.current) {clearInterval(tickRef.current);}
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+    }
     tickRef.current = null;
   }, []);
 
@@ -187,11 +202,16 @@ const ConfirmOtpScreen = () => {
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(OTP_SESSION_KEY);
-        if (!mounted) {return;}
+        if (!mounted) {
+          return;
+        }
 
         if (raw) {
           const parsed = JSON.parse(raw) as Partial<OtpSession>;
-          if (parsed?.phone === phone && typeof parsed.expiresAtMs === 'number') {
+          if (
+            parsed?.phone === phone &&
+            typeof parsed.expiresAtMs === 'number'
+          ) {
             const exp = parsed.expiresAtMs;
             setExpiresAtMs(exp);
             startTick(exp);
@@ -202,12 +222,12 @@ const ConfirmOtpScreen = () => {
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
         setExpiresAtMs(exp);
         startTick(exp);
-        persistSession({phone, expiresAtMs: exp});
+        persistSession({ phone, expiresAtMs: exp });
       } catch {
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
         setExpiresAtMs(exp);
         startTick(exp);
-        persistSession({phone, expiresAtMs: exp});
+        persistSession({ phone, expiresAtMs: exp });
       }
     })();
 
@@ -248,7 +268,9 @@ const ConfirmOtpScreen = () => {
   const handleChangeOtp = useCallback(
     (code: string) => {
       setOtp(code);
-      if (otpError) {setOtpError(null);}
+      if (otpError) {
+        setOtpError(null);
+      }
     },
     [otpError],
   );
@@ -260,7 +282,7 @@ const ConfirmOtpScreen = () => {
     }
 
     loginMutation.mutate(
-      {phone, otp},
+      { phone, otp },
       {
         onSuccess: async () => {
           await clearSession();
@@ -282,7 +304,9 @@ const ConfirmOtpScreen = () => {
   }, [otp, phone, loginMutation, clearSession, triggerResetOtp, openModal]);
 
   const handleResendOtp = useCallback(() => {
-    if (timeLeft > 0 || resendOTPMutation.isPending) {return;}
+    if (timeLeft > 0 || resendOTPMutation.isPending) {
+      return;
+    }
 
     // ✅ hook useSendOTP của bạn nhận string phone
     resendOTPMutation.mutate(phone, {
@@ -290,11 +314,14 @@ const ConfirmOtpScreen = () => {
         const exp = Date.now() + RESEND_COUNTDOWN * 1000;
         setExpiresAtMs(exp);
         startTick(exp);
-        await persistSession({phone, expiresAtMs: exp});
+        await persistSession({ phone, expiresAtMs: exp });
       },
       onError: (err: any) => {
         const ui = mapErrorToUi(err);
-        openModal(ui.kind, ui.message || 'Không thể gửi lại OTP lúc này. Vui lòng thử lại.');
+        openModal(
+          ui.kind,
+          ui.message || 'Không thể gửi lại OTP lúc này. Vui lòng thử lại.',
+        );
       },
     });
   }, [
@@ -310,18 +337,19 @@ const ConfirmOtpScreen = () => {
   const isResendDisabled = resendOTPMutation.isPending || timeLeft > 0;
 
   const isAccountNotFound = modalKind === 'ACCOUNT_NOT_FOUND';
-  reactotron.log('Render ConfirmOtpScreen',loginMutation.data?.msg);
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
-        <Pressable style={{flex: 1}} onPress={Keyboard.dismiss}>
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+      >
+        <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="always"
-            keyboardDismissMode="on-drag">
+            keyboardDismissMode="on-drag"
+          >
             <Pressable onPress={() => {}} style={styles.contentContainer}>
               <View style={styles.viewImage}>
                 <Image
@@ -354,7 +382,9 @@ const ConfirmOtpScreen = () => {
                   needReset={needResetOtp}
                 />
 
-                {otpError ? <CText style={styles.errorText}>{otpError}</CText> : null}
+                {otpError ? (
+                  <CText style={styles.errorText}>{otpError}</CText>
+                ) : null}
 
                 <CText
                   color={Colors.h2}
@@ -363,13 +393,18 @@ const ConfirmOtpScreen = () => {
                     marginTop: scale(10),
                     marginBottom: scale(30),
                     textAlign: 'center',
-                  }}>
+                  }}
+                >
                   Nhập mã gồm 6 chữ số được gửi đến điện thoại của bạn
                 </CText>
 
                 <View style={styles.viewButton}>
                   <CButton
-                    title={loginMutation.isPending ? 'Đang xác minh...' : 'Xác minh OTP'}
+                    title={
+                      loginMutation.isPending
+                        ? 'Đang xác minh...'
+                        : 'Xác minh OTP'
+                    }
                     onPress={handleVerifyOtp}
                     disabled={isVerifyDisabled}
                     isLoading={loginMutation.isPending}
@@ -377,15 +412,19 @@ const ConfirmOtpScreen = () => {
                   />
                 </View>
 
-                <View style={{marginTop: scale(10)}}>
+                <View style={{ marginTop: scale(10) }}>
                   <CButton
-                    title={resendOTPMutation.isPending ? 'Đang gửi...' : resendLabel}
+                    title={
+                      resendOTPMutation.isPending ? 'Đang gửi...' : resendLabel
+                    }
                     onPress={handleResendOtp}
                     disabled={isResendDisabled}
                     isLoading={resendOTPMutation.isPending}
                     style={[
                       {
-                        backgroundColor: isResendDisabled ? Colors.gray500 : Colors.yellow,
+                        backgroundColor: isResendDisabled
+                          ? Colors.gray500
+                          : Colors.yellow,
                         height: scale(48),
                       },
                     ]}
@@ -405,13 +444,36 @@ const ConfirmOtpScreen = () => {
         useNativeDriver
         hideModalContentWhileAnimating
         backdropOpacity={0.6}
-        style={{margin: 0, justifyContent: 'center', paddingHorizontal: scale(18)}}>
-        <View style={{backgroundColor: '#fff', borderRadius: scale(12), padding: scale(16)}}>
-          <CText style={{fontSize: fontScale(18), fontWeight: '900', color: Colors.h1}}>
+        style={{
+          margin: 0,
+          justifyContent: 'center',
+          paddingHorizontal: scale(18),
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: '#fff',
+            borderRadius: scale(12),
+            padding: scale(16),
+          }}
+        >
+          <CText
+            style={{
+              fontSize: fontScale(18),
+              fontWeight: '900',
+              color: Colors.h1,
+            }}
+          >
             {isAccountNotFound ? 'Tài khoản không tồn tại' : 'Thông báo'}
           </CText>
 
-          <CText style={{marginTop: scale(8), color: Colors.h2, fontSize: fontScale(14)}}>
+          <CText
+            style={{
+              marginTop: scale(8),
+              color: Colors.h2,
+              fontSize: fontScale(14),
+            }}
+          >
             {modalMsg}
           </CText>
 
@@ -420,35 +482,54 @@ const ConfirmOtpScreen = () => {
               {/* bấm số để gọi */}
               <Pressable
                 onPress={() => callPhone(SUPPORT_PHONE)}
-                style={{marginTop: scale(10)}}>
-                <CText style={{fontWeight: '900', color: Colors.buttonbg, fontSize: fontScale(15)}}>
+                style={{ marginTop: scale(10) }}
+              >
+                <CText
+                  style={{
+                    fontWeight: '900',
+                    color: Colors.buttonbg,
+                    fontSize: fontScale(15),
+                  }}
+                >
                   {SUPPORT_PHONE} (bấm để gọi)
                 </CText>
               </Pressable>
 
-              <View style={{flexDirection: 'row', gap: scale(10), marginTop: scale(14)}}>
-                <View style={{flex: 1}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: scale(10),
+                  marginTop: scale(14),
+                }}
+              >
+                <View style={{ flex: 1 }}>
                   <CButton
                     title="Đóng"
                     onPress={() => setModalOpen(false)}
-                    style={{height: scale(48), backgroundColor: Colors.gray500}}
+                    style={{
+                      height: scale(48),
+                      backgroundColor: Colors.gray500,
+                    }}
                   />
                 </View>
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                   <CButton
                     title="Gọi ngay"
                     onPress={() => callPhone(SUPPORT_PHONE)}
-                    style={{height: scale(48), backgroundColor: Colors.buttonbg}}
+                    style={{
+                      height: scale(48),
+                      backgroundColor: Colors.buttonbg,
+                    }}
                   />
                 </View>
               </View>
             </>
           ) : (
-            <View style={{marginTop: scale(14)}}>
+            <View style={{ marginTop: scale(14) }}>
               <CButton
                 title="Thử lại"
                 onPress={() => setModalOpen(false)}
-                style={{height: scale(48), backgroundColor: Colors.buttonbg}}
+                style={{ height: scale(48), backgroundColor: Colors.buttonbg }}
               />
             </View>
           )}

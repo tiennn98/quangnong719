@@ -1926,34 +1926,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-date-picker (5.0.13):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - react-native-notifications (5.2.2):
     - React-Core
   - react-native-pager-view (6.9.1):
@@ -2664,7 +2636,7 @@ PODS:
     - Yoga
   - RNCPushNotificationIOS (1.12.0):
     - React-Core
-  - RNDateTimePicker (8.6.0):
+  - RNDateTimePicker (9.1.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2918,7 +2890,6 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-barcode-creator (from `../node_modules/react-native-barcode-creator`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
-  - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-notifications (from `../node_modules/react-native-notifications`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -3083,8 +3054,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-barcode-creator"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
-  react-native-date-picker:
-    :path: "../node_modules/react-native-date-picker"
   react-native-notifications:
     :path: "../node_modules/react-native-notifications"
   react-native-pager-view:
@@ -3245,7 +3214,6 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 55f4c45b6319f7af1955a5dc7621eaf31bd114ce
   react-native-barcode-creator: f1dc64d58ff416a25d35596f926d83a0ca33afa6
   react-native-blur: ba0e9ad6274783c8d45f42da82acae02e25784ad
-  react-native-date-picker: 8191d29ff17772c771a9a69efc0c4c47a7affeef
   react-native-notifications: 801e1a5220d474384968de5ccf8b863d05aa552a
   react-native-pager-view: 899989dd025d219d3ac0d386b2bc162f81ae8330
   react-native-safe-area-context: 0f4986a88ec555aff660503b483d6e4bd6980a9a
@@ -3284,7 +3252,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
   RNCClipboard: 962296f7af77f6c039b683e21c2e2255af9c05df
   RNCPushNotificationIOS: b9dcb4f28c85f77483c3f86d2fcb1e0f0ab396fa
-  RNDateTimePicker: e9e210197c267461f70f3f47bec705401ff72077
+  RNDateTimePicker: e39ae9532555909f20861f3347cfe36b4a0d4b68
   RNDeviceInfo: d79872e11c8e9c4de0d65b0ee6e0cee719f37fea
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBApp: ad920ca07c6131c923e5e46fea556838e52f7369
@@ -3300,6 +3268,6 @@ SPEC CHECKSUMS:
   VisionCamera: 3ea10c46a5c612f5f89fb46a54bef4a0de8b58a7
   Yoga: 728df40394d49f3f471688747cf558158b3a3bd1
 
-PODFILE CHECKSUM: 698962a54204711eabb4872e7a4c3f899a79a108
+PODFILE CHECKSUM: 06887f3f5acacebe8d0eab68d419b0c8948e71d1
 
 COCOAPODS: 1.16.2

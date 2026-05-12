@@ -1,21 +1,21 @@
-import {useMutation, UseMutationOptions, useQuery} from '@tanstack/react-query';
+import { SCREEN_NAME } from '@/constants/screen-name';
+import { navigate } from '@/navigators';
+import { store } from '@/redux/store';
 import {
+  DeleteAccountPayload,
+  DeleteAccountResponse,
+  deleteCustomerAccount,
+  getCustomerHome,
   getProfile,
+  updateCustomerDevice,
   updateCustomerProfile,
   UpdateCustomerProfilePayload,
   UpdateCustomerProfileResponse,
-  updateCustomerDevice,
   UpdateDevicePayload,
   UpdateDeviceResponse,
-  getCustomerHome,
-  ApiResponse,
-  DeleteCustomerPayload,
-  deleteCustomerAccount,
-  DeleteAccountResponse,
-  DeleteAccountPayload,
 } from '@/services/profile.api';
 import { queryClient } from '@/services/react-query-client';
-import {store} from '@/redux/store';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const useGetProfile = () => {
   const token = store.getState().auth.accessToken;
@@ -24,7 +24,8 @@ export const useGetProfile = () => {
     queryFn: getProfile,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    retry: 1, enabled: !!token,
+    retry: 1,
+    enabled: !!token,
   });
 };
 
@@ -37,6 +38,7 @@ export const useUpdateCustomerProfile = () => {
     mutationFn: updateCustomerProfile,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+      navigate(SCREEN_NAME.PROFILESCREEN);
     },
   });
 };
@@ -46,7 +48,6 @@ export const useUpdateCustomerDevice = () => {
     mutationFn: updateCustomerDevice,
   });
 };
-
 
 export const HOME_QK = ['customerHome'];
 

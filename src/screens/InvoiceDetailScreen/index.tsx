@@ -7,13 +7,25 @@ import {
   Store,
   User,
 } from 'lucide-react-native';
-import React, { useMemo } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { BarcodeCreatorView, BarcodeFormat } from 'react-native-barcode-creator';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  BarcodeCreatorView,
+  BarcodeFormat,
+} from 'react-native-barcode-creator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontScale, scale, width } from 'react-native-utils-scale';
 
 import CText from '@/components/text';
+import { useGetInvoiceList } from '@/hooks/useInvoice';
+import { useGetProfile } from '@/hooks/useProfile';
+import { InvoiceData } from '@/services/invoice.api';
 import { Colors, Fonts } from '@/themes';
 import { formatCurrency, formatISODate } from '@/utils/tools';
 
@@ -64,14 +76,68 @@ export type InvoiceDTO = {
   invoiceDetails?: InvoiceDetail[];
 };
 
-const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
+const pickInvoiceFromList = (
+  list: InvoiceData[],
+  current: InvoiceDTO,
+): InvoiceData | undefined => {
+  if (current.id != null) {
+    const byId = list.find(it => it.id === current.id);
+    if (byId) {
+      return byId;
+    }
+  }
+  if (current.code) {
+    const byCode = list.find(it => it.code === current.code);
+    if (byCode) {
+      return byCode;
+    }
+  }
+  if (current.uuid) {
+    return list.find(it => it.uuid === current.uuid);
+  }
+  return undefined;
+};
+
+const InvoiceDetailScreen: React.FC<any> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
-  const invoice = route.params.invoice as unknown as InvoiceDTO;
+  const initialInvoice = route.params.invoice as unknown as InvoiceDTO;
+  const [invoice, setInvoice] = useState<InvoiceDTO>(() => initialInvoice);
+  const [refreshing, setRefreshing] = useState(false);
+
+  React.useEffect(() => {
+    if (initialInvoice) {
+      setInvoice(initialInvoice);
+    }
+  }, [initialInvoice]);
+
+  const { data: profile } = useGetProfile();
+  const { refetch: refetchInvoiceList } = useGetInvoiceList(
+    profile?.phone_number,
+  );
+
+  const onRefresh = useCallback(async () => {
+    if (!profile?.phone_number) {
+      return;
+    }
+    setRefreshing(true);
+    try {
+      const result = await refetchInvoiceList();
+      const list = result.data?.data ?? [];
+      const next = pickInvoiceFromList(list, invoice);
+      if (next) {
+        setInvoice(next as unknown as InvoiceDTO);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [profile?.phone_number, refetchInvoiceList, invoice]);
 
   const code = invoice?.code || `HD-${invoice?.id ?? ''}`;
-  const details = Array.isArray(invoice?.invoiceDetails)
-    ? invoice.invoiceDetails
-    : [];
+  const details = useMemo(
+    () =>
+      Array.isArray(invoice?.invoiceDetails) ? invoice.invoiceDetails : [],
+    [invoice?.invoiceDetails],
+  );
 
   const totalQuantity = useMemo(() => {
     return details.reduce((sum, it) => sum + (Number(it?.quantity) || 0), 0);
@@ -146,7 +212,13 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
     ],
   );
 
-  const renderRow = ({item, index}: {item: InvoiceDetail; index: number}) => {
+  const renderRow = ({
+    item,
+    index,
+  }: {
+    item: InvoiceDetail;
+    index: number;
+  }) => {
     const qty = Number(item?.quantity) || 0;
     const price = Number(item?.price) || 0;
     const rowTotal = Number(item?.subTotal) || qty * price;
@@ -156,7 +228,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
       <View style={styles.detailCard}>
         <View style={styles.detailLeftBar} />
 
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <View style={styles.detailTopLine}>
             <CText style={styles.detailTitle}>{`Dòng ${index + 1}`}</CText>
 
@@ -189,7 +261,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
           ) : null}
         </View>
 
-        <View style={{alignItems: 'flex-end'}}>
+        <View style={{ alignItems: 'flex-end' }}>
           <CText style={styles.money}>{formatCurrency(rowTotal)}</CText>
         </View>
       </View>
@@ -207,7 +279,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
             background="#FFFFFF"
             foregroundColor="#000000"
             format={BarcodeFormat.CODE128}
-            style={{width: width - scale(64), height: scale(95)}}
+            style={{ width: width - scale(64), height: scale(95) }}
           />
         </View>
 
@@ -227,11 +299,11 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         <CText style={styles.sectionNote}>Dễ xem – chữ to</CText>
       </View>
 
-      <View style={{gap: scale(10), paddingHorizontal: scale(16)}}>
+      <View style={{ gap: scale(10), paddingHorizontal: scale(16) }}>
         {metaItems.map(it => (
           <View key={it.key} style={styles.metaCard}>
             <View style={styles.metaIcon}>{it.icon}</View>
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <CText style={styles.metaLabel}>{it.label}</CText>
               <CText style={styles.metaValue} numberOfLines={2}>
                 {it.value}
@@ -241,7 +313,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         ))}
       </View>
 
-      <View style={[styles.sectionHead, {marginTop: scale(14)}]}>
+      <View style={[styles.sectionHead, { marginTop: scale(14) }]}>
         <CText style={styles.sectionTitle}>Chi tiết</CText>
         <CText style={styles.sectionNote}>{`${details.length} dòng`}</CText>
       </View>
@@ -249,11 +321,14 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
   );
 
   const SummaryDock = (
-    <View style={[styles.dockWrap, {paddingBottom: insets.bottom + scale(12)}]}>
+    <View
+      style={[styles.dockWrap, { paddingBottom: insets.bottom + scale(12) }]}
+    >
       <View style={styles.dockCard}>
         <View style={styles.sumRow}>
           <CText
-            style={styles.sumLabel}>{`Tổng tiền (${totalQuantity})`}</CText>
+            style={styles.sumLabel}
+          >{`Tổng tiền (${totalQuantity})`}</CText>
           <CText style={styles.sumValue}>{formatCurrency(totalAmount)}</CText>
         </View>
         <View style={styles.sumRow}>
@@ -273,9 +348,10 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
             style={[
               styles.sumValueStrong,
               remaining > 0
-                ? {color: Colors.red}
-                : {color: Colors.greenPrimary},
-            ]}>
+                ? { color: Colors.red }
+                : { color: Colors.greenPrimary },
+            ]}
+          >
             {formatCurrency(remaining)}
           </CText>
         </View>
@@ -293,17 +369,19 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
     <View
       style={[
         styles.safe,
-        {paddingTop: insets.top, paddingBottom: insets.bottom},
-      ]}>
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <View style={styles.header}>
         <Pressable
           onPress={() => navigation.goBack()}
           hitSlop={12}
-          style={styles.backBtn}>
+          style={styles.backBtn}
+        >
           <ChevronLeft size={26} color={Colors.h1} />
         </Pressable>
 
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <CText style={styles.hTitle}>Chi tiết hóa đơn</CText>
           <CText style={styles.hSub}>{code}</CText>
         </View>
@@ -311,10 +389,11 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         <View
           style={[
             styles.statusBadge,
-            {backgroundColor: statusTone.bg, borderColor: statusTone.border},
-          ]}>
+            { backgroundColor: statusTone.bg, borderColor: statusTone.border },
+          ]}
+        >
           <CheckCircle2 size={18} color={statusTone.text} />
-          <CText style={[styles.statusText, {color: statusTone.text}]}>
+          <CText style={[styles.statusText, { color: statusTone.text }]}>
             {statusText}
           </CText>
         </View>
@@ -324,11 +403,19 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
         keyExtractor={(it, idx) => String(it?.productId ?? idx)}
         renderItem={renderRow}
         ListHeaderComponent={ListHeader}
-        ItemSeparatorComponent={() => <View style={{height: scale(12)}} />}
+        ItemSeparatorComponent={() => <View style={{ height: scale(12) }} />}
         contentContainerStyle={{
           paddingBottom: scale(260) + insets.bottom,
         }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={Colors.greenPrimary}
+            colors={[Colors.greenPrimary]}
+          />
+        }
       />
 
       {SummaryDock}
@@ -339,7 +426,7 @@ const InvoiceDetailScreen: React.FC<any> = ({navigation, route}) => {
 export default InvoiceDetailScreen;
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#FFFFFF'},
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
 
   header: {
     paddingHorizontal: scale(16),
