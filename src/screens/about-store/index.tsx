@@ -2,13 +2,9 @@ import CAccordion, { AccordionProps } from '@/components/accordion';
 import CText from '@/components/text';
 import { Colors } from '@/themes/color';
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, View } from 'react-native';
+import { View } from 'react-native';
 import { fontScale } from 'react-native-utils-scale';
 import { styles } from './style.module';
-
-import CButton from '@/components/button';
-import CDropdown, { DropdownItem } from '@/components/dropdown';
-import CInput from '@/components/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,13 +16,13 @@ type ContactFormValues = {
   message: string;
 };
 
-const TOPIC_OPTIONS: DropdownItem<string>[] = [
-  {label: 'Invoice & Payment', value: 'invoice_payment'},
-  {label: 'Product Information', value: 'product_information'},
-  {label: 'Technical Support', value: 'technical_support'},
-  {label: 'Events & Workshops', value: 'events_workshops'},
-  {label: 'Other', value: 'other'},
-];
+// const TOPIC_OPTIONS: DropdownItem<string>[] = [
+//   { label: 'Invoice & Payment', value: 'invoice_payment' },
+//   { label: 'Product Information', value: 'product_information' },
+//   { label: 'Technical Support', value: 'technical_support' },
+//   { label: 'Events & Workshops', value: 'events_workshops' },
+//   { label: 'Other', value: 'other' },
+// ];
 
 const FAQ_LIST: AccordionProps[] = [
   {
@@ -65,12 +61,12 @@ const FAQ_LIST: AccordionProps[] = [
 const AboutStoreScreen = () => {
   const insets = useSafeAreaInsets();
   const methods = useForm<ContactFormValues>({
-    defaultValues: {fullName: '', phone: '', topic: '', message: ''},
+    defaultValues: { fullName: '', phone: '', topic: '', message: '' },
     mode: 'onChange',
   });
 
   const titleStyle = useMemo(
-    () => ({fontWeight: '600' as const, marginBottom: 8}),
+    () => ({ fontWeight: '600' as const, marginBottom: 8 }),
     [],
   );
 
@@ -80,7 +76,8 @@ const AboutStoreScreen = () => {
         <CText
           style={titleStyle}
           fontSize={fontScale(24)}
-          color={Colors.greenPrimary}>
+          color={Colors.greenPrimary}
+        >
           Thông tin cửa hàng:
         </CText>
 
@@ -125,105 +122,111 @@ const AboutStoreScreen = () => {
     );
   }, [titleStyle]);
 
-  const onSubmit = useCallback((values: ContactFormValues) => {
-    Keyboard.dismiss();
-    console.log('SEND MESSAGE:', values);
-  }, []);
+  // const onSubmit = useCallback((_values: ContactFormValues) => {
+  //   Keyboard.dismiss();
+  // }, []);
 
-  const _renderSendMessageForm = useCallback(() => {
-    return (
-      <View style={styles.infoStoreContainer}>
-        <CText style={titleStyle} fontSize={fontScale(24)} color={Colors.h1}>
-          Gửi tin nhắn cho chúng tôi
-        </CText>
+  // const _renderSendMessageForm = useCallback(() => {
+  //   return (
+  //     <View style={styles.infoStoreContainer}>
+  //       <CText style={titleStyle} fontSize={fontScale(24)} color={Colors.h1}>
+  //         Gửi tin nhắn cho chúng tôi
+  //       </CText>
 
-        <CText
-          fontSize={fontScale(14)}
-          color={Colors.h2}
-          style={{marginBottom: 12}}>
-          Vui lòng điền form, chúng tôi sẽ phản hồi trong vòng 24 giờ.
-        </CText>
+  //       <CText
+  //         fontSize={fontScale(14)}
+  //         color={Colors.h2}
+  //         style={{ marginBottom: 12 }}
+  //       >
+  //         Vui lòng điền form, chúng tôi sẽ phản hồi trong vòng 24 giờ.
+  //       </CText>
 
-        <CText
-          fontSize={fontScale(14)}
-          color={Colors.h2}
-          style={{marginBottom: 6}}>
-          Họ và tên
-        </CText>
-        <CInput
-          name="fullName"
-          placeholder="Nhập họ và tên"
-          style={styles.subTitleHeader}
-          returnKeyType="next"
-          fontSize={fontScale(18)}
-          onSubmitEditing={() => methods.setFocus('phone')}
-        />
+  //       <CText
+  //         fontSize={fontScale(14)}
+  //         color={Colors.h2}
+  //         style={{ marginBottom: 6 }}
+  //       >
+  //         Họ và tên
+  //       </CText>
+  //       <CInput
+  //         name="fullName"
+  //         placeholder="Nhập họ và tên"
+  //         style={styles.subTitleHeader}
+  //         returnKeyType="next"
+  //         fontSize={fontScale(18)}
+  //         onSubmitEditing={() => methods.setFocus('phone')}
+  //       />
 
-        <CText
-          fontSize={fontScale(14)}
-          color={Colors.h2}
-          style={{marginTop: 12, marginBottom: 6}}>
-          Số điện thoại
-        </CText>
-        <CInput
-          name="phone"
-          placeholder="Nhập 10 số điện thoại của bạn"
-          keyboardType="phone-pad"
-          maxLength={10}
-          style={styles.subTitleHeader}
-          returnKeyType="next"
-          fontSize={fontScale(18)}
-          onSubmitEditing={() => methods.setFocus('message')}
-        />
+  //       <CText
+  //         fontSize={fontScale(14)}
+  //         color={Colors.h2}
+  //         style={{ marginTop: 12, marginBottom: 6 }}
+  //       >
+  //         Số điện thoại
+  //       </CText>
+  //       <CInput
+  //         name="phone"
+  //         placeholder="Nhập 10 số điện thoại của bạn"
+  //         keyboardType="phone-pad"
+  //         maxLength={10}
+  //         style={styles.subTitleHeader}
+  //         returnKeyType="next"
+  //         fontSize={fontScale(18)}
+  //         onSubmitEditing={() => methods.setFocus('message')}
+  //       />
 
-        <CText
-          fontSize={fontScale(14)}
-          color={Colors.h2}
-          style={{marginTop: 12, marginBottom: 6}}>
-          Chủ đề
-        </CText>
-        <CDropdown
-          name="topic"
-          placeholder="Chọn chủ đề"
-          items={TOPIC_OPTIONS}
-          selectStyle={styles.subTitleHeader}
-        />
+  //       <CText
+  //         fontSize={fontScale(14)}
+  //         color={Colors.h2}
+  //         style={{ marginTop: 12, marginBottom: 6 }}
+  //       >
+  //         Chủ đề
+  //       </CText>
+  //       <CDropdown
+  //         name="topic"
+  //         placeholder="Chọn chủ đề"
+  //         items={TOPIC_OPTIONS}
+  //         selectStyle={styles.subTitleHeader}
+  //       />
 
-        <CText
-          fontSize={fontScale(14)}
-          color={Colors.h2}
-          style={{marginTop: 12, marginBottom: 6}}>
-          Nội dung
-        </CText>
-        <CInput
-          name="message"
-          placeholder="Nhập nội dung cần hỗ trợ"
-          style={[styles.subTitleHeader, {height: fontScale(120)}]}
-          fontSize={fontScale(18)}
-          multiline
-          blurOnSubmit={false}
-          returnKeyType="default"
-        />
+  //       <CText
+  //         fontSize={fontScale(14)}
+  //         color={Colors.h2}
+  //         style={{ marginTop: 12, marginBottom: 6 }}
+  //       >
+  //         Nội dung
+  //       </CText>
+  //       <CInput
+  //         name="message"
+  //         placeholder="Nhập nội dung cần hỗ trợ"
+  //         style={[styles.subTitleHeader, { height: fontScale(120) }]}
+  //         fontSize={fontScale(18)}
+  //         multiline
+  //         blurOnSubmit={false}
+  //         returnKeyType="default"
+  //       />
 
-        <View style={{marginTop: 16}}>
-          <CButton
-            title="Gửi yêu cầu"
-            onPress={methods.handleSubmit(onSubmit)}
-          />
-        </View>
-      </View>
-    );
-  }, [methods, onSubmit, titleStyle]);
+  //       <View style={{ marginTop: 16 }}>
+  //         <CButton
+  //           title="Gửi yêu cầu"
+  //           onPress={methods.handleSubmit(onSubmit)}
+  //         />
+  //       </View>
+  //     </View>
+  //   );
+  // }, [methods, onSubmit, titleStyle]);
 
   return (
     <View
       style={[
         styles.container,
-        {paddingTop: insets.top, paddingBottom: insets.bottom},
-      ]}>
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <FormProvider {...methods}>
         <KeyboardAvoidingScrollView
-          contentContainerStyle={styles.scrollContent}>
+          contentContainerStyle={styles.scrollContent}
+        >
           <View style={styles.contentContainer} />
           <CText style={styles.titleHeader}>Về cửa hàng của chúng tôi</CText>
           <CText style={styles.subTitleHeader}>

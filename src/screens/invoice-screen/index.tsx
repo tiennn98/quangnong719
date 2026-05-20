@@ -170,10 +170,6 @@ const InvoiceScreen: React.FC = () => {
           totalAmount={String(item.total)}
           status={item.status as any}
           onDetailPress={() => {
-            console.log('====================================');
-            console.log('item', item);
-            console.log('====================================');
-            return;
             navigate(SCREEN_NAME.INVOICE_DETAIL_SCREEN, { invoice: item });
           }}
           totalPayment={item.totalPayment}

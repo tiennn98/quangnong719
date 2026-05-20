@@ -14,7 +14,7 @@ export const getAllStoredKeys = async (): Promise<string[]> => {
     console.log('--- Danh sách Keys trong AsyncStorage ---');
     console.log(keys);
     console.log('------------------------------------------');
-    return keys;
+    return keys as string[];
   } catch (e) {
     console.error('Lỗi khi lấy danh sách keys từ AsyncStorage:', e);
     return [];

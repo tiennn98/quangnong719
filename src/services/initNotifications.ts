@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
-import notifee, {EventType} from '@notifee/react-native';
+import {Platform} from 'react-native';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 import {SCREEN_NAME} from '@/constants/screen-name';
 import {navigate, waitForNavigationReady} from '@/navigators/navigation-service';
@@ -7,7 +8,6 @@ import {
   getInvoiceDetailById,
   mapInvoiceDetailApiToDTO,
 } from './invoice.api';
-import {displayLocalNotification, ensureDefaultChannel} from './notifications';
 
 function logMsg(tag: string, payload: any) {
   console.log(`[NOTIF] ${tag}:`, JSON.stringify(payload, null, 2));
@@ -58,24 +58,17 @@ export async function handleNotificationClick(source: string, payload: any) {
   await navigateToInvoiceDetail(invoiceId);
 }
 
-export async function setupFcmListeners() {
-  try {
-    await ensureDefaultChannel();
-  } catch (e: any) {
-    console.log('[NOTIF] ensureDefaultChannel error:', e?.message || e);
-  }
+function payloadFromIosNotification(notification: any) {
+  const data =
+    typeof notification?.getData === 'function'
+      ? notification.getData()
+      : notification?.data;
+  return {data};
+}
 
+export async function setupFcmListeners() {
   const unsubOnMessage = messaging().onMessage(async remoteMessage => {
-    logMsg('FOREGROUND - message received (chưa click)', remoteMessage);
-    try {
-      await displayLocalNotification({
-        title: remoteMessage?.notification?.title,
-        body: remoteMessage?.notification?.body,
-        data: remoteMessage?.data as Record<string, any> | undefined,
-      });
-    } catch (e: any) {
-      console.log('[NOTIF] displayLocalNotification error:', e?.message || e);
-    }
+    logMsg('FOREGROUND - message received (FCM)', remoteMessage);
   });
 
   const unsubOnOpened = messaging().onNotificationOpenedApp(remoteMessage => {
@@ -95,28 +88,19 @@ export async function setupFcmListeners() {
     handleNotificationClick('KILLED CLICK (FCM)', initialFcm);
   }
 
-  const unsubNotifeeFg = notifee.onForegroundEvent(({type, detail}) => {
-    if (type === EventType.PRESS) {
-      console.log('====================================');
-      console.log('[NOTIF] 👉 CLICK khi app đang MỞ (foreground - notifee)');
-      console.log('====================================');
-      logMsg('FOREGROUND CLICK', detail.notification);
-      handleNotificationClick(
-        'FOREGROUND CLICK (notifee)',
-        detail.notification,
-      );
-    }
-  });
+  const onIosNotificationPress = (notification: any) => {
+    console.log('====================================');
+    console.log('[NOTIF] 👉 CLICK khi app đang MỞ (foreground - iOS)');
+    console.log('====================================');
+    const payload = payloadFromIosNotification(notification);
+    logMsg('FOREGROUND CLICK (iOS)', payload);
+    handleNotificationClick('FOREGROUND CLICK (iOS)', payload);
+  };
 
-  const initialNotifee = await notifee.getInitialNotification();
-  if (initialNotifee) {
-    console.log('====================================');
-    console.log('[NOTIF] 👉 CLICK khi app đã KILL (notifee cold start)');
-    console.log('====================================');
-    logMsg('KILLED CLICK (notifee)', initialNotifee.notification);
-    handleNotificationClick(
-      'KILLED CLICK (notifee)',
-      initialNotifee.notification,
+  if (Platform.OS === 'ios') {
+    PushNotificationIOS.addEventListener(
+      'notification',
+      onIosNotificationPress,
     );
   }
 
@@ -127,7 +111,12 @@ export async function setupFcmListeners() {
   return () => {
     unsubOnMessage();
     unsubOnOpened();
-    unsubNotifeeFg();
     unsubToken();
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.removeEventListener(
+        'notification',
+        onIosNotificationPress,
+      );
+    }
   };
 }
