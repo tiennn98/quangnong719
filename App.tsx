@@ -1,8 +1,3 @@
-
-if (__DEV__) {
-  require('./src/services/reactotron-config');
-}
-
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -28,6 +23,13 @@ import { persistor, store } from '@/redux/store';
 import { Colors } from '@/themes';
 import { QueryClientProvider } from '@tanstack/react-query';
 import Navigators from '@/navigators';
+import { enableScreens } from 'react-native-screens';
+
+enableScreens();
+
+if (__DEV__) {
+  require('./src/services/reactotron-config');
+}
 
 if (Text.defaultProps == null) {
   Text.defaultProps = {};
@@ -47,7 +49,7 @@ TextInput.defaultProps.allowFontScaling = false;
 TouchableOpacity.defaultProps.allowFontScaling = false;
 Pressable.defaultProps.allowFontScaling = false;
 
-const UpdatingUI = ({progress}) => {
+const UpdatingUI = ({ progress }) => {
   return (
     <View style={styles.updateContainer}>
       <StatusBar barStyle="default" />
@@ -96,7 +98,7 @@ const App = () => {
               break;
           }
         },
-        ({receivedBytes, totalBytes}) => {
+        ({ receivedBytes, totalBytes }) => {
           const currentProgress = Math.round(
             (receivedBytes / totalBytes) * 100,
           );
@@ -171,4 +173,3 @@ const styles = StyleSheet.create({
     color: '#007AFF',
   },
 });
-

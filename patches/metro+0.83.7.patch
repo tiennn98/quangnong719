@@ -1,0 +1,60 @@
+diff --git a/node_modules/metro/src/lib/TerminalReporter.js b/node_modules/metro/src/lib/TerminalReporter.js
+--- a/node_modules/metro/src/lib/TerminalReporter.js
++++ b/node_modules/metro/src/lib/TerminalReporter.js
+@@ -41,7 +41,13 @@ function _interopRequireDefault(e) {
+ function _interopRequireDefault(e) {
+   return e && e.__esModule ? e : { default: e };
+ }
+-const style = (format, text) => _util.default.styleText(format, text);
++const style = (format, text) =>
++  Array.isArray(format)
++    ? format.reduceRight(
++        (acc, fmt) => _util.default.styleText(fmt, acc),
++        text,
++      )
++    : _util.default.styleText(format, text);
+ const DARK_BLOCK_CHAR = "\u2593";
+ const LIGHT_BLOCK_CHAR = "\u2591";
+ const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
+diff --git a/node_modules/metro/src/lib/reporting.js b/node_modules/metro/src/lib/reporting.js
+--- a/node_modules/metro/src/lib/reporting.js
++++ b/node_modules/metro/src/lib/reporting.js
+@@ -15,18 +15,27 @@
+ const supportsColor = () =>
+   process.stdout instanceof _tty.default.WriteStream &&
+   process.stdout.hasColors();
++function styleTextMulti(format, text) {
++  if (Array.isArray(format)) {
++    return format.reduceRight(
++      (acc, fmt) => _util.default.styleText(fmt, acc),
++      text,
++    );
++  }
++  return _util.default.styleText(format, text);
++}
+ function logWarning(terminal, format, ...args) {
+   const str = _util.default.format(format, ...args);
+   terminal.log(
+     "%s %s",
+-    _util.default.styleText(["yellow", "inverse", "bold"], " WARN "),
++    styleTextMulti(["yellow", "inverse", "bold"], " WARN "),
+     str,
+   );
+ }
+ function logError(terminal, format, ...args) {
+   terminal.log(
+     "%s %s",
+-    _util.default.styleText(["red", "inverse", "bold"], " ERROR "),
++    styleTextMulti(["red", "inverse", "bold"], " ERROR "),
+     _util.default.format(
+       supportsColor() ? format : _util.default.stripVTControlCharacters(format),
+       ...args,
+@@ -37,7 +46,7 @@
+   const str = _util.default.format(format, ...args);
+   terminal.log(
+     "%s %s",
+-    _util.default.styleText(["cyan", "inverse", "bold"], " INFO "),
++    styleTextMulti(["cyan", "inverse", "bold"], " INFO "),
+     str,
+   );
+ }

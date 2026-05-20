@@ -5,7 +5,9 @@
   "scripts": {
     "postinstall": "patch-package",
     "android": "react-native run-android",
-    "android:clean-build": "cd android && ./gradlew clean && cd .. && rm -rf android/build android/.gradle",
+    "android:clean-build": "cd android && ./gradlew --stop && ./gradlew clean && cd .. && rm -rf android/build android/.gradle node_modules/react-native-screens/android/.cxx node_modules/react-native-screens/android/build",
+    "android:fix-build": "cd android && ./gradlew --stop && cd .. && rm -rf android/app/build android/build android/.gradle && find \"$HOME/.gradle/caches\" -path '*aapt2-8.11.0*' -delete 2>/dev/null; yarn android",
+    "android:bundle-release-check": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/build/tmp-release.bundle --assets-dest android/app/build/tmp-release-assets",
     "android:build-release-aab": "cd android && ./gradlew bundleRelease",
     "android:build-release-apk": "cd android && ./gradlew assembleRelease",
     "update-ios": "revopush release-react QuangNong719-ios ios --deployment-name Production",
@@ -18,7 +20,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
-    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-clipboard/clipboard": "^1.16.3",
     "@react-native-community/blur": "^4.4.1",
@@ -57,13 +58,12 @@
     "react-native-permissions": "^5.4.4",
     "react-native-qrcode-svg": "^6.3.21",
     "react-native-rename": "^3.2.17",
-    "react-native-safe-area-context": "^5.5.2",
-    "react-native-screens": "^4.19.0",
+    "react-native-safe-area-context": "^5.7.0",
+    "react-native-screens": "4.11.1",
     "react-native-svg": "9.13.6",
     "react-native-tab-view": "^4.3.0",
     "react-native-utils-scale": "^2.6.0",
     "react-native-vector-icons": "^10.3.0",
-    "react-native-vision-camera": "^4.7.3",
     "react-native-webview": "^13.13.2",
     "react-redux": "^9.1.2",
     "redux-persist": "^6.0.0",
@@ -97,5 +97,8 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "resolutions": {
+    "react-native-screens": "4.11.1"
+  }
 }
