@@ -8,8 +8,11 @@ export const isProfileCompleted = (p?: any) => {
   const locationOk = !!String(p.location_name || '').trim();
   const wardOk = !!String(p.ward_name || '').trim();
   const addressOk = !!String(p.address || '').trim();
-  const plantsOk =
-    Array.isArray(p.type_of_plants_ids) && p.type_of_plants_ids.length > 0;
+  const plants =
+    (Array.isArray(p.type_of_plants) && p.type_of_plants.length > 0
+      ? p.type_of_plants
+      : p.type_of_plants_ids) ?? [];
+  const plantsOk = Array.isArray(plants) && plants.length > 0;
 
   return fullNameOk && locationOk && wardOk && addressOk && plantsOk;
 };

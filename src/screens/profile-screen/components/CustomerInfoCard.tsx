@@ -1,6 +1,5 @@
 import { Images } from '@/assets';
 import CText from '@/components/text';
-import { useGetPlant } from '@/hooks/usePlant';
 import { useGetProfile } from '@/hooks/useProfile';
 import { Colors } from '@/themes';
 import {
@@ -17,7 +16,7 @@ import { fontScale, scale } from 'react-native-utils-scale';
 
 interface CustomerInfoCardProps {
   rank: string;
-  crops: number[];
+  crops: string[];
   onEditPress?: () => void;
   avatarUri?: string;
   maxCropsToShow?: number;
@@ -30,7 +29,6 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   maxCropsToShow = 8,
 }) => {
   const { data: profile } = useGetProfile();
-  const { data: plantsData } = useGetPlant();
   const name = profile?.full_name?.trim() || '—';
   const phone = profile?.phone_number ? `${profile.phone_number}` : '—';
   const code = profile?.kiotviet_customer_code || '—';
@@ -44,7 +42,10 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
       .join(', ') || 'Chưa cập nhật địa chỉ';
 
   const cropList = useMemo(
-    () => (Array.isArray(crops) ? crops.filter(Boolean) : []),
+    () =>
+      (Array.isArray(crops) ? crops : [])
+        .map(c => String(c).trim())
+        .filter(Boolean),
     [crops],
   );
 
@@ -163,19 +164,13 @@ const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
           </View>
 
           <View style={styles.cropsWrap}>
-            {profile?.type_of_plants_ids?.length ? (
+            {cropList.length ? (
               <>
-                {profile?.type_of_plants_ids?.map((crop, _) => {
-                  plantsData?.data?.plants.filter(item => item.id === crop);
-                  const cropLabel =
-                    plantsData?.data?.plants.find(item => item.id === crop)
-                      ?.name || crop;
-                  return (
-                    <View key={crop} style={styles.cropChip}>
-                      <CText style={styles.cropText}>{cropLabel}</CText>
-                    </View>
-                  );
-                })}
+                {shownCrops.map((crop, index) => (
+                  <View key={`${crop}-${index}`} style={styles.cropChip}>
+                    <CText style={styles.cropText}>{crop}</CText>
+                  </View>
+                ))}
 
                 {extraCount > 0 && (
                   <View style={[styles.cropChip, styles.cropMore]}>

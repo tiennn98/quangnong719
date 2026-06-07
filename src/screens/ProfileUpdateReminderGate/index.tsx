@@ -1,21 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, Image, Pressable, View } from 'react-native';
-import Modal from 'react-native-modal';
-
 import { Images } from '@/assets/images';
 import { CText } from '@/components';
 import { SCREEN_NAME } from '@/constants';
-import { useGetPlant } from '@/hooks/usePlant';
 import { useGetProfile } from '@/hooks/useProfile';
 import { navigate } from '@/navigators/navigation-service';
 import { isProfileCompleted } from '@/screens/home-screen/helper';
 import { Colors } from '@/themes';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, Image, Pressable, View } from 'react-native';
+import Modal from 'react-native-modal';
 
-type Props = {children: React.ReactNode};
+type Props = { children: React.ReactNode };
 
-const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
-  const {data: profile} = useGetProfile();
-  const {data: plants} = useGetPlant();
+const ProfileUpdateReminderGate: React.FC<Props> = ({ children }) => {
+  const { data: profile } = useGetProfile();
   const needUpdate = useMemo(() => {
     if (!profile) {
       return false;
@@ -69,7 +66,7 @@ const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
     setVisible(false);
     // đợi modal đóng xong tránh Android “đơ touch”
     setTimeout(() => {
-      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, {profile});
+      navigate(SCREEN_NAME.PROFILE_COMPLETION_SCREEN, { profile });
     }, 250);
   };
 
@@ -88,20 +85,24 @@ const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
         backdropOpacity={0.65}
         onBackdropPress={onLater}
         onBackButtonPress={onLater}
-        style={{margin: 0, justifyContent: 'center', paddingHorizontal: 18}}>
-        <View style={{backgroundColor: '#fff', borderRadius: 14, padding: 16}}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: 12}}>
+        style={{ margin: 0, justifyContent: 'center', paddingHorizontal: 18 }}
+      >
+        <View
+          style={{ backgroundColor: '#fff', borderRadius: 14, padding: 16 }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <Image
               source={Images.logo}
               resizeMode="contain"
-              style={{width: 42, height: 42}}
+              style={{ width: 42, height: 42 }}
             />
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <CText
-                style={{fontSize: 18, fontWeight: '900', color: Colors.h1}}>
+                style={{ fontSize: 18, fontWeight: '900', color: Colors.h1 }}
+              >
                 Hoàn thiện hồ sơ
               </CText>
-              <CText style={{marginTop: 2, color: Colors.h2}}>
+              <CText style={{ marginTop: 2, color: Colors.h2 }}>
                 Bạn có thể cập nhật sau, nhưng cập nhật đầy đủ sẽ giúp nhận ưu
                 đãi & tư vấn đúng hơn.
               </CText>
@@ -114,14 +115,15 @@ const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
               padding: 12,
               borderRadius: 12,
               backgroundColor: 'rgba(0,0,0,0.04)',
-            }}>
-            <CText style={{color: Colors.h2}}>
+            }}
+          >
+            <CText style={{ color: Colors.h2 }}>
               Cần bổ sung: Thay đổi tên của bạn, Tỉnh/Thành, Xã/Phường, Địa chỉ
               và Cây trồng.
             </CText>
           </View>
 
-          <View style={{flexDirection: 'row', gap: 10, marginTop: 14}}>
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
             <Pressable
               onPress={onLater}
               style={{
@@ -131,8 +133,9 @@ const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'rgba(0,0,0,0.06)',
-              }}>
-              <CText style={{fontWeight: '900', color: Colors.h1}}>
+              }}
+            >
+              <CText style={{ fontWeight: '900', color: Colors.h1 }}>
                 Để sau
               </CText>
             </Pressable>
@@ -146,8 +149,9 @@ const ProfileUpdateReminderGate: React.FC<Props> = ({children}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: Colors.greenPrimary,
-              }}>
-              <CText style={{fontWeight: '900', color: Colors.white}}>
+              }}
+            >
+              <CText style={{ fontWeight: '900', color: Colors.white }}>
                 Cập nhật ngay
               </CText>
             </Pressable>

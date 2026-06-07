@@ -33,7 +33,8 @@ export interface UserProfileData {
   created_at: string;
   updated_at: string;
 
-  type_of_plants_ids: number[];
+  type_of_plants_ids?: number[];
+  type_of_plants?: string[];
 }
 
 export interface ProfileResponse {
@@ -101,7 +102,7 @@ export type UpdateCustomerProfilePayload = {
   location_name: string;
   ward_name: string;
   birth_date: string;
-  type_of_plants: number[];
+  type_of_plants: string[];
 };
 
 export type UpdateCustomerProfileResponse = {
@@ -132,14 +133,14 @@ export const buildUpdateProfilePayload = (form: {
   ward?: { name: string } | null;
 
   birthday?: string;
-  crops: Array<number | string>;
+  crops: Array<string>;
 }): UpdateCustomerProfilePayload => {
   const locationName = (form.province?.name || '').trim();
   const wardName = (form.ward?.name || '').trim();
 
-  const plantIds = (Array.isArray(form.crops) ? form.crops : [])
-    .map(x => Number(x))
-    .filter(n => Number.isFinite(n));
+  const plantNames = (Array.isArray(form.crops) ? form.crops : [])
+    .map(x => String(x).trim())
+    .filter(Boolean);
 
   return {
     full_name: (form.fullName || '').trim(),
@@ -148,7 +149,7 @@ export const buildUpdateProfilePayload = (form: {
     location_name: `${locationName}`,
     ward_name: wardName,
     birth_date: form.birthday ? ymdToIsoZ(form.birthday) : '',
-    type_of_plants: plantIds,
+    type_of_plants: plantNames,
   };
 };
 
@@ -174,12 +175,10 @@ export const updateCustomerProfile = async (
   }
 };
 
-export type PlantType = { id: number; code: string; name: string };
-
 export type PlantsResponse = {
   msg: string;
   statusCode: number;
-  data: { plants: PlantType[] };
+  data: { type_of_plants: string[] };
   length: number;
 };
 

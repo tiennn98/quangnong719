@@ -11,6 +11,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
+  Platform,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -84,6 +85,9 @@ const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
     PushNotificationIOS.requestPermissions({
       alert: true,
       badge: true,

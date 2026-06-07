@@ -26,7 +26,11 @@ const ProfileScreen: React.FC = () => {
         overScrollMode="always">
         <CustomerInfoCard
           rank="Member"
-          crops={profile?.type_of_plants_ids || []}
+          crops={
+            profile?.type_of_plants?.length
+              ? profile.type_of_plants
+              : (profile?.type_of_plants_ids || []).map(String)
+          }
           avatarUri={'https://quangnong.vn/' + (profile?.avatar || '')}
         />
 

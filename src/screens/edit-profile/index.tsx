@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
-import { Keyboard, Pressable, ScrollView, View } from 'react-native';
+import { Keyboard, Platform, Pressable, ScrollView, View } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import ReactNativeModal from 'react-native-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -102,7 +102,7 @@ type PickerKind = 'province' | 'ward';
 type SettingsResponse = {
   msg: string;
   statusCode: number;
-  data: { plants: Array<{ id: number; code: string; name: string }> };
+  data: { type_of_plants: string[] };
   length: number;
 };
 
@@ -113,6 +113,7 @@ type ProfileDTO = {
   ward_name?: string | null;
   address?: string | null;
   birth_date?: string | null;
+  type_of_plants?: string[] | null;
   type_of_plants_ids?: Array<number | string> | null;
 };
 
@@ -216,31 +217,46 @@ const ProfileCompletionScreen: React.FC = () => {
 
   const wardsQ = useWards(province?.code) as any;
 
-  const plants = plantsData?.data?.plants ?? [];
-  const cropsOptions = useMemo<CropOption[]>(
-    () => plants.map(p => ({ id: String(p.id), label: p.name })),
-    [plants],
-  );
-  const plantIdSet = useMemo(
-    () => new Set(plants.map(p => String(p.id))),
-    [plants],
+  const cropsOptions = useMemo<CropOption[]>(() => {
+    const list = plantsData?.data?.type_of_plants ?? [];
+    return list
+      .map(name => String(name).trim())
+      .filter(Boolean)
+      .map(name => ({ id: name, label: name }));
+  }, [plantsData?.data?.type_of_plants]);
+  const plantNameSet = useMemo(
+    () => new Set(cropsOptions.map(o => o.id)),
+    [cropsOptions],
   );
 
-  const normalizePlantIds = useCallback(
+  const normalizeCropNames = useCallback(
     (arr: Array<number | string> | null | undefined) => {
       const raw = Array.isArray(arr) ? arr : [];
       const out: string[] = [];
       for (const x of raw) {
-        const s = String(x);
-        if (plantIdSet.size && !plantIdSet.has(s)) {
+        const name = String(x).trim();
+        if (!name) {
           continue;
         }
-        out.push(s);
+        if (plantNameSet.size && !plantNameSet.has(name)) {
+          continue;
+        }
+        out.push(name);
       }
       return Array.from(new Set(out));
     },
-    [plantIdSet],
+    [plantNameSet],
   );
+
+  const profileCropNames = useMemo(() => {
+    if (Array.isArray(profile?.type_of_plants) && profile.type_of_plants.length) {
+      return profile.type_of_plants;
+    }
+    if (Array.isArray(profile?.type_of_plants_ids)) {
+      return profile.type_of_plants_ids.map(String);
+    }
+    return [];
+  }, [profile?.type_of_plants, profile?.type_of_plants_ids]);
 
   useEffect(() => {
     if (!profile) {
@@ -265,22 +281,22 @@ const ProfileCompletionScreen: React.FC = () => {
         birthday: profile.birth_date
           ? String(profile.birth_date).slice(0, 10)
           : '',
-        crops: normalizePlantIds(profile.type_of_plants_ids as any),
+        crops: normalizeCropNames(profileCropNames),
       },
       { keepDirtyValues: true } as any,
     );
-  }, [profile, reset, normalizePlantIds]);
+  }, [profile, profileCropNames, reset, normalizeCropNames]);
 
   useEffect(() => {
-    if (!plantIdSet.size) {
+    if (!plantNameSet.size) {
       return;
     }
     const cur = getValues('crops') || [];
-    const next = cur.filter(id => plantIdSet.has(String(id)));
+    const next = cur.filter(name => plantNameSet.has(String(name)));
     if (next.length !== cur.length) {
       setValue('crops', next, { shouldDirty: true });
     }
-  }, [plantIdSet, getValues, setValue]);
+  }, [plantNameSet, getValues, setValue]);
 
   useEffect(() => {
     if (!provincesQ.items?.length) {
@@ -439,9 +455,9 @@ const ProfileCompletionScreen: React.FC = () => {
     async (values: FormValues) => {
       Keyboard.dismiss();
 
-      const plantIds = (values.crops || [])
-        .map(x => Number(x))
-        .filter(n => Number.isFinite(n));
+      const plantNames = (values.crops || [])
+        .map(x => String(x).trim())
+        .filter(Boolean);
 
       const payload = buildUpdateProfilePayload({
         fullName: values.fullName,
@@ -450,8 +466,8 @@ const ProfileCompletionScreen: React.FC = () => {
         province: values.province,
         ward: values.ward,
         birthday: values.birthday,
-        crops: plantIds,
-      } as any);
+        crops: plantNames,
+      });
 
       await updateProfile(payload);
       await refetchProfile();
@@ -778,18 +794,27 @@ const ProfileCompletionScreen: React.FC = () => {
                 </View>
 
                 <DatePicker
-                  date={tempBirthday}
-                  onDateChange={setTempBirthday}
+                  value={tempBirthday}
                   mode="date"
-                  locale="vi"
-                  theme="light"
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: width - scale(60),
+                  display="spinner"
+                  onValueChange={(_event, selectedDate) => {
+                    if (selectedDate) {
+                      setTempBirthday(selectedDate);
+                    }
                   }}
                   minimumDate={MIN_BIRTHDAY}
                   maximumDate={MAX_BIRTHDAY}
+                  locale={Platform.OS === 'ios' ? 'vi-VN' : undefined}
+                  themeVariant="light"
+                  style={
+                    Platform.OS === 'ios'
+                      ? {
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: width - scale(60),
+                        }
+                      : undefined
+                  }
                 />
 
                 <View
