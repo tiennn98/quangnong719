@@ -1,4 +1,4 @@
-import {SCREEN_NAME} from '@/constants';
+import { SCREEN_NAME } from '@/constants';
 import {
   BarCodeCustomerScreen,
   ProfileCompletionScreen,
@@ -6,18 +6,20 @@ import {
 } from '@/screens';
 import DeleteAccountOtpScreen from '@/screens/DeleteAccountOtpScreen';
 import InvoiceDetailScreen from '@/screens/InvoiceDetailScreen';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import BottomTabNavigator from '../bottom-tab-navigator';
+import BottomTabsV2 from '../bottom-tab-navigator/bottom-tabs-v2';
 
 const Stack = createNativeStackNavigator<any>();
 
 const AppStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name={SCREEN_NAME.BOTTOM_TAB_NAVIGATOR}
-        component={BottomTabNavigator}
+        // component={BottomTabNavigator}
+        component={BottomTabsV2}
       />
 
       <Stack.Screen
