@@ -1,0 +1,75 @@
+import { NotificationItem } from './types';
+
+export const NOTIFICATION_ITEMS: NotificationItem[] = [
+  {
+    id: '1',
+    tab: 'event',
+    label: 'Sự kiện mới',
+    labelTone: 'green',
+    title: 'Hội thảo mùa mưa 2026 - Mở đăng ký',
+    description:
+      'Đăng ký tham gia hội thảo chuyên sâu về kỹ thuật canh tác mùa mưa, nhận voucher và quà tặng.',
+    time: '08:30',
+    date: '20/06/2026',
+    status: 'Mới',
+    statusTone: 'new',
+    highlighted: true,
+  },
+  {
+    id: '2',
+    tab: 'event',
+    label: 'Sắp hết chỗ',
+    labelTone: 'orange',
+    title: 'Nhắc đăng ký trước khi hết chỗ',
+    description:
+      'Số lượng tham gia sắp đầy, đăng ký ngay để không bỏ lỡ cơ hội nhận ưu đãi từ Quang Nông.',
+    time: '17:45',
+    date: '14/06/2026',
+    status: 'Quan trọng',
+    statusTone: 'important',
+    thumbnailBadge: 'clock',
+  },
+  {
+    id: '3',
+    tab: 'event',
+    title: 'Cập nhật lịch chương trình',
+    description:
+      'Lịch trình hội thảo đã được cập nhật, vui lòng xem chi tiết để sắp xếp thời gian tham dự.',
+    time: '09:15',
+    date: '12/06/2026',
+    status: 'Đã đọc',
+    statusTone: 'read',
+  },
+  {
+    id: '4',
+    tab: 'event',
+    title: 'Thông tin địa điểm tổ chức',
+    description:
+      'Địa điểm tổ chức sự kiện tại Trung tâm Quang Nông 719, xem bản đồ và hướng dẫn di chuyển.',
+    time: '11:00',
+    date: '10/06/2026',
+    status: 'Đã đọc',
+    statusTone: 'read',
+  },
+  {
+    id: '5',
+    tab: 'debt',
+    title: 'Nhắc thanh toán công nợ',
+    description: 'Bạn có khoản công nợ sắp đến hạn thanh toán, vui lòng kiểm tra chi tiết.',
+    time: '08:00',
+    date: '18/06/2026',
+    status: 'Mới',
+    statusTone: 'new',
+    highlighted: true,
+  },
+  {
+    id: '6',
+    tab: 'invoice',
+    title: 'Hóa đơn mới phát hành',
+    description: 'Hóa đơn đơn hàng ngày 15/06/2026 đã được phát hành, xem chi tiết tại đây.',
+    time: '14:20',
+    date: '15/06/2026',
+    status: 'Đã đọc',
+    statusTone: 'read',
+  },
+];

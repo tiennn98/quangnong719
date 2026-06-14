@@ -33,13 +33,15 @@ const SummaryStatCard: React.FC<Props> = ({
     ]}
   >
     <View style={styles.iconWrap}>{icon}</View>
+    <View style={styles.content}>
     <CText style={styles.label}>{label}</CText>
     <CText style={[styles.value, { color: valueColor }]}>{value}</CText>
     <View style={styles.actionRow}>
       <CText style={[styles.actionText, { color: valueColor }]}>
-        {actionLabel}
-      </CText>
-      <ChevronRight color={valueColor} size={14} />
+          {actionLabel}
+        </CText>
+        <ChevronRight color={valueColor} size={14} />
+      </View>
     </View>
   </Pressable>
 );
@@ -51,19 +53,20 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: scale(14),
     padding: scale(12),
-    minHeight: scale(132),
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(10),
   },
   cardPressed: {
     opacity: 0.92,
   },
   iconWrap: {
-    width: scale(36),
-    height: scale(36),
-    borderRadius: scale(10),
+    width: scale(50),
+    height: scale(50),
+    borderRadius: scale(12),
     backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: scale(10),
   },
   label: {
     fontSize: fontScale(11),
@@ -84,5 +87,8 @@ const styles = StyleSheet.create({
     fontSize: fontScale(11),
     fontFamily: Fonts.SEMIBOLD,
     marginRight: scale(2),
+  },
+  content: {
+    flex: 1,
   },
 });

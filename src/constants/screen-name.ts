@@ -1,4 +1,5 @@
-export const URL = 'https://api.quangnong719.vn/api/v1';
+// export const URL = 'https://api.quangnong719.vn/api/v1';
+export const URL = 'https://dev-api.quangnong719.vn/api/v1';
 export const SCREEN_NAME = {
   AUTH_STACK: 'AuthStack',
   APP_STACK: 'AppStack',
@@ -19,4 +20,13 @@ export const SCREEN_NAME = {
   INVOICE_DETAIL_SCREEN: 'InvoiceDetailScreen',
   VOUCHER_USE_SCREEN: 'VoucherUseScreen',
   DELETE_ACCOUNT_OTP_SCREEN: 'DeleteAccountOtpScreen',
+  MY_GARDEN: 'MyGarden',
+  MY_QRCODE_SCREEN: 'MyQrcodeScreen',
+  MY_VOUCHER_SCREEN: 'MyVoucherScreen',
+  VOUCHER_DETAIL_SCREEN: 'VoucherDetailScreen',
+  EXCHANGE_GIFTS_SCREEN: 'ExchangeGiftsScreen',
+  EXCHANGE_GIFTS_DETAIL_SCREEN: 'ExchangeGiftsDetailScreen',
+  EXCHANGE_GIFTS_SUCCESS_SCREEN: 'ExchangeGiftsSuccessScreen',
+  NOTIFICATION_SCREEN: 'NotificationScreen',
+  EVENT_DETAIL_SCREEN: 'EventDetailScreen',
 };

@@ -2,11 +2,11 @@
 import { CText } from '@/components';
 import { SCREEN_NAME } from '@/constants';
 import {
-  AboutStoreScreen,
-  ProfileScreen,
-} from '@/screens';
-import { HomeScreenV2, PromotionScreenV2 } from '@/screens-v2';
-import InvoiceScreen from '@/screens/invoice-screen';
+  HomeScreenV2,
+  MyProfileScreen,
+  NotificationScreen,
+  PromotionScreen,
+} from '@/screens-v2';
 import { Colors, Fonts } from '@/themes';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -27,7 +27,7 @@ const tabLabels: Record<string, string> = {
   [SCREEN_NAME.HOME]: 'Trang chủ',
   [SCREEN_NAME.PROMOTION]: 'Khuyến mãi',
   [SCREEN_NAME.ABOUT_STORE_SCREEN]: 'Lịch phun',
-  [SCREEN_NAME.INVOICESCREEN]: 'Thông báo',
+  [SCREEN_NAME.NOTIFICATION_SCREEN]: 'Thông báo',
   [SCREEN_NAME.PROFILESCREEN]: 'Tài khoản',
 };
 
@@ -40,7 +40,7 @@ function TabIcon({ routeName }: { routeName: string }) {
       return <House color={color} size={size} />;
     case SCREEN_NAME.PROMOTION:
       return <TicketPercent color={color} size={size} />;
-    case SCREEN_NAME.INVOICESCREEN:
+    case SCREEN_NAME.NOTIFICATION_SCREEN:
       return <NotepadText color={color} size={size} />;
     case SCREEN_NAME.PROFILESCREEN:
       return <UserRound color={color} size={size} />;
@@ -94,24 +94,24 @@ const BottomTabsV2 = () => {
       />
       <Tab.Screen
         name={SCREEN_NAME.PROMOTION}
-        component={PromotionScreenV2}
+        component={PromotionScreen}
         options={{ tabBarLabel: tabLabels[SCREEN_NAME.PROMOTION] }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={SCREEN_NAME.ABOUT_STORE_SCREEN}
         component={AboutStoreScreen}
         options={{
           tabBarLabel: tabLabels[SCREEN_NAME.ABOUT_STORE_SCREEN],
         }}
-      />
+      /> */}
       <Tab.Screen
-        name={SCREEN_NAME.INVOICESCREEN}
-        component={InvoiceScreen}
-        options={{ tabBarLabel: tabLabels[SCREEN_NAME.INVOICESCREEN] }}
+        name={SCREEN_NAME.NOTIFICATION_SCREEN}
+        component={NotificationScreen}
+        options={{ tabBarLabel: tabLabels[SCREEN_NAME.NOTIFICATION_SCREEN] }}
       />
       <Tab.Screen
         name={SCREEN_NAME.PROFILESCREEN}
-        component={ProfileScreen}
+        component={MyProfileScreen}
         options={{ tabBarLabel: tabLabels[SCREEN_NAME.PROFILESCREEN] }}
       />
     </Tab.Navigator>

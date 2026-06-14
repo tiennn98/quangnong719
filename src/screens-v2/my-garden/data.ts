@@ -1,0 +1,62 @@
+import { GardenItem } from './types';
+
+export const GARDEN_SUMMARY = {
+  totalGardens: 4,
+  totalArea: '4,35 ha',
+  upcomingTasks: 3,
+};
+
+export const GARDEN_ITEMS: GardenItem[] = [
+  {
+    id: '1',
+    name: 'Vườn Sầu Riêng',
+    variety: 'Sầu riêng Monthong',
+    area: '1,20 ha',
+    location: 'Thôn 8A, Xã Ea Kly...',
+    stage: 'Nuôi trái',
+    stageTone: 'green',
+    health: 'Tốt',
+    healthTone: 'good',
+    upcomingTaskDate: '15/06/2025',
+    upcomingTaskName: 'Phun dưỡng trái',
+  },
+  {
+    id: '2',
+    name: 'Vườn Chanh Dây',
+    variety: 'Chanh dây tím',
+    area: '0,75 ha',
+    location: 'Thôn 8A, Xã Ea Kly...',
+    stage: 'Ra hoa',
+    stageTone: 'yellow',
+    health: 'Tốt',
+    healthTone: 'good',
+    upcomingTaskDate: '13/06/2025',
+    upcomingTaskName: 'Bón phân kali',
+  },
+  {
+    id: '3',
+    name: 'Vườn lúa 8A',
+    variety: 'Lúa OM18',
+    area: '1,50 ha',
+    location: 'Thôn 8A, Xã Ea Kly...',
+    stage: 'Đẻ nhánh',
+    stageTone: 'blue',
+    health: 'Tốt',
+    healthTone: 'good',
+    upcomingTaskDate: '11/06/2025',
+    upcomingTaskName: 'Bón phân đón đòng',
+  },
+  {
+    id: '4',
+    name: 'Vườn cà phê A1',
+    variety: 'Cà phê Robusta',
+    area: '0,90 ha',
+    location: 'Thôn 8A, Xã Ea Kly...',
+    stage: 'Nuôi trái',
+    stageTone: 'orange',
+    health: 'Cần chú ý',
+    healthTone: 'warning',
+    upcomingTaskDate: '16/06/2025',
+    upcomingTaskName: 'Phun phòng nấm',
+  },
+];

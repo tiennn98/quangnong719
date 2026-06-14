@@ -1,2 +1,12 @@
 export { default as HomeScreenV2 } from './home';
-export { default as PromotionScreenV2 } from './promotion';
+export { default as PromotionScreen } from './promotion';
+export { default as MyGardenScreen } from './my-garden';
+export { default as MyQrcodeScreen } from './my-qrcode';
+export { default as MyVoucherScreen } from './my-voucher';
+export { default as VoucherDetailScreen } from './voucher-detail';
+export { default as ExchangeGiftsScreen } from './exchange-gifts';
+export { default as ExchangeGiftsDetailScreen } from './exchange-gifts-detail';
+export { default as ExchangeGiftsSuccessScreen } from './exchange-gifts-success';
+export { default as NotificationScreen } from './notification';
+export { default as EventDetailScreen } from './event-detail';
+export { default as MyProfileScreen } from './my-profile';

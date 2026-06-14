@@ -1,0 +1,80 @@
+import { ProfileData } from './types';
+
+export const DEFAULT_PROFILE: ProfileData = {
+  fullName: 'Quang Nông 719',
+  phone: '0922982986',
+  customerCode: '0922982986',
+  memberLabel: 'Member',
+  points: 784,
+  currentDebt: '207.000đ',
+  overview: [
+    {
+      id: 'purchase',
+      label: '1.111.430đ',
+      value: '1.111.430đ',
+      subtext: 'Tổng giá trị',
+      tone: 'green',
+      icon: 'bag',
+    },
+    {
+      id: 'debt',
+      label: '207.000đ',
+      value: '207.000đ',
+      subtext: 'Cần thanh toán',
+      tone: 'red',
+      icon: 'wallet',
+    },
+    {
+      id: 'gardens',
+      label: '4',
+      value: '4',
+      subtext: 'vườn đang quản lý',
+      tone: 'green',
+      icon: 'tree',
+    },
+    {
+      id: 'schedule',
+      label: '3',
+      value: '3',
+      subtext: 'công việc',
+      tone: 'blue',
+      icon: 'calendar',
+    },
+  ],
+  featuredInfo: [
+    { id: 'name', label: 'Họ và tên', value: 'Quang Nông 719', icon: 'user' },
+    {
+      id: 'address',
+      label: 'Địa chỉ',
+      value: '149, thôn 8A, Xã Ea Kly, Tỉnh Đắk Lắk',
+      icon: 'map',
+    },
+    {
+      id: 'crops',
+      label: 'Cây trồng',
+      value: 'Lúa, Cà phê, Sầu Riêng, Vải',
+      icon: 'leaf',
+    },
+    { id: 'birthday', label: 'Ngày sinh', value: '08/06/2002', icon: 'cake' },
+  ],
+  gardens: [
+    {
+      id: '1',
+      name: 'Vườn Sầu Riêng',
+      area: '2,3 ha',
+      location: 'Krông Pắc',
+      crop: 'Sầu riêng',
+      nextTask: 'Phun nấm gốc',
+      nextTaskDate: '22/05/2026',
+    },
+    {
+      id: '2',
+      name: 'Vườn Chanh Dây',
+      area: '1,5 ha',
+      location: 'Krông Pắc',
+      crop: 'Chanh dây',
+      nextTask: 'Bón phân kali',
+      nextTaskDate: '25/05/2026',
+    },
+  ],
+};

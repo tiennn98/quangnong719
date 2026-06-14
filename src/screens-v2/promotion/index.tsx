@@ -11,6 +11,8 @@ import PromotionList from './components/PromotionList';
 import SummaryStats from './components/SummaryStats';
 import { PROMOTION_ITEMS } from './data';
 import { PromotionCategoryId, PromotionListItemData } from './types';
+import { navigate } from '@/navigators/navigation-service';
+import { SCREEN_NAME } from '@/constants/screen-name';
 
 const PromotionScreen: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<PromotionCategoryId>('all');
@@ -35,19 +37,28 @@ const PromotionScreen: React.FC = () => {
     console.log('[PromotionV2] item press:', item.id);
   }, []);
 
+  const handleVoucherPress = useCallback(() => {
+    navigate(SCREEN_NAME.MY_VOUCHER_SCREEN);
+  }, []);
+
+  const handlePointsPress = useCallback(() => {
+    navigate(SCREEN_NAME.EXCHANGE_GIFTS_SCREEN);
+  }, []);
+
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F7F6" />
 
+      <PromotionHeader />
+
       <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <PromotionHeader />
-
         <PromotionBannerCarousel />
 
-        <SummaryStats voucherCount={voucherCount} points={points} />
+        <SummaryStats voucherCount={voucherCount} points={points} onVoucherPress={handleVoucherPress} onPointsPress={handlePointsPress} />
 
         <CategoryTabs activeId={activeCategory} onChange={setActiveCategory} />
 
@@ -67,6 +78,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#F5F7F6',
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
     paddingBottom: scale(24),

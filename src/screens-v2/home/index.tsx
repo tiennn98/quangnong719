@@ -120,10 +120,6 @@ const HomeScreen: React.FC = () => {
       : `https://quangnong.vn/${profile.avatar.replace(/^\//, '')}`
     : null;
 
-  const handleQrPress = useCallback(() => {
-    navigate(SCREEN_NAME.BARCODE_CUSTOMER_SCREEN, profile);
-  }, [profile]);
-
   const renderVoucherIcon = (type: 'ticket' | 'percent') => {
     if (type === 'ticket') {
       return <Ticket color={Colors.greenPrimary} size={18} />;
@@ -146,6 +142,14 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  const handleGardenInfoPress = useCallback(() => {
+    navigate(SCREEN_NAME.MY_GARDEN);
+  }, []);
+
+  const handleQrPress = useCallback(() => {
+    navigate(SCREEN_NAME.MY_QRCODE_SCREEN);
+  }, []);
+
   return (
     <View style={styles.screen}>
       <StatusBar
@@ -154,21 +158,23 @@ const HomeScreen: React.FC = () => {
         translucent
       />
 
+      <HomeHeader
+        greeting={greetingTitle}
+        notificationCount={2}
+      />
+
       <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <HomeHeader
-          greeting={greetingTitle}
-          notificationCount={2}
-        />
-
         <CustomerSummaryCard
           avatarUri={avatarUri}
           customerCode={profile?.phone_number || '—'}
           memberLabel="Member"
           points={profile?.reward_point ?? profile?.loyalty_points ?? 0}
           onQrPress={handleQrPress}
+          onGardenInfoPress={handleGardenInfoPress}
         />
 
         <SectionHeader title="Khuyến mãi nổi bật" actionLabel="Xem tất cả" />
@@ -280,6 +286,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#F5F7F6',
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
     paddingBottom: scale(24),
