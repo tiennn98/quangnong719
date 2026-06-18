@@ -59,7 +59,7 @@
     "react-native-rename": "^3.2.17",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.19.0",
-    "react-native-svg": "9.13.6",
+    "react-native-svg": "^15.12.1",
     "react-native-tab-view": "^4.3.0",
     "react-native-utils-scale": "^2.6.0",
     "react-native-vector-icons": "^10.3.0",

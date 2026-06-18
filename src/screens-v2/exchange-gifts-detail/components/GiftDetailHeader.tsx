@@ -8,16 +8,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontScale, scale } from 'react-native-utils-scale';
 
 type Props = {
-  step?: number;
-  totalSteps?: number;
   onSupportPress?: () => void;
 };
 
-const GiftDetailHeader: React.FC<Props> = ({
-  step = 6,
-  totalSteps = 10,
-  onSupportPress,
-}) => {
+const GiftDetailHeader: React.FC<Props> = ({ onSupportPress }) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -33,9 +27,6 @@ const GiftDetailHeader: React.FC<Props> = ({
 
       <View style={styles.titleWrap}>
         <CText style={styles.title}>Chi tiết quà đổi điểm</CText>
-        <CText style={styles.step}>
-          Bước {step}/{totalSteps}
-        </CText>
       </View>
 
       <Pressable

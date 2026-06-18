@@ -15,10 +15,15 @@ const BottomActions: React.FC<Props> = ({ onSave, onRegister }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.wrapper, { paddingBottom: insets.bottom + scale(12) }]}>
+    <View
+      style={[styles.wrapper, { paddingBottom: insets.bottom + scale(12) }]}
+    >
       <Pressable
         onPress={onSave}
-        style={({ pressed }) => [styles.outlineButton, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.outlineButton,
+          pressed && styles.pressed,
+        ]}
       >
         <Bookmark color={Colors.greenPrimary} size={16} strokeWidth={2.2} />
         <CText style={styles.outlineText}>Lưu sự kiện</CText>
@@ -26,9 +31,12 @@ const BottomActions: React.FC<Props> = ({ onSave, onRegister }) => {
 
       <Pressable
         onPress={onRegister}
-        style={({ pressed }) => [styles.filledButton, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.filledButton,
+          pressed && styles.pressed,
+        ]}
       >
-        <CText style={styles.filledText}>Tiếp tục đăng ký</CText>
+        <CText style={styles.filledText}>Đăng ký sự kiện</CText>
         <ArrowRight color={Colors.white} size={16} strokeWidth={2.2} />
       </Pressable>
     </View>

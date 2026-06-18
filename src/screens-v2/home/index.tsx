@@ -16,6 +16,8 @@ import {
 import React, { useCallback, useMemo } from 'react';
 import {
   Image,
+  Linking,
+  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -29,8 +31,8 @@ import HomeHeader from './components/HomeHeader';
 const VOUCHERS = [
   {
     id: '1',
-    title: '3 voucher đang có',
-    subtitle: 'Sẵn sàng sử dụng',
+    title: 'Giảm 100.000đ',
+    subtitle: 'Cho đơn từ 1.000.000đ',
     icon: 'ticket' as const,
   },
   {
@@ -150,6 +152,29 @@ const HomeScreen: React.FC = () => {
     navigate(SCREEN_NAME.MY_QRCODE_SCREEN);
   }, []);
 
+  const handleNotificationPress = useCallback(() => {
+    navigate(SCREEN_NAME.PUSH_NOTIFICATION_SCREEN);
+  }, []);
+
+  const handlePromotionPress = useCallback(() => {
+    navigate(SCREEN_NAME.VOUCHER_DETAIL_SCREEN);
+  }, []);
+
+  const handlePhoneCall = () => {
+    const phoneNumber = 'phoneNumber';
+    let dialString = '';
+
+    if (Platform.OS === 'android') {
+      dialString = `tel:${phoneNumber}`;
+    } else {
+      dialString = `telprompt:${phoneNumber}`;
+    }
+
+    Linking.openURL(dialString).catch(err =>
+      console.error('Error opening dialer:', err),
+    );
+  };
+
   return (
     <View style={styles.screen}>
       <StatusBar
@@ -158,16 +183,13 @@ const HomeScreen: React.FC = () => {
         translucent
       />
 
-      <HomeHeader
-        greeting={greetingTitle}
-        notificationCount={2}
-      />
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <View style={styles.headerSection}>
+        <HomeHeader
+          greeting={greetingTitle}
+          notificationCount={2}
+          onNotificationPress={handleNotificationPress}
+          onSupportPress={handlePhoneCall}
+        />
         <CustomerSummaryCard
           avatarUri={avatarUri}
           customerCode={profile?.phone_number || '—'}
@@ -176,8 +198,18 @@ const HomeScreen: React.FC = () => {
           onQrPress={handleQrPress}
           onGardenInfoPress={handleGardenInfoPress}
         />
+      </View>
 
-        <SectionHeader title="Khuyến mãi nổi bật" actionLabel="Xem tất cả" />
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <SectionHeader
+          title="Khuyến mãi nổi bật"
+          actionLabel="Xem tất cả"
+          onActionPress={() => navigate(SCREEN_NAME.PROMOTION)}
+        />
         <View style={styles.bannerWrap}>
           <Image
             source={Images.bannner}
@@ -191,23 +223,33 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        <SectionHeader title="Voucher của tôi" actionLabel="Xem tất cả" />
+        <SectionHeader
+          title="Voucher của tôi"
+          actionLabel="Xem tất cả"
+          onActionPress={() => navigate(SCREEN_NAME.MY_VOUCHER_SCREEN)}
+        />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.horizontalList}
         >
           {VOUCHERS.map(item => (
-            <View key={item.id} style={styles.voucherCard}>
+            <Pressable
+              key={item.id}
+              style={styles.voucherCard}
+              onPress={() => handlePromotionPress()}
+            >
               <View style={styles.voucherIconWrap}>
                 {renderVoucherIcon(item.icon)}
               </View>
               <View style={styles.voucherTextWrap}>
                 <CText style={styles.voucherTitle}>{item.title}</CText>
-                <CText style={styles.voucherSubtitle}>{item.subtitle}</CText>
+                <View style={styles.voucherBottomRow}>
+                  <CText style={styles.voucherSubtitle}>{item.subtitle}</CText>
+                  <ChevronRight color={Colors.gray300} size={18} />
+                </View>
               </View>
-              <ChevronRight color={Colors.gray300} size={18} />
-            </View>
+            </Pressable>
           ))}
         </ScrollView>
 
@@ -224,10 +266,10 @@ const HomeScreen: React.FC = () => {
                   <CText style={styles.quickLabel}>{item.label}</CText>
                 </View>
               </View>
-              <Pressable style={styles.quickActionRow}>
+              <View style={styles.quickActionRow}>
                 <CText style={styles.quickActionText}>{item.action}</CText>
                 <ChevronRight color={Colors.greenPrimary} size={14} />
-              </Pressable>
+              </View>
             </View>
           ))}
         </View>
@@ -265,14 +307,20 @@ const HomeScreen: React.FC = () => {
 const SectionHeader = ({
   title,
   actionLabel,
+  onActionPress,
 }: {
   title: string;
   actionLabel?: string;
+  onActionPress?: () => void;
 }) => (
   <View style={styles.sectionHeader}>
     <CText style={styles.sectionTitle}>{title}</CText>
     {actionLabel ? (
-      <Pressable hitSlop={8} style={styles.sectionActionRow}>
+      <Pressable
+        hitSlop={8}
+        style={styles.sectionActionRow}
+        onPress={onActionPress}
+      >
         <CText style={styles.sectionAction}>{actionLabel}</CText>
         <ChevronRight color={Colors.gray500} size={14} />
       </Pressable>
@@ -286,6 +334,10 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#F5F7F6',
+  },
+  headerSection: {
+    zIndex: 2,
+    marginBottom: scale(8),
   },
   scrollView: {
     flex: 1,
@@ -337,7 +389,7 @@ const styles = StyleSheet.create({
   },
   sectionAction: {
     fontSize: fontScale(12),
-    color: Colors.gray500,
+    color: Colors.h1,
     fontFamily: Fonts.MEDIUM,
     marginRight: scale(2),
   },
@@ -347,12 +399,11 @@ const styles = StyleSheet.create({
   },
   horizontalList: {
     paddingHorizontal: scale(16),
-    gap: scale(10),
   },
   voucherCard: {
-    width: width * 0.72,
+    width: width * 0.5,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: Colors.white,
     borderRadius: scale(14),
     padding: scale(12),
@@ -369,17 +420,26 @@ const styles = StyleSheet.create({
   },
   voucherTextWrap: {
     flex: 1,
+    justifyContent: 'space-between',
+    minHeight: scale(40),
   },
   voucherTitle: {
     fontSize: fontScale(14),
     color: Colors.text,
     fontFamily: Fonts.BOLD,
   },
+  voucherBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: scale(8),
+  },
   voucherSubtitle: {
+    flex: 1,
     fontSize: fontScale(11),
     color: Colors.gray500,
     fontFamily: Fonts.MEDIUM,
-    marginTop: scale(2),
+    marginRight: scale(4),
   },
   quickGrid: {
     flexDirection: 'row',
@@ -424,6 +484,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: scale(10),
+    justifyContent: 'flex-end',
   },
   quickActionText: {
     fontSize: fontScale(11),

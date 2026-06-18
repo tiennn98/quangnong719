@@ -1,14 +1,9 @@
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
-import {
-  CalendarDays,
-  ShoppingBag,
-  Sprout,
-  Wallet,
-} from 'lucide-react-native';
+import { CalendarDays, ShoppingBag, Sprout, Wallet } from 'lucide-react-native';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { fontScale, scale } from 'react-native-utils-scale';
+import { fontScale, scale, width } from 'react-native-utils-scale';
 import { OverviewStat } from '../types';
 
 type Props = {
@@ -28,6 +23,9 @@ const TONE_STYLES = {
   blue: { bg: '#EAF3FB', text: Colors.blue400 },
 } as const;
 
+const CARD_GAP = scale(8);
+const CARD_WIDTH = (width - scale(32) - CARD_GAP * 3) / 4;
+
 const OverviewSection: React.FC<Props> = ({ items }) => (
   <View style={styles.section}>
     <CText style={styles.title}>Tổng quan của tôi</CText>
@@ -43,10 +41,15 @@ const OverviewSection: React.FC<Props> = ({ items }) => (
             style={[styles.card, { backgroundColor: tone.bg }]}
           >
             <Icon color={tone.text} size={16} strokeWidth={2.2} />
-            <CText style={[styles.value, { color: tone.text }]}>
+            <CText
+              style={[styles.value, { color: tone.text }]}
+              numberOfLines={1}
+            >
               {item.value}
             </CText>
-            <CText style={styles.subtext}>{item.subtext}</CText>
+            <CText style={styles.subtext} numberOfLines={2}>
+              {item.subtext}
+            </CText>
           </View>
         );
       })}
@@ -69,24 +72,26 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: scale(8),
+    gap: CARD_GAP,
   },
   card: {
-    width: '48%',
+    width: CARD_WIDTH,
     borderRadius: scale(12),
-    padding: scale(12),
-    minHeight: scale(88),
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(4),
+    alignItems: 'center',
   },
   value: {
-    marginTop: scale(8),
-    fontSize: fontScale(16),
+    marginTop: scale(6),
+    fontSize: fontScale(13),
     fontFamily: Fonts.BOLD,
+    textAlign: 'center',
   },
   subtext: {
     marginTop: scale(2),
-    fontSize: fontScale(9),
+    fontSize: fontScale(8),
     color: Colors.gray500,
     fontFamily: Fonts.MEDIUM,
+    textAlign: 'center',
   },
 });

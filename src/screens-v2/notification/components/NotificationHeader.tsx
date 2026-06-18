@@ -1,37 +1,56 @@
-import { Images } from '@/assets/images';
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
-import { Search, Settings } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ArrowLeft, Search, Settings } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontScale, scale } from 'react-native-utils-scale';
 
 type Props = {
+  showBackButton?: boolean;
   onSearchPress?: () => void;
   onSettingsPress?: () => void;
 };
 
 const NotificationHeader: React.FC<Props> = ({
+  showBackButton = false,
   onSearchPress,
   onSettingsPress,
 }) => {
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
+  if (showBackButton) {
+    return (
+      <View style={[styles.stackWrapper, { paddingTop: insets.top + scale(8) }]}>
+        <View style={styles.stackLeftSection}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            hitSlop={10}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <ArrowLeft color={Colors.h1} size={20} strokeWidth={2.2} />
+          </Pressable>
+
+          <View style={styles.titleWrap}>
+            <CText style={styles.stackTitle}>Thông báo</CText>
+            <CText style={styles.stackSubtitle}>
+              Cập nhật mới từ ứng dụng
+            </CText>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.wrapper, { paddingTop: insets.top + scale(8) }]}>
-      <Image
-        source={Images.logowhite}
-        style={styles.watermark}
-        resizeMode="contain"
-      />
-
       <View style={styles.topRow}>
         <View style={styles.brandRow}>
-          <View style={styles.logoWrap}>
-            <Image source={Images.logo} style={styles.logo} resizeMode="contain" />
-          </View>
-
           <View style={styles.titleWrap}>
             <CText style={styles.title}>Thông báo</CText>
           </View>
@@ -64,13 +83,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(16),
     paddingBottom: scale(24),
   },
-  watermark: {
-    position: 'absolute',
-    right: scale(-20),
-    top: scale(-10),
-    width: scale(140),
-    height: scale(140),
-    opacity: 0.12,
+  stackWrapper: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: scale(16),
+    paddingBottom: scale(12),
+    backgroundColor: '#F5F7F6',
+    gap: scale(8),
+  },
+  stackLeftSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: scale(8),
+    minWidth: 0,
+  },
+  backButton: {
+    width: scale(36),
+    height: scale(36),
+    borderRadius: scale(18),
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.gray200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: scale(2),
   },
   topRow: {
     flexDirection: 'row',
@@ -85,19 +123,6 @@ const styles = StyleSheet.create({
     gap: scale(10),
     minWidth: 0,
   },
-  logoWrap: {
-    width: scale(44),
-    height: scale(44),
-    borderRadius: scale(22),
-    backgroundColor: Colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  logo: {
-    width: scale(30),
-    height: scale(30),
-  },
   titleWrap: {
     flex: 1,
     minWidth: 0,
@@ -107,21 +132,16 @@ const styles = StyleSheet.create({
     color: Colors.h1,
     fontFamily: Fonts.BOLD,
   },
-  stepBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scale(4),
-    alignSelf: 'flex-start',
-    marginTop: scale(4),
-    backgroundColor: Colors.white,
-    borderRadius: scale(10),
-    paddingHorizontal: scale(8),
-    paddingVertical: scale(3),
-  },
-  stepText: {
-    fontSize: fontScale(9),
-    color: Colors.greenPrimary,
+  stackTitle: {
+    fontSize: fontScale(20),
+    color: Colors.h1,
     fontFamily: Fonts.BOLD,
+  },
+  stackSubtitle: {
+    marginTop: scale(2),
+    fontSize: fontScale(11),
+    color: Colors.gray500,
+    fontFamily: Fonts.MEDIUM,
   },
   actions: {
     flexDirection: 'row',

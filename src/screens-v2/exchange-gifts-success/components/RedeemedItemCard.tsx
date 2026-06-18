@@ -1,8 +1,9 @@
+import { Images } from '@/assets';
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import { Diamond, Gift } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
 
 type Props = {
@@ -13,7 +14,11 @@ type Props = {
 
 const RedeemedItemCard: React.FC<Props> = ({ title, points, description }) => (
   <View style={styles.card}>
-    <View style={styles.imagePlaceholder} />
+    <Image
+      source={Images.mu_qua_tang}
+      style={styles.imagePlaceholder}
+      resizeMode="cover"
+    />
 
     <View style={styles.content}>
       <View style={styles.badge}>
@@ -38,6 +43,7 @@ export default memo(RedeemedItemCard);
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
+    alignItems: 'center',
     marginHorizontal: scale(16),
     backgroundColor: Colors.white,
     borderRadius: scale(16),

@@ -8,7 +8,7 @@ import DeleteAccountOtpScreen from '@/screens/DeleteAccountOtpScreen';
 import InvoiceDetailScreen from '@/screens/InvoiceDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { EventDetailScreen, ExchangeGiftsDetailScreen, ExchangeGiftsScreen, ExchangeGiftsSuccessScreen, MyGardenScreen, MyQrcodeScreen, MyVoucherScreen, VoucherDetailScreen } from '@/screens-v2';
+import { EventDetailScreen, ExchangeGiftsDetailScreen, ExchangeGiftsScreen, ExchangeGiftsSuccessScreen, MyGardenScreen, MyQrcodeScreen, MyVoucherScreen, PushNotificationScreen, VoucherDetailScreen } from '@/screens-v2';
 // import BottomTabNavigator from '../bottom-tab-navigator';
 import BottomTabsV2 from '../bottom-tab-navigator/bottom-tabs-v2';
 
@@ -76,6 +76,10 @@ const AppStackNavigator = () => {
       <Stack.Screen
         name={SCREEN_NAME.EVENT_DETAIL_SCREEN}
         component={EventDetailScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.PUSH_NOTIFICATION_SCREEN}
+        component={PushNotificationScreen}
       />
     </Stack.Navigator>
   );

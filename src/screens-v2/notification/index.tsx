@@ -1,45 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
-import NotificationList from './components/NotificationList';
-import { NotificationItem, NotificationTabId } from './types';
-import { SCREEN_NAME } from '@/constants/screen-name';
-import { navigate } from '@/navigators/navigation-service';
+import React from 'react';
+import NotificationScreenContent from './NotificationScreenContent';
 
-const NotificationScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<NotificationTabId>('event');
-
-  const handleSearchPress = useCallback(() => {
-    console.log('[Notification] search');
-  }, []);
-
-  const handleSettingsPress = useCallback(() => {
-    console.log('[Notification] settings');
-  }, []);
-
-  const handleNotificationPress = useCallback((_item: NotificationItem) => {
-    navigate(SCREEN_NAME.EVENT_DETAIL_SCREEN);
-  }, []);
-
-  return (
-    <View style={styles.screen}>
-      <StatusBar barStyle="dark-content" backgroundColor="#EAF6EE" />
-
-      <NotificationList
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onSearchPress={handleSearchPress}
-        onSettingsPress={handleSettingsPress}
-        onNotificationPress={handleNotificationPress}
-      />
-    </View>
-  );
-};
+const NotificationScreen: React.FC = () => <NotificationScreenContent />;
 
 export default NotificationScreen;
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F5F7F6',
-  },
-});

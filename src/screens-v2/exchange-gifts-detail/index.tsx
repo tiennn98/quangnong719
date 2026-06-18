@@ -13,6 +13,7 @@ import { DEFAULT_GIFT_DETAIL } from './data';
 import { RedemptionMethodId } from './types';
 import { SCREEN_NAME } from '@/constants/screen-name';
 import { navigate } from '@/navigators/navigation-service';
+import { callPhoneNumber } from '@/utils';
 
 const ExchangeGiftsDetailScreen: React.FC = () => {
   const gift = DEFAULT_GIFT_DETAIL;
@@ -22,15 +23,9 @@ const ExchangeGiftsDetailScreen: React.FC = () => {
 
   const currentPoints = useMemo(
     () =>
-      profile?.reward_point ??
-      profile?.loyalty_points ??
-      gift.currentPoints,
+      profile?.reward_point ?? profile?.loyalty_points ?? gift.currentPoints,
     [profile?.reward_point, profile?.loyalty_points, gift.currentPoints],
   );
-
-  const handleSupportPress = useCallback(() => {
-    console.log('[GiftDetail] support');
-  }, []);
 
   const handleSave = useCallback(() => {
     console.log('[GiftDetail] save');
@@ -44,7 +39,7 @@ const ExchangeGiftsDetailScreen: React.FC = () => {
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F7F6" />
 
-      <GiftDetailHeader onSupportPress={handleSupportPress} />
+      <GiftDetailHeader onSupportPress={callPhoneNumber} />
 
       <ScrollView
         style={styles.scrollView}

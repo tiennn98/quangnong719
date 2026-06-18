@@ -2,8 +2,9 @@ import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import { Check } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
+import { Images } from '@/assets';
 
 type Props = {
   inStock?: boolean;
@@ -18,7 +19,11 @@ const ProductImageCard: React.FC<Props> = ({ inStock = true }) => (
       </View>
     ) : null}
 
-    <View style={styles.imagePlaceholder} />
+    <Image
+      source={Images.mu_qua_tang}
+      style={styles.imagePlaceholder}
+      resizeMode="cover"
+    />
   </View>
 );
 

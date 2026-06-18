@@ -1,11 +1,7 @@
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import React, { memo } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
 import { CATEGORY_ICONS, PROMOTION_CATEGORIES } from '../data';
 import { PromotionCategoryId } from '../types';
@@ -56,7 +52,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: scale(16),
     paddingVertical: scale(14),
-    gap: scale(8),
   },
   tab: {
     flexDirection: 'row',

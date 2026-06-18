@@ -28,5 +28,6 @@ export const SCREEN_NAME = {
   EXCHANGE_GIFTS_DETAIL_SCREEN: 'ExchangeGiftsDetailScreen',
   EXCHANGE_GIFTS_SUCCESS_SCREEN: 'ExchangeGiftsSuccessScreen',
   NOTIFICATION_SCREEN: 'NotificationScreen',
+  PUSH_NOTIFICATION_SCREEN: 'PushNotificationScreen',
   EVENT_DETAIL_SCREEN: 'EventDetailScreen',
 };

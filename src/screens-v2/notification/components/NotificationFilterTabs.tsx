@@ -15,10 +15,15 @@ const TABS: { id: NotificationTabId; label: string }[] = [
 type Props = {
   activeId: NotificationTabId;
   onChange: (id: NotificationTabId) => void;
+  compact?: boolean;
 };
 
-const NotificationFilterTabs: React.FC<Props> = ({ activeId, onChange }) => (
-  <View style={styles.row}>
+const NotificationFilterTabs: React.FC<Props> = ({
+  activeId,
+  onChange,
+  compact = false,
+}) => (
+  <View style={[styles.row, compact && styles.rowCompact]}>
     {TABS.map(tab => {
       const active = tab.id === activeId;
 
@@ -54,6 +59,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: scale(20),
     borderTopRightRadius: scale(20),
     marginTop: -scale(12),
+  },
+  rowCompact: {
+    marginTop: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    paddingTop: scale(8),
   },
   tab: {
     flex: 1,

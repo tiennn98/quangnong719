@@ -2,9 +2,10 @@ import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import { CalendarDays, Clock3, MapPin } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
 import { EventDetailData } from '../types';
+import { Images } from '@/assets';
 
 type Props = Pick<
   EventDetailData,
@@ -21,7 +22,11 @@ const EventBannerCard: React.FC<Props> = ({
 }) => (
   <View style={styles.card}>
     <View style={styles.imageArea}>
-      <View style={styles.imagePlaceholder} />
+      <Image
+        source={Images.background_event}
+        style={styles.imagePlaceholder}
+        resizeMode="cover"
+      />
       <View style={styles.statusBadge}>
         <CText style={styles.statusText}>{status}</CText>
       </View>
@@ -61,16 +66,13 @@ const styles = StyleSheet.create({
   },
   imageArea: {
     position: 'relative',
-    minHeight: scale(160),
-    backgroundColor: '#EAF6EE',
+    height: scale(160),
     alignItems: 'center',
     justifyContent: 'center',
   },
   imagePlaceholder: {
-    width: scale(120),
-    height: scale(120),
-    borderRadius: scale(60),
-    backgroundColor: 'red',
+    width: '100%',
+    height: '100%',
   },
   statusBadge: {
     position: 'absolute',

@@ -8,5 +8,6 @@ export { default as ExchangeGiftsScreen } from './exchange-gifts';
 export { default as ExchangeGiftsDetailScreen } from './exchange-gifts-detail';
 export { default as ExchangeGiftsSuccessScreen } from './exchange-gifts-success';
 export { default as NotificationScreen } from './notification';
+export { default as PushNotificationScreen } from './push-notification';
 export { default as EventDetailScreen } from './event-detail';
 export { default as MyProfileScreen } from './my-profile';

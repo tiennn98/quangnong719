@@ -9,7 +9,7 @@ export const Images = {
   thung: require('./thung.png'),
   wellcome: require('./wellcome.jpeg'),
   logowhite: require('./logowhite.png'),
-  bannner : require('./bannner.png'),
+  bannner: require('./bannner.png'),
   walletIcon: require('./wallet.png'),
   qrcodeIcon: require('./qrcode.png'),
   eventIcon: require('./event.png'),
@@ -17,4 +17,7 @@ export const Images = {
   invoiceIcon: require('./invoice.png'),
   skillCorner: require('./skillcorn.png'),
   helpSupport: require('./help-support.png'),
+  bg_home: require('./bg_home.png'),
+  mu_qua_tang: require('./mu_qua_tang.png'),
+  background_event: require('./background_event.png'),
 };

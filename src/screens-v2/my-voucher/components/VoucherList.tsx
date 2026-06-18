@@ -4,7 +4,6 @@ import { scale } from 'react-native-utils-scale';
 import { VOUCHER_ITEMS } from '../data';
 import { VoucherItem, VoucherTabId } from '../types';
 import MyVoucherHeader from './MyVoucherHeader';
-import StepIndicator from './StepIndicator';
 import VoucherCard from './VoucherCard';
 import VoucherFilterTabs from './VoucherFilterTabs';
 import VoucherTipCard from './VoucherTipCard';
@@ -26,7 +25,6 @@ const ListHeader = memo(
     onTabChange: (id: VoucherTabId) => void;
   }) => (
     <View>
-      <StepIndicator />
       <VoucherFilterTabs activeId={activeTab} onChange={onTabChange} />
     </View>
   ),

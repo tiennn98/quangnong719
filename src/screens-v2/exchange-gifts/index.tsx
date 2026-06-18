@@ -1,25 +1,21 @@
+import { SCREEN_NAME } from '@/constants/screen-name';
 import { useGetProfile } from '@/hooks/useProfile';
+import { navigate } from '@/navigators/navigation-service';
+import { callPhoneNumber } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import GiftGrid from './components/GiftGrid';
 import { DEFAULT_POINTS } from './data';
 import { GiftCategoryId, GiftItem, RedemptionHistoryItem } from './types';
-import { navigate } from '@/navigators/navigation-service';
-import { SCREEN_NAME } from '@/constants/screen-name';
 
 const ExchangeGiftsScreen: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<GiftCategoryId>('all');
   const { data: profile } = useGetProfile();
 
   const points = useMemo(
-    () =>
-      profile?.reward_point ?? profile?.loyalty_points ?? DEFAULT_POINTS,
+    () => profile?.reward_point ?? profile?.loyalty_points ?? DEFAULT_POINTS,
     [profile?.reward_point, profile?.loyalty_points],
   );
-
-  const handleSupportPress = useCallback(() => {
-    console.log('[ExchangeGifts] support');
-  }, []);
 
   const handleRedeem = useCallback((_item: GiftItem) => {
     navigate(SCREEN_NAME.EXCHANGE_GIFTS_DETAIL_SCREEN);
@@ -41,7 +37,7 @@ const ExchangeGiftsScreen: React.FC = () => {
         points={points}
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
-        onSupportPress={handleSupportPress}
+        onSupportPress={callPhoneNumber}
         onRedeem={handleRedeem}
         onSeeAllHistory={handleSeeAllHistory}
         onHistoryPress={handleHistoryPress}

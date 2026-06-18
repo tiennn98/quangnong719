@@ -8,16 +8,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontScale, scale } from 'react-native-utils-scale';
 
 type Props = {
-  step?: number;
-  totalSteps?: number;
   onSharePress?: () => void;
 };
 
-const EventDetailHeader: React.FC<Props> = ({
-  step = 4,
-  totalSteps = 10,
-  onSharePress,
-}) => {
+const EventDetailHeader: React.FC<Props> = ({ onSharePress }) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -33,11 +27,6 @@ const EventDetailHeader: React.FC<Props> = ({
 
       <View style={styles.center}>
         <CText style={styles.title}>Chi tiết sự kiện</CText>
-        <View style={styles.stepBadge}>
-          <CText style={styles.stepText}>
-            Bước {step}/{totalSteps}
-          </CText>
-        </View>
       </View>
 
       <Pressable
@@ -59,7 +48,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: scale(16),
-    paddingBottom: scale(12),
     backgroundColor: '#F5F7F6',
   },
   sideButton: {

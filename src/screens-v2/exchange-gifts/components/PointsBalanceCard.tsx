@@ -8,15 +8,9 @@ import { fontScale, scale } from 'react-native-utils-scale';
 
 type Props = {
   points?: number;
-  step?: number;
-  totalSteps?: number;
 };
 
-const PointsBalanceCard: React.FC<Props> = ({
-  points = 0,
-  step = 5,
-  totalSteps = 10,
-}) => (
+const PointsBalanceCard: React.FC<Props> = ({ points = 0 }) => (
   <View style={styles.wrapper}>
     <LinearGradient
       colors={['#1F8A5B', '#19673A', '#145A32']}
@@ -24,12 +18,6 @@ const PointsBalanceCard: React.FC<Props> = ({
       end={{ x: 1, y: 0.5 }}
       style={styles.card}
     >
-      <View style={styles.stepBadge}>
-        <CText style={styles.stepText}>
-          Bước {step}/{totalSteps}
-        </CText>
-      </View>
-
       <View style={styles.content}>
         <View style={styles.diamondIconWrap}>
           <Diamond color={Colors.blue400} size={22} fill="#E8F4FC" />
@@ -45,8 +33,6 @@ const PointsBalanceCard: React.FC<Props> = ({
             Đổi quà thiết thực cho mùa vụ bội thu
           </CText>
         </View>
-
-        <View style={styles.decorPlaceholder} />
       </View>
     </LinearGradient>
   </View>

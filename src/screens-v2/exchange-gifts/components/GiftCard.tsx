@@ -2,9 +2,10 @@ import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import { Diamond } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { fontScale, scale, width } from 'react-native-utils-scale';
 import { GiftItem } from '../types';
+import { Images } from '@/assets';
 
 type Props = {
   item: GiftItem;
@@ -15,7 +16,11 @@ const CARD_WIDTH = (width - scale(16) * 2 - scale(10)) / 2;
 
 const GiftCard: React.FC<Props> = ({ item, onRedeem }) => (
   <View style={styles.card}>
-    <View style={styles.imagePlaceholder} />
+    <Image
+      source={Images.mu_qua_tang}
+      style={styles.imagePlaceholder}
+      resizeMode="cover"
+    />
 
     <CText style={styles.title} numberOfLines={2}>
       {item.title}
@@ -50,8 +55,6 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: '100%',
     height: scale(90),
-    borderRadius: scale(45),
-    backgroundColor: 'red',
     alignSelf: 'center',
     marginBottom: scale(8),
   },

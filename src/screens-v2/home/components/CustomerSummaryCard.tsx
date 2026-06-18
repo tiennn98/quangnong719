@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.white,
     marginHorizontal: scale(16),
-    marginTop: scale(-28),
+    marginTop: scale(-36),
     borderRadius: scale(16),
     paddingVertical: scale(14),
     paddingHorizontal: scale(12),
@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 6,
+    zIndex: 10,
   },
   leftSection: {
     flex: 1,

@@ -1,21 +1,22 @@
+import { SCREEN_NAME } from '@/constants/screen-name';
 import { useGetProfile } from '@/hooks/useProfile';
 import { useGetVoucherList } from '@/hooks/useVoucher';
+import { navigate } from '@/navigators/navigation-service';
+import { callPhoneNumber } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { scale } from 'react-native-utils-scale';
 import CategoryTabs from './components/CategoryTabs';
-import OnboardingGuideCard from './components/OnboardingGuideCard';
 import PromotionBannerCarousel from './components/PromotionBannerCarousel';
 import PromotionHeader from './components/PromotionHeader';
 import PromotionList from './components/PromotionList';
 import SummaryStats from './components/SummaryStats';
 import { PROMOTION_ITEMS } from './data';
 import { PromotionCategoryId, PromotionListItemData } from './types';
-import { navigate } from '@/navigators/navigation-service';
-import { SCREEN_NAME } from '@/constants/screen-name';
 
 const PromotionScreen: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<PromotionCategoryId>('all');
+  const [activeCategory, setActiveCategory] =
+    useState<PromotionCategoryId>('all');
 
   const { data: profile } = useGetProfile();
   const voucherQ = useGetVoucherList(1, 10);
@@ -49,7 +50,7 @@ const PromotionScreen: React.FC = () => {
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F7F6" />
 
-      <PromotionHeader />
+      <PromotionHeader onSupportPress={() => callPhoneNumber()} />
 
       <ScrollView
         style={styles.scrollView}
@@ -58,13 +59,16 @@ const PromotionScreen: React.FC = () => {
       >
         <PromotionBannerCarousel />
 
-        <SummaryStats voucherCount={voucherCount} points={points} onVoucherPress={handleVoucherPress} onPointsPress={handlePointsPress} />
+        <SummaryStats
+          voucherCount={voucherCount}
+          points={points}
+          onVoucherPress={handleVoucherPress}
+          onPointsPress={handlePointsPress}
+        />
 
         <CategoryTabs activeId={activeCategory} onChange={setActiveCategory} />
 
         <PromotionList items={filteredItems} onItemPress={handleItemPress} />
-
-        <OnboardingGuideCard />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

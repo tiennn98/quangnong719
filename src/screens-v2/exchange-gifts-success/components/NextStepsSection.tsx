@@ -30,7 +30,11 @@ const NextStepsSection: React.FC<Props> = ({ steps }) => (
             <View key={step.id} style={styles.stepRow}>
               <View style={styles.stepLeft}>
                 <View style={styles.iconWrap}>
-                  <Icon color={Colors.greenPrimary} size={14} strokeWidth={2.2} />
+                  <Icon
+                    color={Colors.greenPrimary}
+                    size={14}
+                    strokeWidth={2.2}
+                  />
                 </View>
                 {!isLast ? <View style={styles.connector} /> : null}
               </View>
@@ -48,8 +52,6 @@ const NextStepsSection: React.FC<Props> = ({ steps }) => (
           );
         })}
       </View>
-
-      <View style={styles.illustrationPlaceholder} />
     </View>
   </View>
 );
@@ -142,13 +144,5 @@ const styles = StyleSheet.create({
     color: Colors.gray500,
     fontFamily: Fonts.MEDIUM,
     lineHeight: fontScale(13),
-  },
-  illustrationPlaceholder: {
-    width: scale(80),
-    height: scale(120),
-    borderRadius: scale(40),
-    backgroundColor: 'red',
-    alignSelf: 'center',
-    flexShrink: 0,
   },
 });

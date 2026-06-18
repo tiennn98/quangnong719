@@ -13,10 +13,7 @@ import { fontScale, scale } from 'react-native-utils-scale';
 import { GIFT_CATEGORIES } from '../data';
 import { GiftCategoryId } from '../types';
 
-const CATEGORY_ICONS: Record<
-  GiftCategoryId,
-  typeof LayoutGrid
-> = {
+const CATEGORY_ICONS: Record<GiftCategoryId, typeof LayoutGrid> = {
   all: LayoutGrid,
   small: Gift,
   supplies: ShoppingBag,
@@ -69,7 +66,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: scale(16),
     paddingVertical: scale(12),
-    gap: scale(8),
   },
   tab: {
     flexDirection: 'row',

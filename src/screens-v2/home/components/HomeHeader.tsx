@@ -1,7 +1,7 @@
 import { Images } from '@/assets/images';
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
-import { Bell, Headphones, Search } from 'lucide-react-native';
+import { Bell, Headphones } from 'lucide-react-native';
 import React, { memo } from 'react';
 import {
   Image,
@@ -18,7 +18,6 @@ type Props = {
   brandName?: string;
   subtitle?: string;
   notificationCount?: number;
-  onSearchPress?: () => void;
   onNotificationPress?: () => void;
   onSupportPress?: () => void;
 };
@@ -28,7 +27,6 @@ const HomeHeader: React.FC<Props> = ({
   brandName = 'Quang Nông 719',
   subtitle = 'Đồng hành cùng mùa vụ bội thu',
   notificationCount = 0,
-  onSearchPress,
   onNotificationPress,
   onSupportPress,
 }) => {
@@ -37,12 +35,12 @@ const HomeHeader: React.FC<Props> = ({
   return (
     <View style={styles.wrapper}>
       <ImageBackground
-        source={Images.bannner}
+        source={Images.bg_home}
         style={styles.banner}
         imageStyle={styles.bannerImage}
         resizeMode="cover"
       >
-        <View style={[styles.topRow, { paddingTop: insets.top + scale(8) }]}>
+        <View style={[styles.topRow, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
             <View style={styles.logoCircle}>
               <Image
@@ -59,9 +57,6 @@ const HomeHeader: React.FC<Props> = ({
           </View>
 
           <View style={styles.actions}>
-            <HeaderIconButton onPress={onSearchPress}>
-              <Search color={Colors.h1} size={18} strokeWidth={2.2} />
-            </HeaderIconButton>
             <HeaderIconButton onPress={onNotificationPress}>
               <Bell color={Colors.h1} size={18} strokeWidth={2.2} />
               {notificationCount > 0 ? (
@@ -146,7 +141,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: fontScale(12),
-    color: Colors.text,
+    color: Colors.h1,
     fontFamily: Fonts.MEDIUM,
   },
   brandName: {
@@ -157,7 +152,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: fontScale(11),
-    color: Colors.h2,
+    color: Colors.white,
     fontFamily: Fonts.MEDIUM,
     marginTop: scale(2),
   },
@@ -179,8 +174,8 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    top: scale(4),
-    right: scale(4),
+    top: scale(3),
+    right: scale(3),
     minWidth: scale(16),
     height: scale(16),
     borderRadius: scale(8),

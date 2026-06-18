@@ -1,14 +1,19 @@
+import { Images } from '@/assets';
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
 import { Check } from 'lucide-react-native';
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
 
 const SuccessHero: React.FC = () => (
   <View style={styles.wrapper}>
     <View style={styles.illustrationArea}>
-      <View style={styles.giftPlaceholder} />
+      <Image
+        source={Images.bg_home}
+        style={styles.giftPlaceholder}
+        resizeMode="cover"
+      />
       <View style={styles.checkCircle}>
         <Check color={Colors.greenPrimary} size={36} strokeWidth={3} />
       </View>
@@ -31,7 +36,7 @@ const styles = StyleSheet.create({
     paddingBottom: scale(16),
   },
   illustrationArea: {
-    width: scale(180),
+    width: '100%',
     height: scale(160),
     alignItems: 'center',
     justifyContent: 'center',
@@ -39,10 +44,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   giftPlaceholder: {
-    width: scale(140),
-    height: scale(140),
-    borderRadius: scale(70),
-    backgroundColor: 'red',
+    width: '100%',
+    height: '100%',
   },
   checkCircle: {
     position: 'absolute',

@@ -12,6 +12,7 @@ import NotificationHeader from './NotificationHeader';
 type Props = {
   activeTab: NotificationTabId;
   onTabChange: (id: NotificationTabId) => void;
+  showBackButton?: boolean;
   onSearchPress?: () => void;
   onSettingsPress?: () => void;
   onNotificationPress?: (item: NotificationItem) => void;
@@ -24,6 +25,7 @@ const ListFooter = memo(() => (
 const NotificationList: React.FC<Props> = ({
   activeTab,
   onTabChange,
+  showBackButton = false,
   onSearchPress,
   onSettingsPress,
   onNotificationPress,
@@ -49,11 +51,16 @@ const NotificationList: React.FC<Props> = ({
   return (
     <View style={styles.wrapper}>
       <NotificationHeader
+        showBackButton={showBackButton}
         onSearchPress={onSearchPress}
         onSettingsPress={onSettingsPress}
       />
 
-      <NotificationFilterTabs activeId={activeTab} onChange={onTabChange} />
+      <NotificationFilterTabs
+        activeId={activeTab}
+        onChange={onTabChange}
+        compact={showBackButton}
+      />
 
       <FlatList
         data={filteredItems}

@@ -1,12 +1,6 @@
 import { CText } from '@/components';
 import { Colors, Fonts } from '@/themes';
-import {
-  Clock3,
-  Gift,
-  MapPin,
-  Navigation,
-  Users,
-} from 'lucide-react-native';
+import { Clock3, Gift, MapPin, Navigation, Users } from 'lucide-react-native';
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { fontScale, scale } from 'react-native-utils-scale';
@@ -31,12 +25,16 @@ const EventInfoCard: React.FC<Props> = ({
   <View style={styles.card}>
     <View style={styles.left}>
       <InfoRow
-        icon={<Clock3 color={Colors.greenPrimary} size={14} strokeWidth={2.2} />}
+        icon={
+          <Clock3 color={Colors.greenPrimary} size={14} strokeWidth={2.2} />
+        }
         label="Thời gian bắt đầu"
         value={startTime}
       />
       <InfoRow
-        icon={<MapPin color={Colors.greenPrimary} size={14} strokeWidth={2.2} />}
+        icon={
+          <MapPin color={Colors.greenPrimary} size={14} strokeWidth={2.2} />
+        }
         label="Địa điểm"
         value={fullLocation}
       />
@@ -45,8 +43,8 @@ const EventInfoCard: React.FC<Props> = ({
         label="Số chỗ còn lại"
         value={
           <CText style={styles.seatsValue}>
-            <CText style={styles.seatsHighlight}>{seatsRemaining}</CText>
-            /{seatsTotal} chỗ
+            <CText style={styles.seatsHighlight}>{seatsRemaining}</CText>/
+            {seatsTotal} chỗ
           </CText>
         }
       />
@@ -58,7 +56,6 @@ const EventInfoCard: React.FC<Props> = ({
     </View>
 
     <View style={styles.mapWrap}>
-      <View style={styles.mapPlaceholder} />
       <Pressable
         onPress={onDirectionsPress}
         style={({ pressed }) => [
@@ -161,11 +158,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
     flexShrink: 0,
-  },
-  mapPlaceholder: {
-    flex: 1,
-    minHeight: scale(120),
-    backgroundColor: 'red',
   },
   directionsButton: {
     position: 'absolute',

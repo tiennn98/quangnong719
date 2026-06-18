@@ -9,6 +9,7 @@ import RemainingPointsCard from './components/RemainingPointsCard';
 import SuccessHeader from './components/SuccessHeader';
 import SuccessHero from './components/SuccessHero';
 import { DEFAULT_SUCCESS_DATA } from './data';
+import { callPhoneNumber } from '@/utils';
 
 const ExchangeGiftsSuccessScreen: React.FC = () => {
   const success = DEFAULT_SUCCESS_DATA;
@@ -27,10 +28,6 @@ const ExchangeGiftsSuccessScreen: React.FC = () => {
     success.remainingPoints,
   ]);
 
-  const handleSupportPress = useCallback(() => {
-    console.log('[GiftSuccess] support');
-  }, []);
-
   const handleViewHistory = useCallback(() => {
     console.log('[GiftSuccess] view history');
   }, []);
@@ -43,7 +40,7 @@ const ExchangeGiftsSuccessScreen: React.FC = () => {
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F7F6" />
 
-      <SuccessHeader onSupportPress={handleSupportPress} />
+      <SuccessHeader onSupportPress={callPhoneNumber} />
 
       <ScrollView
         style={styles.scrollView}
